@@ -7,7 +7,7 @@
     "SHOW_LESS": "收起",
     "PLAYLISTS": "播放清單",
     "HOME": {
-        "TITLE": "IPTVnator",
+        "TITLE": "SaravTV",
         "SUBTITLE": "請從列表中選擇一個播放清單，或透過檔案上傳或網址新增新播放清單",
         "TABS": {
             "RECENTLY_ADDED": "最近新增的播放清單",
@@ -20,7 +20,7 @@
         "PLAYLISTS": {
             "NO_PLAYLISTS": "尚未新增播放清單",
             "ADD_FIRST": "請從其他分頁新增您的第一個播放清單",
-            "WELCOME_TITLE": "歡迎使用 IPTVnator",
+            "WELCOME_TITLE": "歡迎使用 SaravTV",
             "WELCOME_DESCRIPTION": "透過新增您的第一個播放清單開始串流之旅。連接您喜愛的 IPTV 服務，享受直播電視、電影和影集。",
             "ADD_YOUR_FIRST": "新增您的第一個播放清單",
             "FEATURE_M3U": "M3U/M3U8 檔案",
@@ -168,7 +168,7 @@
             "ERROR_TLS_HOST_UNKNOWN": "無法判斷播放清單主機。請手動重試。",
             "TRUST_TLS_HOST": "信任主機",
             "TRUST_TLS_HOST_TITLE": "信任無效憑證？",
-            "TRUST_TLS_HOST_WARNING": "僅在您信任此播放清單主機時繼續。IPTVnator 將允許此主機使用無效 TLS 憑證，但其他主機仍需要有效憑證。"
+            "TRUST_TLS_HOST_WARNING": "僅在您信任此播放清單主機時繼續。SaravTV 將允許此主機使用無效 TLS 憑證，但其他主機仍需要有效憑證。"
         },
         "TEXT_IMPORT": {
             "LABEL": "將 m3u（8）播放清單以純文字的方式插入",
@@ -310,7 +310,7 @@
         "TMDB_ATTRIBUTION": "本產品使用 TMDB API，但未經 TMDB 認可或認證。",
         "APP_PREFERENCES": "應用程式偏好設定",
         "HERO_EYEBROW": "工作區設定",
-        "HERO_TITLE": "打造您的 IPTVnator 體驗",
+        "HERO_TITLE": "打造您的 SaravTV 體驗",
         "HERO_DESCRIPTION": "在同一處調整播放、節目表、遠端存取與資料管理，同時保留目前的工作區風格。",
         "SUBTITLE": "更改應用程式的配置",
         "DESCRIPTION": "請調整下面的選項列表，並使用儲存變更按鈕確認",
@@ -370,7 +370,7 @@
         "EPG_SOURCE_FORMATS_EXAMPLES": "Examples:",
         "VIDEO_PLAYER_DESCRIPTION": "選擇預設影片播放器",
         "WEB_PLAYER_SHARED_CONTROLS": "Web 播放器統一控制項",
-        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "在 HTML5、Video.js 和 ArtPlayer 中使用 IPTVnator 的共用控制項。",
+        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "在 HTML5、Video.js 和 ArtPlayer 中使用 SaravTV 的共用控制項。",
         "PLAYER_AMBIENT_MODE": "環境背景填充",
         "PLAYER_AMBIENT_MODE_DESCRIPTION": "用模糊、昏暗的海報填充播放器周圍的空間，取代純黑色邊框。",
         "PLAYER_UP_NEXT_RAIL": "即將播放集數側欄",
@@ -396,7 +396,7 @@
         "EPG_VIEW_MODE_TIMELINE": "時間軸",
         "EPG_VIEW_MODE_LIST": "清單",
         "STARTUP_BEHAVIOR": "啟動畫面",
-        "STARTUP_BEHAVIOR_DESCRIPTION": "選擇 IPTVnator 啟動時要開啟第一個可用的工作區畫面，或還原您上次瀏覽的區段層級畫面。第一個畫面在啟用儀表板時為儀表板，否則為「來源」。",
+        "STARTUP_BEHAVIOR_DESCRIPTION": "選擇 SaravTV 啟動時要開啟第一個可用的工作區畫面，或還原您上次瀏覽的區段層級畫面。第一個畫面在啟用儀表板時為儀表板，否則為「來源」。",
         "STARTUP_BEHAVIOR_FIRST_VIEW": "第一個可用畫面",
         "STARTUP_BEHAVIOR_RESTORE_LAST_VIEW": "還原上次畫面",
         "STARTUP_WINDOW_MODE": "啟動時的視窗",
@@ -410,7 +410,7 @@
         "STRIP_COUNTRY_PREFIX": "從頻道名稱中移除國家前綴",
         "STRIP_COUNTRY_PREFIX_DESCRIPTION": "移除應用程式中直播頻道名稱裡的國家/群組前綴，例如「US | 」或「UK - 」。",
         "VERSION_DESCRIPTION": "應用程式目前版本",
-        "ABOUT_SUBTITLE": "版本、專案連結，以及支持 IPTVnator 的方式。",
+        "ABOUT_SUBTITLE": "版本、專案連結，以及支持 SaravTV 的方式。",
         "EMBEDDED_MPV_NOTICE_TITLE": "內嵌 MPV 執行環境",
         "EMBEDDED_MPV_NOTICE_DESCRIPTION": "桌面版本可內含 libmpv 和 FFmpeg 程式庫，用於實驗性的內嵌 MPV 播放器。使用者無需另行安裝 MPV 應用程式；外部 MPV 與 VLC 仍可作為備援播放器使用。",
         "COMMUNITY": "專案與社群",
@@ -420,10 +420,10 @@
         "LINK_BLOG_DESCRIPTION": "版本資訊、技巧與專案動態",
         "LINK_TELEGRAM_DESCRIPTION": "公告、社群交流與支援",
         "SUPPORT_TITLE": "支持本專案",
-        "SUPPORT_DESCRIPTION": "IPTVnator 是一款免費且開源的應用程式，採開放方式開發。如果它已成為您日常生活的一部分，一點小小的贊助就能讓專案延續，並影響未來發展方向——感謝您。",
+        "SUPPORT_DESCRIPTION": "SaravTV 是一款免費且開源的應用程式，採開放方式開發。如果它已成為您日常生活的一部分，一點小小的贊助就能讓專案延續，並影響未來發展方向——感謝您。",
         "SUPPORT_SPONSORS_HINT": "定期或單次贊助",
         "SUPPORT_KOFI_HINT": "請我喝杯咖啡",
-        "EPG_NOTE": "目前僅在 Electron 版的 IPTVnator 中提供 EPG。",
+        "EPG_NOTE": "目前僅在 Electron 版的 SaravTV 中提供 EPG。",
         "EPG_NOTE_URL_TEXT": "在此處查看",
         "IMPORT_EXPORT_DATA": "匯入/匯出播放清單",
         "IMPORT_EXPORT_DATA_DESCRIPTION": "匯出或還原播放清單備份，包括 M3U 快照、Xtream/Stalker 連線中繼資料、使用者狀態和 EPG 來源 URL。",
@@ -450,10 +450,10 @@
         "PLAYLISTS_REMOVED": "已移除所有播放清單和播放清單資料。",
         "MPV_PLAYER_PATH_LABEL": "mpv 路徑",
         "MPV_PLAYER_PATH_DESCRIPTION": "設定 MPV 路徑。在 macOS 上可以使用 MPV App bundle，例如 /Applications/mpv.app，也可以使用可執行檔路徑。",
-        "MPV_COMPATIBLE_PLAYER_TIP": "IINA 可以在 macOS 上作為相容 MPV 的播放器啟動，但請使用它的可執行檔路徑，例如 /Applications/IINA.app/Contents/MacOS/iina-cli 或 /Applications/IINA.app/Contents/MacOS/IINA。IPTVnator 控制、位置輪詢與 instance 重複使用僅保證適用於 MPV IPC。",
+        "MPV_COMPATIBLE_PLAYER_TIP": "IINA 可以在 macOS 上作為相容 MPV 的播放器啟動，但請使用它的可執行檔路徑，例如 /Applications/IINA.app/Contents/MacOS/iina-cli 或 /Applications/IINA.app/Contents/MacOS/IINA。SaravTV 控制、位置輪詢與 instance 重複使用僅保證適用於 MPV IPC。",
         "MPV_PLAYER_PATH": "mpv 播放器路徑",
         "MPV_PLAYER_ARGUMENTS_LABEL": "mpv 命令列參數",
-        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "IPTVnator 啟動新的外部播放器程序時傳遞給 mpv 的可選參數。",
+        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "SaravTV 啟動新的外部播放器程序時傳遞給 mpv 的可選參數。",
         "MPV_PLAYER_ARGUMENTS": "mpv 參數",
         "MPV_REUSE_INSTANCE_LABEL": "重複使用 MPV 實體",
         "MPV_REUSE_INSTANCE_DESCRIPTION": "啟用後，相同的 MPV 視窗將重複用於播放不同串流。停用時，每個串流會在新的 MPV 視窗中開啟。",
@@ -465,9 +465,9 @@
         "VLC_PLAYER_PATH_DESCRIPTION": "設定 VLC 路徑。在 macOS 上可以使用 VLC App bundle，例如 /Applications/VLC.app，也可以使用可執行檔路徑。",
         "VLC_PLAYER_PATH": "VLC 播放器路徑",
         "VLC_PLAYER_ARGUMENTS_LABEL": "VLC 命令列參數",
-        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "IPTVnator 啟動新的外部播放器程序時傳遞給 VLC 的可選參數。",
+        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "SaravTV 啟動新的外部播放器程序時傳遞給 VLC 的可選參數。",
         "VLC_PLAYER_ARGUMENTS": "VLC 參數",
-        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "每行一個參數。這些值會在 IPTVnator 的串流專用選項之前套用。",
+        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "每行一個參數。這些值會在 SaravTV 的串流專用選項之前套用。",
         "VLC_REUSE_INSTANCE_LABEL": "重複使用 VLC 實體",
         "VLC_REUSE_INSTANCE_DESCRIPTION": "啟用後，相同的 VLC 視窗將重複用於播放不同串流。停用時，每個串流會在新的 VLC 視窗中開啟。",
         "REMOTE_CONTROL": "遠端控制",
@@ -879,10 +879,10 @@
         "RETRY": "重試",
         "ALLOW_PRIVATE_SOURCE": "允許來源",
         "ALLOW_PRIVATE_SOURCE_TITLE": "允許私有網路 EPG 來源？",
-        "ALLOW_PRIVATE_SOURCE_WARNING": "僅當您信任此 EPG 來源時才允許。IPTVnator 將允許此 EPG URL 連線到私有或本機網路位址。",
+        "ALLOW_PRIVATE_SOURCE_WARNING": "僅當您信任此 EPG 來源時才允許。SaravTV 將允許此 EPG URL 連線到私有或本機網路位址。",
         "TRUST_TLS_HOST": "信任主機",
         "TRUST_TLS_HOST_TITLE": "信任無效憑證？",
-        "TRUST_TLS_HOST_WARNING": "僅當您信任此主機時才繼續。IPTVnator 將允許此主機使用無效 TLS 憑證，但其他主機仍需要有效憑證。",
+        "TRUST_TLS_HOST_WARNING": "僅當您信任此主機時才繼續。SaravTV 將允許此主機使用無效 TLS 憑證，但其他主機仍需要有效憑證。",
         "CURRENT_PROGRAM": "目前節目",
         "ARCHIVE_PLAYBACK": "回看播放",
         "COLLAPSE_PANEL": "收合 EPG 面板",
@@ -999,7 +999,7 @@
     "NO": "否",
     "MENU": {
         "OPEN": "開啟選單",
-        "SUPPORT_ARIA": "在 GitHub 上支持 IPTVnator",
+        "SUPPORT_ARIA": "在 GitHub 上支持 SaravTV",
         "SETTINGS_ARIA": "開啟設定",
         "BUG_REPORT": "回報問題",
         "WHAT_IS_NEW": "更新內容",
@@ -1008,7 +1008,7 @@
         "SUPPORT_PROJECT": "支持專案"
     },
     "ABOUT": {
-        "TITLE": "關於 IPTVnator",
+        "TITLE": "關於 SaravTV",
         "DESCRIPTION": "跨平台 IPTV 播放器，具有多種功能，如支援 m3u 和 m3u8 播放清單、我的最愛、電視指南、電視節目存檔/回看等。",
         "VERSION": "版本",
         "GITHUB_TOOLTIP": "ITPVnator 的 GitHub 專案",
@@ -1396,7 +1396,7 @@
         "STOP_RECORDING": "停止錄製",
         "REMOVE_RECORDING_DIALOG": {
             "TITLE": "從管理員中移除錄製檔？",
-            "MESSAGE": "這會從 IPTVnator 移除此項目。錄製的檔案仍會保留在磁碟上。"
+            "MESSAGE": "這會從 SaravTV 移除此項目。錄製的檔案仍會保留在磁碟上。"
         },
         "RECORDING_DETAIL": {
             "PROGRAMS": "已錄製的節目",
@@ -1407,7 +1407,7 @@
         "REMOVE_FROM_MANAGER": "從管理器移除",
         "REMOVE_COMPLETED_DIALOG": {
             "TITLE": "從管理器移除？",
-            "MESSAGE": "這會從 IPTVnator 中移除該項目。已下載的媒體檔案仍會保留在磁碟上。"
+            "MESSAGE": "這會從 SaravTV 中移除該項目。已下載的媒體檔案仍會保留在磁碟上。"
         },
         "REMOVE_PARTIAL_DIALOG": {
             "TITLE": "移除未完成下載？",
@@ -1464,8 +1464,8 @@
         "SUBTITLE": "遠端控制您的 IPTV 播放器",
         "UP_CHANNEL": "上一頻道",
         "DOWN_CHANNEL": "下一頻道",
-        "HEADER": "IPTVnator 遠端控制",
-        "FOOTER": "IPTVnator 遠端控制"
+        "HEADER": "SaravTV 遠端控制",
+        "FOOTER": "SaravTV 遠端控制"
     },
     "WORKSPACE": {
         "FAVORITES_ONLY": "僅顯示我的最愛",
@@ -1526,7 +1526,7 @@
             "SOURCE_EXPIRED": "已過期"
         },
         "SHELL": {
-            "BRAND_ALT": "IPTVnator",
+            "BRAND_ALT": "SaravTV",
             "RAIL_DASHBOARD": "儀表板",
             "OPEN_DASHBOARD": "開啟儀表板",
             "RAIL_SOURCES": "來源",
@@ -1721,7 +1721,7 @@
         },
         "SHORTCUTS": {
             "TITLE": "鍵盤快捷鍵",
-            "SUBTITLE": "IPTVnator 中可用的工作區、導覽、播放和對話框快捷鍵。",
+            "SUBTITLE": "SaravTV 中可用的工作區、導覽、播放和對話框快捷鍵。",
             "OPEN_TOOLTIP": "鍵盤快捷鍵 (?)",
             "OPEN_ARIA": "開啟鍵盤快捷鍵",
             "PLATFORM": {

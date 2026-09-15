@@ -148,11 +148,11 @@ describe('buildNightlyVersion', () => {
 describe('applyNightlyVersion', () => {
     it('replaces only the version line and keeps the file formatting', () => {
         const source =
-            '{\n    "name": "iptvnator",\n    "version": "0.23.0",\n    "engines": {\n        "node": "22"\n    }\n}\n';
+            '{\n    "name": "saravtv",\n    "version": "0.23.0",\n    "engines": {\n        "node": "22"\n    }\n}\n';
 
         assert.equal(
             applyNightlyVersion(source, '0.23.1-nightly.20260915.7'),
-            '{\n    "name": "iptvnator",\n    "version": "0.23.1-nightly.20260915.7",\n    "engines": {\n        "node": "22"\n    }\n}\n'
+            '{\n    "name": "saravtv",\n    "version": "0.23.1-nightly.20260915.7",\n    "engines": {\n        "node": "22"\n    }\n}\n'
         );
     });
 

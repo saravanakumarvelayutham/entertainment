@@ -21,7 +21,7 @@ concurrency:
 jobs:
     refresh:
         name: Refresh checked-in runtime pin
-        if: github.repository == '4gray/iptvnator'
+        if: github.repository == 'sarav-ai-labs/saravtv'
         runs-on: ubuntu-latest
         timeout-minutes: 10
 
@@ -85,7 +85,7 @@ jobs:
                   PR_BODY="$(printf '%s\n\n%s\n%s\n%s' \
                       'Automated refresh of the checksum-pinned Windows Embedded MPV CI input.' \
                       "- Pins upstream release \`${RELEASE_TAG}\` in repository history." \
-                      '- Keeps the binary on its upstream host; IPTVnator does not mirror it.' \
+                      '- Keeps the binary on its upstream host; SaravTV does not mirror it.' \
                       '- Preserves the explicit checksum/layout-only license-verification statement.')"
                   PR_NUMBER="$(gh pr list \
                       --base master \

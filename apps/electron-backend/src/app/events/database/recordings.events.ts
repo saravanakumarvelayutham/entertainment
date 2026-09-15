@@ -195,7 +195,7 @@ ipcMain.handle('RECORDINGS_STOP', async (_event, recordingId: number) => {
             row.ownerPid !== process.pid
         ) {
             return {
-                error: 'Recording belongs to another IPTVnator instance',
+                error: 'Recording belongs to another SaravTV instance',
                 success: false,
             };
         }
@@ -250,9 +250,7 @@ ipcMain.handle('RECORDINGS_REMOVE', async (_event, recordingId: number) => {
                 // Bounded: a hung network unlink must not keep the Remove
                 // action busy — deleting the row is what matters, and the
                 // cleanup contract is best-effort anyway.
-                let unlinkDeadline:
-                    | ReturnType<typeof setTimeout>
-                    | undefined;
+                let unlinkDeadline: ReturnType<typeof setTimeout> | undefined;
                 await Promise.race([
                     unlink(row.filePath).catch(() => undefined),
                     new Promise<void>((resolve) => {

@@ -154,7 +154,7 @@ async function main(): Promise<void> {
     // Frames are staged outside the repo and published only once every shot
     // and every guard has passed, so a late failure can never destroy the
     // release assets an earlier run already committed.
-    const stagingDir = mkdtempSync(path.join(tmpdir(), 'iptvnator-shots-'));
+    const stagingDir = mkdtempSync(path.join(tmpdir(), 'saravtv-shots-'));
     const mockServer = await driver.ensureXtreamMockServer(workspaceRoot);
     // The Stalker portal is seeded only for shots that walk into it: it adds
     // a third source card to the dashboard, which release shots must not show.
@@ -175,7 +175,7 @@ async function main(): Promise<void> {
             )
         )
     );
-    const dataDir = mkdtempSync(path.join(tmpdir(), 'iptvnator-release-shots-'));
+    const dataDir = mkdtempSync(path.join(tmpdir(), 'saravtv-release-shots-'));
     let app: Awaited<ReturnType<typeof driver.launchApp>> | undefined;
     let page: Page | undefined;
     let recordedRequests: string[] = [];

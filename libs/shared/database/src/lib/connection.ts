@@ -60,12 +60,12 @@ function isSqlTraceEnabled(): boolean {
 
 function traceSql(scope: string, message: string, payload?: unknown): void {
     if (payload === undefined) {
-        console.log(`[IPTVnator Trace][${scope}] ${message}`);
+        console.log(`[SaravTV Trace][${scope}] ${message}`);
         return;
     }
 
     console.log(
-        `[IPTVnator Trace][${scope}] ${message} ${JSON.stringify(
+        `[SaravTV Trace][${scope}] ${message} ${JSON.stringify(
             redactSensitiveData(payload)
         )}`
     );

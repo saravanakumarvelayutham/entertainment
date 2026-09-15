@@ -681,7 +681,7 @@ test('@electron @dash ClearKey DASH filters DRM fallback and reports external la
             clipboard.readText()
         );
         expect(JSON.parse(drmReport)).toMatchObject({
-            app: 'IPTVnator',
+            app: 'SaravTV',
             runtime: 'electron',
             code: 'drm-or-encryption',
             drmSystems: ['widevine'],

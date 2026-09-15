@@ -19,7 +19,7 @@ name: Build and Make Electron App
 # (tools/release/nightly-version.mjs), every build job writes it into
 # package.json so electron-updater treats the build as newer than the
 # released version, and the release job publishes the artifacts as a
-# prerelease of 4gray/iptvnator-nightly instead of the rolling test-master
+# prerelease of sarav-ai-labs/saravtv-nightly instead of the rolling test-master
 # draft. Contract: docs/architecture/release-pipeline.md ("Nightly channel").
 on:
     push:
@@ -62,14 +62,14 @@ jobs:
             version: ${{ steps.resolve.outputs.version }}
         steps:
             - name: Checkout code
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == '4gray/iptvnator'
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'sarav-ai-labs/saravtv'
               uses: actions/checkout@v7
 
             - name: Resolve nightly version
               id: resolve
               shell: bash
               env:
-                  NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == '4gray/iptvnator' }}
+                  NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'sarav-ai-labs/saravtv' }}
               run: |
                   set -euo pipefail
 
@@ -713,7 +713,7 @@ jobs:
 
             - name: Validate AppStream metadata
               if: matrix.os == 'linux'
-              run: appstreamcli validate --pedantic --no-net apps/electron-backend/linux/com.fourgray.iptvnator.metainfo.xml
+              run: appstreamcli validate --pedantic --no-net apps/electron-backend/linux/com.saravtv.app.metainfo.xml
 
             - name: Build website
               if: matrix.os == 'linux'
@@ -865,10 +865,10 @@ jobs:
 
                   case "${{ matrix.arch }}" in
                       x64)
-                          APP_PATH="dist/executables/mac/IPTVnator.app"
+                          APP_PATH="dist/executables/mac/SaravTV.app"
                           ;;
                       arm64)
-                          APP_PATH="dist/executables/mac-arm64/IPTVnator.app"
+                          APP_PATH="dist/executables/mac-arm64/SaravTV.app"
                           ;;
                       *)
                           echo "::error::Unsupported macOS arch: ${{ matrix.arch }}"
@@ -1169,7 +1169,7 @@ jobs:
             - name: Save embedded MPV runtime cache
               # TEMPORARY ARTIFACT TEST: remove `|| github.ref == 'refs/heads/master'`
               # after the macOS Embedded MPV artifacts are built and manually tested.
-              if: matrix.embedded_mpv_platform && matrix.os != 'linux' && !startsWith(github.ref, 'refs/tags/v') && github.repository == '4gray/iptvnator' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && steps.embedded-mpv-runtime-cache.outputs.cache-hit != 'true'
+              if: matrix.embedded_mpv_platform && matrix.os != 'linux' && !startsWith(github.ref, 'refs/tags/v') && github.repository == 'sarav-ai-labs/saravtv' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && steps.embedded-mpv-runtime-cache.outputs.cache-hit != 'true'
               uses: actions/cache/save@v6
               with:
                   path: |
@@ -1195,13 +1195,13 @@ jobs:
                           --artifact "${FLATPAK_BUNDLE}" --profile flatpak
                   flatpak install --user --noninteractive -y "${FLATPAK_BUNDLE}"
                   xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 \
-                      flatpak run --command=sh com.fourgray.iptvnator -c '
+                      flatpak run --command=sh com.saravtv.app -c '
                       set -euo pipefail
 
-                      test -f /app/share/metainfo/com.fourgray.iptvnator.metainfo.xml
-                      test -L /app/bin/iptvnator
+                      test -f /app/share/metainfo/com.saravtv.app.metainfo.xml
+                      test -L /app/bin/saravtv
 
-                      LAUNCHER_PATH="$(readlink -f /app/bin/iptvnator)"
+                      LAUNCHER_PATH="$(readlink -f /app/bin/saravtv)"
                       test -f "${LAUNCHER_PATH}"
                       test -x "${LAUNCHER_PATH}"
                       if [ -e "${LAUNCHER_PATH}.bin" ] || [ -L "${LAUNCHER_PATH}.bin" ]; then
@@ -1215,7 +1215,7 @@ jobs:
                   PROBE_OUTPUT="$(
                       xvfb-run -a dbus-run-session -- flatpak run \
                           --env=LIBGL_ALWAYS_SOFTWARE=1 \
-                          com.fourgray.iptvnator \
+                          com.saravtv.app \
                           --embedded-mpv-runtime-probe 2>&1
                   )"
                   PROBE_STATUS=$?
@@ -1351,8 +1351,8 @@ jobs:
         env:
             # Master pushes publish to the nightly repository (steps at the
             # end of this job) instead of the rolling draft.
-            NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == '4gray/iptvnator' }}
-            NIGHTLY_REPOSITORY: 4gray/iptvnator-nightly
+            NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'sarav-ai-labs/saravtv' }}
+            NIGHTLY_REPOSITORY: sarav-ai-labs/saravtv-nightly
             NIGHTLY_KEEP_RELEASES: '20'
 
         steps:

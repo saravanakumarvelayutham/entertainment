@@ -26,7 +26,10 @@ rails also require the underlying data slice to have at least one item.
   `DashboardDataService.globalFavoriteItems()`, excluding live favorites, using
   cover cards.
 - `recentSources` shows recently used playlist/source entries.
-- `xtreamRecentlyAdded` shows recently added Xtream catalog items.
+- `xtreamRecentlyAdded` shows recently added Xtream catalog items. Obvious
+  CAM/telesync releases are omitted from this broad feed, and entries that
+  differ only by a release-quality tag collapse to the strongest labelled
+  copy. This is presentation-only; provider rows are never deleted.
 - `tmdbRecommendations` shows "Because you watched X" — TMDB
   recommendations seeded from recently watched movies/series, kept to
   titles that exist in an imported Xtream library. Needs the TMDB opt-in
@@ -34,8 +37,9 @@ rails also require the underlying data slice to have at least one item.
   five matched cards. Data:
   `DashboardRecommendationsService` in `workspace/dashboard/data-access`.
 - `tmdbTrending` shows TMDB's weekly trending titles, matched against the
-  imported Xtream libraries. Same TMDB/Electron gating; unmatched cards
-  open the global search prefilled. Data: `DashboardTrendingService`.
+  imported Xtream libraries. Unmatched titles stay off the dashboard, and a
+  separate High Rated rail projects matched entries rated 7.5 or higher.
+  Data: `DashboardTrendingService`.
 
 ## Settings
 

@@ -14,7 +14,7 @@ describe('web backend app', () => {
 
             await expect(response.json()).resolves.toEqual({
                 status: 'ok',
-                service: 'iptvnator-web-backend',
+                service: 'saravtv-web-backend',
             });
         });
     });

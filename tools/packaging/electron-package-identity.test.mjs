@@ -151,11 +151,11 @@ function writeWindowsHelperFixture(helperPath, importedDllName) {
 }
 
 test('Linux package identity does not expose the internal Electron backend project name', () => {
-    assert.equal(electronBuilderConfig.productName, 'IPTVnator');
-    assert.equal(electronBuilderConfig.extraMetadata?.name, 'iptvnator');
-    assert.equal(electronBuilderConfig.extraMetadata?.productName, 'IPTVnator');
-    assert.equal(electronBuilderConfig.linux?.executableName, 'iptvnator');
-    assert.equal(electronBuilderConfig.extraMetadata?.desktopName, 'iptvnator');
+    assert.equal(electronBuilderConfig.productName, 'SaravTV');
+    assert.equal(electronBuilderConfig.extraMetadata?.name, 'saravtv');
+    assert.equal(electronBuilderConfig.extraMetadata?.productName, 'SaravTV');
+    assert.equal(electronBuilderConfig.linux?.executableName, 'saravtv');
+    assert.equal(electronBuilderConfig.extraMetadata?.desktopName, 'saravtv');
     assert.ok(
         electronBuilderConfig.linux?.executableArgs?.includes(
             '--ozone-platform=x11'
@@ -211,17 +211,17 @@ test('AppImage desktop metadata supports AppManager without changing other Linux
                     ];
                 })
         );
-        assert.equal(fields['X-AppImage-Name'], 'IPTVnator');
+        assert.equal(fields['X-AppImage-Name'], 'SaravTV');
         assert.equal(fields['X-AppImage-Version'], version);
         assert.equal(
             fields['X-AppImage-Homepage'],
-            'https://github.com/4gray/iptvnator'
+            'https://github.com/sarav-ai-labs/saravtv'
         );
         assert.equal(
             fields['X-AppImage-UpdateURL'],
-            'https://github.com/4gray/iptvnator'
+            'https://github.com/sarav-ai-labs/saravtv'
         );
-        assert.equal(fields.StartupWMClass, 'iptvnator');
+        assert.equal(fields.StartupWMClass, 'saravtv');
         assert.equal(fields.Exec, 'AppRun --ozone-platform=x11 %U');
         assert.equal(
             fields.MimeType,
@@ -231,16 +231,16 @@ test('AppImage desktop metadata supports AppManager without changing other Linux
         assert.equal(fields['X-AppImage-Arch'], undefined);
         const otherDesktop = await helper.computeDesktopEntry(
             config.linux,
-            'iptvnator %U'
+            'saravtv %U'
         );
         assert.doesNotMatch(otherDesktop, /^X-AppImage-/m);
-        assert.match(otherDesktop, /^StartupWMClass=iptvnator$/m);
-        assert.equal(helper.getDesktopFileName(), 'iptvnator');
+        assert.match(otherDesktop, /^StartupWMClass=saravtv$/m);
+        assert.equal(helper.getDesktopFileName(), 'saravtv');
     }
 });
 
 test('playlist file associations are registered with the operating system', () => {
-    // Without these the OS never offers IPTVnator as a handler, so every
+    // Without these the OS never offers SaravTV as a handler, so every
     // runtime path for an OS-supplied playlist is unreachable by double-click.
     assert.deepEqual(electronBuilderConfig.fileAssociations, [
         {
@@ -291,8 +291,8 @@ test('GitHub Releases auto-update metadata is generated and uploaded', () => {
     assert.deepEqual(electronBuilderConfig.publish, [
         {
             provider: 'github',
-            owner: '4gray',
-            repo: 'iptvnator',
+            owner: 'sarav-ai-labs',
+            repo: 'saravtv',
         },
     ]);
     assert.deepEqual(electronBuilderConfig.mac?.target, [

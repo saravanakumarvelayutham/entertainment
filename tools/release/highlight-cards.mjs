@@ -348,7 +348,7 @@ function brandHeader(version) {
     const chipX = 262;
 
     return [
-        `<text x="64" y="84" font-family="${FONT_STACK}" font-size="34" font-weight="700" fill="${BRAND.text}">IPTVnator</text>`,
+        `<text x="64" y="84" font-family="${FONT_STACK}" font-size="34" font-weight="700" fill="${BRAND.text}">SaravTV</text>`,
         `<rect x="${chipX}" y="56" rx="16" ry="16" width="${34 + `v${version}`.length * 13}" height="36" fill="none" stroke="${BRAND.accent}" stroke-width="2"/>`,
         `<text x="${chipX + 17}" y="81" font-family="${FONT_STACK}" font-size="22" font-weight="600" fill="${BRAND.accentBright}">v${escapeXml(version)}</text>`,
     ].join('');
@@ -501,7 +501,7 @@ export function buildHeroCardSvg(hero) {
         `<svg width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`,
         backgroundDefs(),
         backgroundRects(),
-        `<text x="64" y="96" font-family="${FONT_STACK}" font-size="34" font-weight="700" fill="${BRAND.text}">IPTVnator</text>`,
+        `<text x="64" y="96" font-family="${FONT_STACK}" font-size="34" font-weight="700" fill="${BRAND.text}">SaravTV</text>`,
         `<text x="64" y="220" font-family="${FONT_STACK}" font-size="104" font-weight="800" fill="${BRAND.text}">v${escapeXml(hero.version)}</text>`,
         `<rect x="64" y="252" width="160" height="6" rx="3" fill="${BRAND.warm}"/>`,
     ];

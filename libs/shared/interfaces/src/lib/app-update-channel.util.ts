@@ -1,9 +1,9 @@
 /**
  * Desktop update channel. Electron only.
  *
- * `stable` follows the tagged releases of `4gray/iptvnator`; `nightly`
+ * `stable` follows the tagged releases of `sarav-ai-labs/saravtv`; `nightly`
  * follows the prereleases that every master merge publishes to
- * `4gray/iptvnator-nightly`. The value is persisted with the other settings
+ * `sarav-ai-labs/saravtv-nightly`. The value is persisted with the other settings
  * in the renderer and mirrored into the main-process config by the
  * `SETTINGS_UPDATE` handler, because the startup update check runs before
  * any renderer exists to ask.
@@ -43,8 +43,8 @@ interface AppUpdateRepository {
 }
 
 const APP_UPDATE_REPOSITORIES: Record<AppUpdateChannel, AppUpdateRepository> = {
-    stable: { owner: '4gray', repo: 'iptvnator' },
-    nightly: { owner: '4gray', repo: 'iptvnator-nightly' },
+    stable: { owner: 'sarav-ai-labs', repo: 'saravtv' },
+    nightly: { owner: 'sarav-ai-labs', repo: 'saravtv-nightly' },
 };
 
 export function appUpdateRepository(

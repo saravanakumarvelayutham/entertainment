@@ -69,7 +69,7 @@ describe('renderTelegramPost', () => {
             { version: '0.24.0' }
         );
 
-        assert.match(post, /^🎉 IPTVnator v0\.24\.0 is out!/);
+        assert.match(post, /^🎉 SaravTV v0\.24\.0 is out!/);
         assert.match(
             post,
             /✨ Up Next rail — Series now show an Up Next rail beside the player\./
@@ -78,11 +78,11 @@ describe('renderTelegramPost', () => {
         assert.doesNotMatch(post, /Stalker resume|EPG no longer/);
         assert.match(
             post,
-            /⬇️ Download: https:\/\/github\.com\/4gray\/iptvnator\/releases\/tag\/v0\.24\.0/
+            /⬇️ Download: https:\/\/github\.com\/sarav-ai-labs\/saravtv\/releases\/tag\/v0\.24\.0/
         );
         assert.match(
             post,
-            /📝 Full notes: https:\/\/4gray\.github\.io\/iptvnator\/blog\/v0-24-release-notes\//
+            /📝 Full notes: https:\/\/sarav-ai-labs\.github\.io\/saravtv\/blog\/v0-24-release-notes\//
         );
     });
 
@@ -199,7 +199,7 @@ describe('renderRedditPost', () => {
             { version: '0.24.0' }
         );
 
-        assert.match(post, /^Suggested title: IPTVnator v0\.24\.0 — Up Next rail\n/);
+        assert.match(post, /^Suggested title: SaravTV v0\.24\.0 — Up Next rail\n/);
         assert.match(post, /## Highlights/);
         assert.match(
             post,
@@ -209,11 +209,11 @@ describe('renderRedditPost', () => {
         assert.match(post, /\*\*Fixes\*\*\n\n- \*\*stalker\*\* — Resume works\./);
         assert.match(
             post,
-            /\[Download\]\(https:\/\/github\.com\/4gray\/iptvnator\/releases\/tag\/v0\.24\.0\)/
+            /\[Download\]\(https:\/\/github\.com\/sarav-ai-labs\/saravtv\/releases\/tag\/v0\.24\.0\)/
         );
         assert.match(
             post,
-            /\[Full release notes\]\(https:\/\/4gray\.github\.io\/iptvnator\/blog\/v0-24-release-notes\/\)/
+            /\[Full release notes\]\(https:\/\/sarav-ai-labs\.github\.io\/saravtv\/blog\/v0-24-release-notes\/\)/
         );
     });
 
@@ -223,7 +223,7 @@ describe('renderRedditPost', () => {
             { version: '0.24.1' }
         );
 
-        assert.match(post, /^Suggested title: IPTVnator v0\.24\.1 released\n/);
+        assert.match(post, /^Suggested title: SaravTV v0\.24\.1 released\n/);
         assert.match(post, /## What's changed/);
         assert.doesNotMatch(post, /## Highlights/);
     });
@@ -262,9 +262,9 @@ describe('renderRedditPost', () => {
                 { highlight: 'Up Next rail' },
                 { highlight: 'Faster imports' },
             ]),
-            'IPTVnator v0.24.0 — Up Next rail, Faster imports'
+            'SaravTV v0.24.0 — Up Next rail, Faster imports'
         );
-        assert.equal(buildRedditTitle('0.24.0', []), 'IPTVnator v0.24.0 released');
+        assert.equal(buildRedditTitle('0.24.0', []), 'SaravTV v0.24.0 released');
     });
 
     it('stays inside the Reddit post limit and says what it dropped', () => {

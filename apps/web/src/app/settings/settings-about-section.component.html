@@ -1,7 +1,4 @@
-<section
-    class="settings-group"
-    id="about"
->
+<section class="settings-group" id="about">
     <header class="settings-group__header">
         <div class="settings-group__header-icon">
             <mat-icon>info</mat-icon>
@@ -98,7 +95,9 @@
                                     | translate
                             }}
                         </small>
-                        @if (form()!.get('updateChannel')?.value === 'nightly') {
+                        @if (
+                            form()!.get('updateChannel')?.value === 'nightly'
+                        ) {
                             <small
                                 class="app-update-channel__note"
                                 data-test-id="app-update-channel-nightly-warning"
@@ -153,8 +152,7 @@
                         >
                             <mat-icon>article</mat-icon>
                             {{
-                                'SETTINGS.APP_UPDATE_RELEASE_NOTES'
-                                    | translate
+                                'SETTINGS.APP_UPDATE_RELEASE_NOTES' | translate
                             }}
                         </button>
                     }
@@ -223,7 +221,7 @@
             <div class="link-cards">
                 <a
                     class="link-card link-card--github"
-                    href="https://github.com/4gray/iptvnator"
+                    href="https://github.com/sarav-ai-labs/saravtv"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-test-id="link-github"
@@ -250,7 +248,7 @@
                 </a>
                 <a
                     class="link-card link-card--blog"
-                    href="https://4gray.github.io/iptvnator/"
+                    href="https://github.com/4gray/iptvnator"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-test-id="link-blog"
@@ -259,16 +257,14 @@
                         <mat-icon>menu_book</mat-icon>
                     </span>
                     <span class="link-card__text">
-                        <strong>{{ 'SETTINGS.LINK_BLOG' | translate }}</strong>
-                        <span>{{
-                            'SETTINGS.LINK_BLOG_DESCRIPTION' | translate
-                        }}</span>
+                        <strong>Upstream IPTVnator</strong>
+                        <span>Original MIT-licensed project</span>
                     </span>
                     <mat-icon class="link-card__arrow">arrow_outward</mat-icon>
                 </a>
                 <a
                     class="link-card link-card--telegram"
-                    href="https://t.me/iptvnator"
+                    href="https://github.com/4gray/iptvnator/blob/master/TRADEMARK.md"
                     target="_blank"
                     rel="noreferrer noopener"
                     data-test-id="link-telegram"
@@ -286,71 +282,12 @@
                         </svg>
                     </span>
                     <span class="link-card__text">
-                        <strong>Telegram</strong>
-                        <span>{{
-                            'SETTINGS.LINK_TELEGRAM_DESCRIPTION' | translate
-                        }}</span>
+                        <strong>Upstream trademark policy</strong>
+                        <span
+                            >Branding terms for forks and redistributions</span
+                        >
                     </span>
                     <mat-icon class="link-card__arrow">arrow_outward</mat-icon>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="setting-item setting-item--full-control">
-        <div class="support-card" data-test-id="support-card">
-            <div class="support-card__intro">
-                <div class="support-card__emblem">
-                    <mat-icon>favorite</mat-icon>
-                </div>
-                <div class="support-card__copy">
-                    <h4>{{ 'SETTINGS.SUPPORT_TITLE' | translate }}</h4>
-                    <p>{{ 'SETTINGS.SUPPORT_DESCRIPTION' | translate }}</p>
-                </div>
-            </div>
-            <div class="support-card__actions">
-                <a
-                    class="support-btn support-btn--sponsors"
-                    href="https://github.com/sponsors/4gray"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    data-test-id="support-sponsors"
-                >
-                    <span class="support-btn__glyph">
-                        <svg
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                            focusable="false"
-                        >
-                            <path
-                                fill="currentColor"
-                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                            />
-                        </svg>
-                    </span>
-                    <span class="support-btn__text">
-                        <strong>GitHub Sponsors</strong>
-                        <small>{{
-                            'SETTINGS.SUPPORT_SPONSORS_HINT' | translate
-                        }}</small>
-                    </span>
-                </a>
-                <a
-                    class="support-btn support-btn--kofi"
-                    href="https://ko-fi.com/4gray"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    data-test-id="support-kofi"
-                >
-                    <span class="support-btn__glyph">
-                        <mat-icon>local_cafe</mat-icon>
-                    </span>
-                    <span class="support-btn__text">
-                        <strong>Ko-fi</strong>
-                        <small>{{
-                            'SETTINGS.SUPPORT_KOFI_HINT' | translate
-                        }}</small>
-                    </span>
                 </a>
             </div>
         </div>

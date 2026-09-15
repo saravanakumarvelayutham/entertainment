@@ -19,22 +19,22 @@ describe('app update channel util', () => {
 
     it('maps each channel to its repository and pages', () => {
         expect(appUpdateRepository('stable')).toEqual({
-            owner: '4gray',
-            repo: 'iptvnator',
+            owner: 'sarav-ai-labs',
+            repo: 'saravtv',
         });
         expect(appUpdateRepository('nightly')).toEqual({
-            owner: '4gray',
-            repo: 'iptvnator-nightly',
+            owner: 'sarav-ai-labs',
+            repo: 'saravtv-nightly',
         });
         // /releases/latest never resolves to a prerelease.
         expect(appUpdateReleasesPageUrl('stable')).toBe(
-            'https://github.com/4gray/iptvnator/releases/latest'
+            'https://github.com/sarav-ai-labs/saravtv/releases/latest'
         );
         expect(appUpdateReleasesPageUrl('nightly')).toBe(
-            'https://github.com/4gray/iptvnator-nightly/releases'
+            'https://github.com/sarav-ai-labs/saravtv-nightly/releases'
         );
         expect(appUpdateReleasesApiUrl('nightly')).toBe(
-            'https://api.github.com/repos/4gray/iptvnator-nightly/releases'
+            'https://api.github.com/repos/sarav-ai-labs/saravtv-nightly/releases'
         );
     });
 

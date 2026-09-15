@@ -7,7 +7,7 @@
     "SHOW_LESS": "Menos",
     "PLAYLISTS": "Playlists",
     "HOME": {
-        "TITLE": "IPTVnator",
+        "TITLE": "SaravTV",
         "SUBTITLE": "Por favor, selecione uma playlist da lista ou adicione uma nova playlist",
         "TABS": {
             "RECENTLY_ADDED": "Playlists adicionadas recentemente",
@@ -20,7 +20,7 @@
         "PLAYLISTS": {
             "NO_PLAYLISTS": "Nenhuma playlist foi adicionada",
             "ADD_FIRST": "Por favor, adicione sua primeira playlist",
-            "WELCOME_TITLE": "Bem-vindo ao IPTVnator",
+            "WELCOME_TITLE": "Bem-vindo ao SaravTV",
             "WELCOME_DESCRIPTION": "Comece sua jornada de streaming adicionando sua primeira playlist. Conecte-se ao seu serviço de IPTV preferido e aproveite TV ao vivo, filmes e séries.",
             "ADD_YOUR_FIRST": "Adicionar sua primeira playlist",
             "FEATURE_M3U": "Arquivos M3U/M3U8",
@@ -168,7 +168,7 @@
             "ERROR_TLS_HOST_UNKNOWN": "Não foi possível determinar o host da playlist. Tente novamente manualmente.",
             "TRUST_TLS_HOST": "Confiar no host",
             "TRUST_TLS_HOST_TITLE": "Confiar em certificado inválido?",
-            "TRUST_TLS_HOST_WARNING": "Continue somente se você confiar neste host da playlist. O IPTVnator permitirá certificados TLS inválidos para este host, mas outros hosts ainda exigem certificados válidos."
+            "TRUST_TLS_HOST_WARNING": "Continue somente se você confiar neste host da playlist. O SaravTV permitirá certificados TLS inválidos para este host, mas outros hosts ainda exigem certificados válidos."
         },
         "TEXT_IMPORT": {
             "LABEL": "Inserir playlist m3u(8) como texto",
@@ -310,7 +310,7 @@
         "TMDB_ATTRIBUTION": "Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB.",
         "APP_PREFERENCES": "Preferências do aplicativo",
         "HERO_EYEBROW": "Configurações do espaço de trabalho",
-        "HERO_TITLE": "Personalize a experiência do IPTVnator",
+        "HERO_TITLE": "Personalize a experiência do SaravTV",
         "HERO_DESCRIPTION": "Ajuste reprodução, guias, acesso remoto e gerenciamento de dados em um só lugar, sem perder o estilo atual do espaço de trabalho.",
         "SUBTITLE": "Altere a configuração do aplicativo",
         "DESCRIPTION": "Adapte as opções da lista abaixo e confirme com o botão salvar alterações",
@@ -370,7 +370,7 @@
         "EPG_SOURCE_FORMATS_EXAMPLES": "Examples:",
         "VIDEO_PLAYER_DESCRIPTION": "Selecionar reprodutor de vídeo padrão",
         "WEB_PLAYER_SHARED_CONTROLS": "Controlos unificados para leitores web",
-        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "Usa os controlos partilhados do IPTVnator em HTML5, Video.js e ArtPlayer.",
+        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "Usa os controlos partilhados do SaravTV em HTML5, Video.js e ArtPlayer.",
         "PLAYER_AMBIENT_MODE": "Preenchimento de fundo ambiente",
         "PLAYER_AMBIENT_MODE_DESCRIPTION": "Preenche o espaço ao redor do reprodutor com um pôster desfocado e escurecido em vez de barras pretas simples.",
         "PLAYER_UP_NEXT_RAIL": "Painel de próximos episódios",
@@ -396,7 +396,7 @@
         "EPG_VIEW_MODE_TIMELINE": "Linha do tempo",
         "EPG_VIEW_MODE_LIST": "Lista",
         "STARTUP_BEHAVIOR": "Visualização inicial",
-        "STARTUP_BEHAVIOR_DESCRIPTION": "Escolha se o IPTVnator abre a primeira visualização disponível do espaço de trabalho ou restaura sua última visualização. Primeira visualização significa Dashboard quando ativada, caso contrário, Fontes.",
+        "STARTUP_BEHAVIOR_DESCRIPTION": "Escolha se o SaravTV abre a primeira visualização disponível do espaço de trabalho ou restaura sua última visualização. Primeira visualização significa Dashboard quando ativada, caso contrário, Fontes.",
         "STARTUP_BEHAVIOR_FIRST_VIEW": "Primeira visualização disponível",
         "STARTUP_BEHAVIOR_RESTORE_LAST_VIEW": "Restaurar última visualização",
         "STARTUP_WINDOW_MODE": "Janela ao iniciar",
@@ -410,7 +410,7 @@
         "STRIP_COUNTRY_PREFIX": "Remover prefixos de país dos nomes dos canais",
         "STRIP_COUNTRY_PREFIX_DESCRIPTION": "Remove prefixos de país/grupo como \"US | \" ou \"UK - \" dos nomes dos canais ao vivo em todo o aplicativo.",
         "VERSION_DESCRIPTION": "Versão atual do aplicativo",
-        "ABOUT_SUBTITLE": "Versão, links do projeto e formas de apoiar o IPTVnator.",
+        "ABOUT_SUBTITLE": "Versão, links do projeto e formas de apoiar o SaravTV.",
         "EMBEDDED_MPV_NOTICE_TITLE": "Runtime MPV integrado",
         "EMBEDDED_MPV_NOTICE_DESCRIPTION": "Builds desktop podem incluir as bibliotecas libmpv e FFmpeg empacotadas para o reprodutor MPV integrado experimental. Os usuários não precisam instalar o aplicativo MPV separadamente; MPV externo e VLC permanecem disponíveis como reprodutores alternativos.",
         "COMMUNITY": "Projeto e comunidade",
@@ -420,10 +420,10 @@
         "LINK_BLOG_DESCRIPTION": "Notas de versão, dicas e atualizações do projeto",
         "LINK_TELEGRAM_DESCRIPTION": "Anúncios, comunidade e suporte",
         "SUPPORT_TITLE": "Apoiar o projeto",
-        "SUPPORT_DESCRIPTION": "O IPTVnator é gratuito e de código aberto, desenvolvido abertamente. Se ele faz parte da sua rotina diária, uma pequena contribuição ajuda a manter o projeto vivo e a definir o que vem a seguir — obrigado.",
+        "SUPPORT_DESCRIPTION": "O SaravTV é gratuito e de código aberto, desenvolvido abertamente. Se ele faz parte da sua rotina diária, uma pequena contribuição ajuda a manter o projeto vivo e a definir o que vem a seguir — obrigado.",
         "SUPPORT_SPONSORS_HINT": "Recorrente ou única",
         "SUPPORT_KOFI_HINT": "Compre-me um café",
-        "EPG_NOTE": "No momento, o EPG está disponível apenas na versão desktop Electron do IPTVnator.",
+        "EPG_NOTE": "No momento, o EPG está disponível apenas na versão desktop Electron do SaravTV.",
         "EPG_NOTE_URL_TEXT": "Confira aqui",
         "IMPORT_EXPORT_DATA": "Importar/exportar backups de playlists",
         "IMPORT_EXPORT_DATA_DESCRIPTION": "Exporte ou restaure backups de playlists incluindo snapshots M3U, metadados de conexão Xtream/Stalker, estado do usuário e URLs de fontes EPG.",
@@ -450,10 +450,10 @@
         "PLAYLISTS_REMOVED": "Todas as playlists e dados de playlists foram removidos.",
         "MPV_PLAYER_PATH_LABEL": "Caminho do mpv",
         "MPV_PLAYER_PATH_DESCRIPTION": "Defina o caminho para o MPV. No macOS você pode usar o pacote do app MPV, como /Applications/mpv.app, ou o caminho do executável.",
-        "MPV_COMPATIBLE_PLAYER_TIP": "O IINA pode ser iniciado como player compatível com MPV no macOS, mas use o caminho do executável, como /Applications/IINA.app/Contents/MacOS/iina-cli ou /Applications/IINA.app/Contents/MacOS/IINA. Controles do IPTVnator, consulta de posição e reutilização de instância são garantidos apenas com MPV IPC.",
+        "MPV_COMPATIBLE_PLAYER_TIP": "O IINA pode ser iniciado como player compatível com MPV no macOS, mas use o caminho do executável, como /Applications/IINA.app/Contents/MacOS/iina-cli ou /Applications/IINA.app/Contents/MacOS/IINA. Controles do SaravTV, consulta de posição e reutilização de instância são garantidos apenas com MPV IPC.",
         "MPV_PLAYER_PATH": "Caminho do reprodutor mpv",
         "MPV_PLAYER_ARGUMENTS_LABEL": "Argumentos de linha de comando do mpv",
-        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "Argumentos opcionais passados ao mpv quando o IPTVnator inicia um novo processo de reprodutor externo.",
+        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "Argumentos opcionais passados ao mpv quando o SaravTV inicia um novo processo de reprodutor externo.",
         "MPV_PLAYER_ARGUMENTS": "Argumentos do mpv",
         "MPV_REUSE_INSTANCE_LABEL": "Reutilizar instância do MPV",
         "MPV_REUSE_INSTANCE_DESCRIPTION": "Quando ativado, a mesma janela do MPV será reutilizada para reproduzir streams diferentes. Quando desativado, cada stream abre em uma nova janela do MPV.",
@@ -465,9 +465,9 @@
         "VLC_PLAYER_PATH_DESCRIPTION": "Defina o caminho para o VLC. No macOS você pode usar o pacote do app VLC, como /Applications/VLC.app, ou o caminho do executável.",
         "VLC_PLAYER_PATH": "Caminho do reprodutor VLC",
         "VLC_PLAYER_ARGUMENTS_LABEL": "Argumentos de linha de comando do VLC",
-        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "Argumentos opcionais passados ao VLC quando o IPTVnator inicia um novo processo de reprodutor externo.",
+        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "Argumentos opcionais passados ao VLC quando o SaravTV inicia um novo processo de reprodutor externo.",
         "VLC_PLAYER_ARGUMENTS": "Argumentos do VLC",
-        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "Use um argumento por linha. Esses valores são aplicados antes das opções específicas de stream do IPTVnator.",
+        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "Use um argumento por linha. Esses valores são aplicados antes das opções específicas de stream do SaravTV.",
         "VLC_REUSE_INSTANCE_LABEL": "Reutilizar instância do VLC",
         "VLC_REUSE_INSTANCE_DESCRIPTION": "Quando ativado, a mesma janela do VLC será reutilizada para reproduzir streams diferentes. Quando desativado, cada stream abre em uma nova janela do VLC.",
         "REMOTE_CONTROL": "Controle remoto",
@@ -879,10 +879,10 @@
         "RETRY": "Tentar novamente",
         "ALLOW_PRIVATE_SOURCE": "Permitir fonte",
         "ALLOW_PRIVATE_SOURCE_TITLE": "Permitir fonte de EPG em rede privada?",
-        "ALLOW_PRIVATE_SOURCE_WARNING": "Permita somente se você confiar nesta fonte de EPG. O IPTVnator permitirá que esta URL exata de EPG se conecte a endereços de rede privada ou local.",
+        "ALLOW_PRIVATE_SOURCE_WARNING": "Permita somente se você confiar nesta fonte de EPG. O SaravTV permitirá que esta URL exata de EPG se conecte a endereços de rede privada ou local.",
         "TRUST_TLS_HOST": "Confiar no host",
         "TRUST_TLS_HOST_TITLE": "Confiar em certificado inválido?",
-        "TRUST_TLS_HOST_WARNING": "Continue somente se você confiar neste host. O IPTVnator permitirá certificados TLS inválidos para este host, mas outros hosts ainda exigem certificados válidos.",
+        "TRUST_TLS_HOST_WARNING": "Continue somente se você confiar neste host. O SaravTV permitirá certificados TLS inválidos para este host, mas outros hosts ainda exigem certificados válidos.",
         "CURRENT_PROGRAM": "Programa atual",
         "ARCHIVE_PLAYBACK": "Reprodução do arquivo",
         "COLLAPSE_PANEL": "Recolher painel EPG",
@@ -999,7 +999,7 @@
     "NO": "Não",
     "MENU": {
         "OPEN": "Abrir menu",
-        "SUPPORT_ARIA": "Apoie o IPTVnator no GitHub",
+        "SUPPORT_ARIA": "Apoie o SaravTV no GitHub",
         "SETTINGS_ARIA": "Abrir configurações",
         "BUG_REPORT": "Reportar um bug",
         "WHAT_IS_NEW": "O que há de novo",
@@ -1008,7 +1008,7 @@
         "SUPPORT_PROJECT": "Apoiar projeto"
     },
     "ABOUT": {
-        "TITLE": "Sobre o IPTVnator",
+        "TITLE": "Sobre o SaravTV",
         "DESCRIPTION": "Aplicativo reprodutor de IPTV multiplataforma com vários recursos, como suporte a playlists m3u e m3u8, favoritos, guia de TV, arquivo/catchup de TV e muito mais.",
         "VERSION": "Versão",
         "GITHUB_TOOLTIP": "Repositório ITPVnator no GitHub",
@@ -1396,7 +1396,7 @@
         "STOP_RECORDING": "Parar gravação",
         "REMOVE_RECORDING_DIALOG": {
             "TITLE": "Remover gravação do gerenciador?",
-            "MESSAGE": "Isso remove a entrada do IPTVnator. O arquivo gravado permanece no disco."
+            "MESSAGE": "Isso remove a entrada do SaravTV. O arquivo gravado permanece no disco."
         },
         "RECORDING_DETAIL": {
             "PROGRAMS": "Programas gravados",
@@ -1407,7 +1407,7 @@
         "REMOVE_FROM_MANAGER": "Remover do gerenciador",
         "REMOVE_COMPLETED_DIALOG": {
             "TITLE": "Remover do gerenciador?",
-            "MESSAGE": "Isso remove a entrada do IPTVnator. O arquivo de mídia baixado permanece no disco."
+            "MESSAGE": "Isso remove a entrada do SaravTV. O arquivo de mídia baixado permanece no disco."
         },
         "REMOVE_PARTIAL_DIALOG": {
             "TITLE": "Remover download parcial?",
@@ -1464,8 +1464,8 @@
         "SUBTITLE": "Controle seu reprodutor IPTV remotamente",
         "UP_CHANNEL": "Canal anterior",
         "DOWN_CHANNEL": "Próximo canal",
-        "HEADER": "Controle remoto do IPTVnator",
-        "FOOTER": "Controle remoto do IPTVnator"
+        "HEADER": "Controle remoto do SaravTV",
+        "FOOTER": "Controle remoto do SaravTV"
     },
     "WORKSPACE": {
         "FAVORITES_ONLY": "Apenas favoritos",
@@ -1526,7 +1526,7 @@
             "SOURCE_EXPIRED": "Expirada"
         },
         "SHELL": {
-            "BRAND_ALT": "IPTVnator",
+            "BRAND_ALT": "SaravTV",
             "RAIL_DASHBOARD": "Dashboard",
             "OPEN_DASHBOARD": "Abrir dashboard",
             "RAIL_SOURCES": "Fontes",
@@ -1721,7 +1721,7 @@
         },
         "SHORTCUTS": {
             "TITLE": "Atalhos de teclado",
-            "SUBTITLE": "Atalhos de área de trabalho, navegação, reprodução e diálogos disponíveis no IPTVnator.",
+            "SUBTITLE": "Atalhos de área de trabalho, navegação, reprodução e diálogos disponíveis no SaravTV.",
             "OPEN_TOOLTIP": "Atalhos de teclado (?)",
             "OPEN_ARIA": "Abrir atalhos de teclado",
             "PLATFORM": {

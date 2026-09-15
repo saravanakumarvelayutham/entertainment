@@ -58,7 +58,7 @@ import {
 } from './app/services/playlist-open-request';
 import { EMBEDDED_MPV_FRAME_COPY, store } from './app/services/store.service';
 
-app.setName('iptvnator');
+app.setName('saravtv');
 
 // Packaged Linux launchers force X11 via the .desktop entry
 // (electron-builder `executableArgs`), but direct binary/AppImage launches

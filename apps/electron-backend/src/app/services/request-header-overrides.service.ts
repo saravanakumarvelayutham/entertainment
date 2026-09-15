@@ -35,7 +35,7 @@ const YOUTUBE_EMBED_HOSTS = new Set([
     'www.youtube-nocookie.com',
     'www.youtube.com',
 ]);
-const YOUTUBE_EMBED_REFERER = 'https://4gray.github.io/iptvnator/';
+const YOUTUBE_EMBED_REFERER = 'https://sarav-ai-labs.github.io/saravtv/';
 
 let activeHeaderOverride: HeaderOverride | null = null;
 let activeScopedHeaderOverride: HeaderOverride | null = null;

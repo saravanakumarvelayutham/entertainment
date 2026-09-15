@@ -32,7 +32,7 @@ This file provides guidance to coding agents working in this repository.
   must receive the temporary keychain's own password, not the `.p12` import
   password. macOS runner images since `macos-26-arm64` 20260831 verify that
   password, and `Build on macos arm64` failed with `SecKeychainUnlock: The user
-  name or passphrase you entered is not correct`. Keep the patch until
+name or passphrase you entered is not correct`. Keep the patch until
   electron-builder resolves an `app-builder-lib` containing the fix (26.16.1+),
   and run `pnpm run deps:electron-builder:test` after related dependency
   updates — the test fails when the patched version no longer matches the
@@ -99,7 +99,7 @@ This file provides guidance to coding agents working in this repository.
 ## AppImage Manager Metadata
 
 AppManager full-download discovery uses `appImage.desktop.entry` URL fields.
-Electron Builder generates the version; `extraMetadata.desktopName=iptvnator`
+Electron Builder generates the version; `extraMetadata.desktopName=saravtv`
 preserves Linux window identity without a shared `linux.desktop.entry` object
 (builder's nested merge would leak AppImage fields into Snap). This does not
 enable AppImageUpdate/zsync. Contract: `docs/architecture/release-pipeline.md`
@@ -153,8 +153,8 @@ same contract for startup readiness and error handling.
 - Connect Chrome DevTools Protocol tools to: `127.0.0.1:9222`
 - For Electron automation/debugging tasks, use the `electron` skill
 - Do not auto-open DevTools during normal CDP automation. In development, DevTools is opt-in via `ELECTRON_OPEN_DEVTOOLS=1`.
-- If DevTools is open, `agent-browser --cdp 9222 ...` may attach to the DevTools page instead of the IPTVnator window. Symptoms: `tab list` shows `about:blank`, snapshots are empty, and screenshots are black.
-- If that happens, inspect targets with `curl http://127.0.0.1:9222/json/list` and connect directly to the IPTVnator page websocket from the `webSocketDebuggerUrl` field.
+- If DevTools is open, `agent-browser --cdp 9222 ...` may attach to the DevTools page instead of the SaravTV window. Symptoms: `tab list` shows `about:blank`, snapshots are empty, and screenshots are black.
+- If that happens, inspect targets with `curl http://127.0.0.1:9222/json/list` and connect directly to the SaravTV page websocket from the `webSocketDebuggerUrl` field.
 - The app holds a single-instance lock (`acquireSingleInstanceLock` in `apps/electron-backend/src/app/services/single-instance.ts`): a second launch against the same `userData` quits immediately and focuses the running window. To attach a second CDP-enabled instance to the same profile, set `IPTVNATOR_ALLOW_MULTIPLE_INSTANCES=1` — knowing that only one of the two processes will own the renderer's IndexedDB, so settings written by the other are lost. Before focusing, the guard forwards the second launch's argv to `onSecondInstance`, which is how a playlist path handed to an already-running app reaches the open queue.
 
 ### Trace / Debug Startup
@@ -305,30 +305,31 @@ reset list windows and retain playback/active EPG. Contract:
 Portal live layouts (Xtream `live`, Stalker `itv`/`radio`) fold their panels
 from the outside in, in three nested levels owned by `LiveSidebarState`
 (`@iptvnator/portal/shared/util`): `expanded` (categories rail + channels rail
-+ player), `categories-hidden` (channels rail + player) and `collapsed`
-(player only). `LiveLayoutSidebarStateService` is the single source of truth, per
-surface (`m3u` / `portal` / `collection`; the levels apply to `portal`); the
-shell context sidebar folds the categories rail on
-`areCategoriesHiddenFor('portal')` (at level 2 only while the portal store has
-a selected category — the live root has no channels header to host the way
-back — and always at level 3), the channels rail folds on
-`isCollapsedFor('portal')`. While the rail is folded the
-channels header turns its title into a category dropdown that opens the same
-`WorkspaceContextPanelComponent` as a CDK popover through the
-`LIVE_CATEGORIES_POPOVER` token: the workspace shell provides
-`WorkspaceLiveCategoriesPopoverService` (focus-trapped `role="dialog"`,
-closed by backdrop, Escape, selection, its footer and any `NavigationStart`),
-the live layouts reach it through `createLivePanelsController()` (level
-flags, dropdown bridge and focus handoff in one shared object; the token is
-optional). `Cmd/Ctrl+B`, the header toggle and the
-floating restore handle return to the level the user collapsed from (the
-target is session-only; every level is restored as stored per surface).
-Folded rails carry `inert`, and
-`handoffFocusOnLiveSidebarChange()` / `focusIfFocusLost()` move focus to the
-replacement affordance only when the activated button was removed or inerted.
-M3U and the unified live tab have no categories rail and treat level 2 like
-level 1. Contract: `docs/architecture/iptvnator-ui-guidelines.md`
-("Collapsible Live Sidebar").
+
+- player), `categories-hidden` (channels rail + player) and `collapsed`
+  (player only). `LiveLayoutSidebarStateService` is the single source of truth, per
+  surface (`m3u` / `portal` / `collection`; the levels apply to `portal`); the
+  shell context sidebar folds the categories rail on
+  `areCategoriesHiddenFor('portal')` (at level 2 only while the portal store has
+  a selected category — the live root has no channels header to host the way
+  back — and always at level 3), the channels rail folds on
+  `isCollapsedFor('portal')`. While the rail is folded the
+  channels header turns its title into a category dropdown that opens the same
+  `WorkspaceContextPanelComponent` as a CDK popover through the
+  `LIVE_CATEGORIES_POPOVER` token: the workspace shell provides
+  `WorkspaceLiveCategoriesPopoverService` (focus-trapped `role="dialog"`,
+  closed by backdrop, Escape, selection, its footer and any `NavigationStart`),
+  the live layouts reach it through `createLivePanelsController()` (level
+  flags, dropdown bridge and focus handoff in one shared object; the token is
+  optional). `Cmd/Ctrl+B`, the header toggle and the
+  floating restore handle return to the level the user collapsed from (the
+  target is session-only; every level is restored as stored per surface).
+  Folded rails carry `inert`, and
+  `handoffFocusOnLiveSidebarChange()` / `focusIfFocusLost()` move focus to the
+  replacement affordance only when the activated button was removed or inerted.
+  M3U and the unified live tab have no categories rail and treat level 2 like
+  level 1. Contract: `docs/architecture/iptvnator-ui-guidelines.md`
+  ("Collapsible Live Sidebar").
 
 ## Channel and Detail Keyboard Scrolling
 

@@ -25,7 +25,7 @@ const nightlyReleases = [
         body: '## Nightly\n\nNewest master build\n\n<!-- iptvnator-commit: abc -->',
         draft: false,
         html_url:
-            'https://github.com/4gray/iptvnator-nightly/releases/tag/v0.23.1-nightly.20260915.7',
+            'https://github.com/sarav-ai-labs/saravtv-nightly/releases/tag/v0.23.1-nightly.20260915.7',
         name: 'Nightly 0.23.1-nightly.20260915.7',
         prerelease: true,
         published_at: '2026-09-15T00:00:00.000Z',
@@ -35,7 +35,7 @@ const nightlyReleases = [
         body: 'not a nightly',
         draft: false,
         html_url:
-            'https://github.com/4gray/iptvnator-nightly/releases/tag/v9.9.9',
+            'https://github.com/sarav-ai-labs/saravtv-nightly/releases/tag/v9.9.9',
         name: 'stray tag',
         prerelease: false,
         published_at: '2026-09-14T12:00:00.000Z',
@@ -45,7 +45,7 @@ const nightlyReleases = [
         body: '## Nightly\n\nOlder master build',
         draft: false,
         html_url:
-            'https://github.com/4gray/iptvnator-nightly/releases/tag/v0.23.1-nightly.20260914.5',
+            'https://github.com/sarav-ai-labs/saravtv-nightly/releases/tag/v0.23.1-nightly.20260914.5',
         name: 'Nightly 0.23.1-nightly.20260914.5',
         prerelease: true,
         published_at: '2026-09-14T00:00:00.000Z',
@@ -56,7 +56,7 @@ const nightlyReleases = [
 /** Answers the stable and nightly repositories with their own lists. */
 function createChannelReleaseFetcher() {
     return jest.fn(async (url: string) => {
-        const releases = url.includes('/iptvnator-nightly/')
+        const releases = url.includes('/saravtv-nightly/')
             ? nightlyReleases
             : githubReleases;
 
@@ -73,7 +73,8 @@ const githubReleases = [
     {
         body: '## New\n\nFresh build',
         draft: false,
-        html_url: 'https://github.com/4gray/iptvnator/releases/tag/v0.24.0',
+        html_url:
+            'https://github.com/sarav-ai-labs/saravtv/releases/tag/v0.24.0',
         name: 'v0.24.0',
         prerelease: false,
         published_at: '2026-06-29T00:00:00.000Z',
@@ -82,7 +83,8 @@ const githubReleases = [
     {
         body: '## Current\n\nUpdate details',
         draft: false,
-        html_url: 'https://github.com/4gray/iptvnator/releases/tag/v0.23.0',
+        html_url:
+            'https://github.com/sarav-ai-labs/saravtv/releases/tag/v0.23.0',
         name: 'v0.23.0',
         prerelease: false,
         published_at: '2026-06-28T00:00:00.000Z',
@@ -92,7 +94,7 @@ const githubReleases = [
         body: 'beta notes',
         draft: false,
         html_url:
-            'https://github.com/4gray/iptvnator/releases/tag/v0.22.5-beta',
+            'https://github.com/sarav-ai-labs/saravtv/releases/tag/v0.22.5-beta',
         name: 'v0.22.5-beta',
         prerelease: true,
         published_at: '2026-06-27T00:00:00.000Z',
@@ -101,7 +103,8 @@ const githubReleases = [
     {
         body: '## Older\n\nBug fixes',
         draft: false,
-        html_url: 'https://github.com/4gray/iptvnator/releases/tag/v0.22.0',
+        html_url:
+            'https://github.com/sarav-ai-labs/saravtv/releases/tag/v0.22.0',
         name: 'v0.22.0',
         prerelease: false,
         published_at: '2026-06-20T00:00:00.000Z',
@@ -172,7 +175,7 @@ describe('AppUpdateService', () => {
         expect(service.getStatus()).toEqual({
             currentVersion: '0.22.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Unsupported,
             supportedSelfUpdate: false,
             channel: 'stable',
@@ -195,7 +198,7 @@ describe('AppUpdateService', () => {
         expect(service.getStatus()).toEqual({
             currentVersion: '0.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Unsupported,
             supportedSelfUpdate: false,
             channel: 'stable',
@@ -221,7 +224,7 @@ describe('AppUpdateService', () => {
         expect(service.getStatus()).toEqual({
             currentVersion: '0.22.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Unsupported,
             supportedSelfUpdate: false,
             channel: 'stable',
@@ -248,7 +251,7 @@ describe('AppUpdateService', () => {
 
         expect(updaterFactory).not.toHaveBeenCalled();
         expect(fetcher).toHaveBeenCalledWith(
-            'https://api.github.com/repos/4gray/iptvnator/releases?per_page=10&page=1',
+            'https://api.github.com/repos/sarav-ai-labs/saravtv/releases?per_page=10&page=1',
             expect.any(Object)
         );
         expect(service.getStatus()).toEqual(
@@ -331,11 +334,11 @@ describe('AppUpdateService', () => {
 
         expect(updater.checkForUpdates).not.toHaveBeenCalled();
         expect(fetcher).toHaveBeenCalledWith(
-            'https://api.github.com/repos/4gray/iptvnator/releases?per_page=10&page=1',
+            'https://api.github.com/repos/sarav-ai-labs/saravtv/releases?per_page=10&page=1',
             expect.objectContaining({
                 headers: expect.objectContaining({
                     Accept: 'application/vnd.github+json',
-                    'User-Agent': 'iptvnator/0.22.0',
+                    'User-Agent': 'saravtv/0.22.0',
                 }),
             })
         );
@@ -611,8 +614,8 @@ describe('AppUpdateService', () => {
 
         expect(updater.setFeedURL).toHaveBeenCalledWith({
             provider: 'github',
-            owner: '4gray',
-            repo: 'iptvnator',
+            owner: 'sarav-ai-labs',
+            repo: 'saravtv',
         });
         expect(updater.allowPrerelease).toBe(false);
         expect(updater.channel).toBe('latest');
@@ -629,15 +632,15 @@ describe('AppUpdateService', () => {
             channel: 'nightly',
             installedChannel: 'stable',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator-nightly/releases',
+                'https://github.com/sarav-ai-labs/saravtv-nightly/releases',
         });
 
         await service.checkForUpdates();
 
         expect(updater.setFeedURL).toHaveBeenCalledWith({
             provider: 'github',
-            owner: '4gray',
-            repo: 'iptvnator-nightly',
+            owner: 'sarav-ai-labs',
+            repo: 'saravtv-nightly',
         });
         expect(updater.allowPrerelease).toBe(true);
         expect(updater.channel).toBe('nightly');
@@ -670,7 +673,7 @@ describe('AppUpdateService', () => {
 
         expect(updater.checkForUpdates).toHaveBeenCalledTimes(1);
         expect(updater.setFeedURL).toHaveBeenLastCalledWith(
-            expect.objectContaining({ repo: 'iptvnator-nightly' })
+            expect.objectContaining({ repo: 'saravtv-nightly' })
         );
         const pushed = (
             win.webContents.send.mock.calls as [
@@ -705,7 +708,7 @@ describe('AppUpdateService', () => {
             channel: 'nightly',
             latestVersion: '0.23.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator-nightly/releases',
+                'https://github.com/sarav-ai-labs/saravtv-nightly/releases',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Downloading,
         });
     });
@@ -724,7 +727,7 @@ describe('AppUpdateService', () => {
 
         expect(updater.checkForUpdates).not.toHaveBeenCalled();
         expect(fetcher).toHaveBeenCalledWith(
-            'https://api.github.com/repos/4gray/iptvnator-nightly/releases?per_page=10&page=1',
+            'https://api.github.com/repos/sarav-ai-labs/saravtv-nightly/releases?per_page=10&page=1',
             expect.any(Object)
         );
         // v9.9.9 is not a nightly and must not win the list.
@@ -782,8 +785,8 @@ describe('AppUpdateService', () => {
         expect(
             fetcher.mock.calls.map(([url]) => new URL(url).pathname)
         ).toEqual([
-            '/repos/4gray/iptvnator-nightly/releases',
-            '/repos/4gray/iptvnator/releases',
+            '/repos/sarav-ai-labs/saravtv-nightly/releases',
+            '/repos/sarav-ai-labs/saravtv/releases',
         ]);
     });
 });

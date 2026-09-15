@@ -20,15 +20,15 @@ chosen deliberately by bumping `package.json`.
 
 ## Surfaces built from one set of notes
 
-| Surface | Command | Writes |
-| --- | --- | --- |
-| `CHANGELOG.md` section | `release:notes:changelog` | the file |
-| Website blog scaffold | `release:notes:blog` | `apps/website/src/content/blog/<vX-Y>-release-notes.mdx` |
-| GitHub release body | (tag build) | via `extract-changelog-section.mjs --public` |
-| Telegram announcement | `release:notes:telegram` | stdout |
-| Reddit announcement | `release:notes:reddit` | stdout |
-| Highlight cards | `release:cards:generate` | `dist/release-highlight-cards/v<version>/` |
-| Screenshots | `release:screenshots` | `apps/website/public/blog/<vX-Y>/screenshots/` |
+| Surface                | Command                   | Writes                                                   |
+| ---------------------- | ------------------------- | -------------------------------------------------------- |
+| `CHANGELOG.md` section | `release:notes:changelog` | the file                                                 |
+| Website blog scaffold  | `release:notes:blog`      | `apps/website/src/content/blog/<vX-Y>-release-notes.mdx` |
+| GitHub release body    | (tag build)               | via `extract-changelog-section.mjs --public`             |
+| Telegram announcement  | `release:notes:telegram`  | stdout                                                   |
+| Reddit announcement    | `release:notes:reddit`    | stdout                                                   |
+| Highlight cards        | `release:cards:generate`  | `dist/release-highlight-cards/v<version>/`               |
+| Screenshots            | `release:screenshots`     | `apps/website/public/blog/<vX-Y>/screenshots/`           |
 
 Run the two stdout commands as `pnpm --silent run …` whenever the output is
 redirected to a file or a clipboard. Without it pnpm prints its lifecycle
@@ -51,7 +51,7 @@ changes. It is rejected on `type: internal`, and capped at **60 characters** to
 keep it headline-sized — roughly what the hero card fits on one line.
 
 The cap is an authoring guideline, not a rendering guarantee: character count
-is not width. Card text wraps by *estimated rendered width*
+is not width. Card text wraps by _estimated rendered width_
 (`estimateTextWidth`), because 34 `W` at font-size 52 measures ~1948px where
 1072px are available — a character-capped line still ran off the canvas.
 
@@ -194,7 +194,7 @@ The `v*` tag build creates a **draft** GitHub release.
 the gate that runs before a human publishes it. It is strictly read-only: it
 never publishes, edits or deletes.
 
-1. **Find the run.** `gh run list` reports what is indexed *right now* — its
+1. **Find the run.** `gh run list` reports what is indexed _right now_ — its
    `--limit` caps how many runs come back, it does not wait for one to appear,
    and a tag pushed seconds ago routinely is not indexed yet. The verifier
    polls (10 attempts, 6 s apart) before concluding the tag was never pushed.
@@ -223,18 +223,18 @@ pre-publication gate after publication would claim a boundary already crossed.
 in `.github/workflows/build-and-make.yaml` gains or loses a target, update
 `requiredAssetRules()` in the same PR.
 
-| Platform | Assets |
-| --- | --- |
-| macOS | `-mac-{x64,arm64}.{dmg,zip}` + a `.blockmap` for each (8) |
-| Windows | `-windows-x64-setup.exe` + `.blockmap` (2) |
-| DEB | `-linux-{amd64,arm64,armv7l}.deb` (3) |
-| AppImage | `-linux-{x86_64,arm64,armv7l}.AppImage` (3) |
-| Snap | `-linux-{amd64,armhf}.snap` (2) |
-| RPM | `-linux-x86_64.rpm` (1) |
-| Flatpak | `-linux-x86_64.flatpak` (1) |
-| Pacman | `-linux-x64.pacman` **or** `-linux-x86_64.pkg.tar.*` (1) |
-| Updater metadata | `latest.yml`, `latest-mac.yml`, `latest-linux.yml`, `latest-linux-arm.yml`, `latest-linux-arm64.yml` (5) |
-| Source compliance | `linux-frame-copy-runtime-sources.tar.xz` (1) |
+| Platform          | Assets                                                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| macOS             | `-mac-{x64,arm64}.{dmg,zip}` + a `.blockmap` for each (8)                                                |
+| Windows           | `-windows-x64-setup.exe` + `.blockmap` (2)                                                               |
+| DEB               | `-linux-{amd64,arm64,armv7l}.deb` (3)                                                                    |
+| AppImage          | `-linux-{x86_64,arm64,armv7l}.AppImage` (3)                                                              |
+| Snap              | `-linux-{amd64,armhf}.snap` (2)                                                                          |
+| RPM               | `-linux-x86_64.rpm` (1)                                                                                  |
+| Flatpak           | `-linux-x86_64.flatpak` (1)                                                                              |
+| Pacman            | `-linux-x64.pacman` **or** `-linux-x86_64.pkg.tar.*` (1)                                                 |
+| Updater metadata  | `latest.yml`, `latest-mac.yml`, `latest-linux.yml`, `latest-linux-arm.yml`, `latest-linux-arm64.yml` (5) |
+| Source compliance | `linux-frame-copy-runtime-sources.tar.xz` (1)                                                            |
 
 Electron Builder has shipped both pacman artifact shapes, so either satisfies
 that rule. Rules compare plain strings rather than a regex built from the
@@ -253,7 +253,7 @@ canonical GitHub repository. AppManager 3.8.0 reads these URL fields and can
 discover GitHub releases and download complete AppImages. Its architecture
 selection recognizes the existing `x86_64`, `arm64` and `armv7l` asset names.
 Other Linux package formats do not inherit these AppImage-specific fields.
-`extraMetadata.desktopName=iptvnator` preserves the existing window class and
+`extraMetadata.desktopName=saravtv` gives the fork its own window class and
 desktop filename. Do not reintroduce a shared `linux.desktop.entry` object:
 electron-builder 26.15.7's target merge mutates nested defaults, which would
 leak the AppImage URL fields into Snap in the same portable packaging pass.
@@ -278,9 +278,9 @@ References: [AppImage desktop keys](https://docs.appimage.org/reference/desktop-
 
 ## Nightly channel
 
-Every push to `master` of `4gray/iptvnator` is also a nightly. The same
+Every push to `master` of `sarav-ai-labs/saravtv` is also a nightly. The same
 `build-and-make.yaml` run that builds the matrix publishes its artifacts as a
-**prerelease of `4gray/iptvnator-nightly`** instead of the rolling
+**prerelease of `sarav-ai-labs/saravtv-nightly`** instead of the rolling
 `test-master` draft: a draft is invisible to anyone without write access and
 to electron-updater, while a published prerelease is what the desktop app's
 **Nightly** update channel installs. PR builds keep their `test-pr-<n>`
@@ -319,8 +319,8 @@ frontend and backend builds and before electron-builder reads it
 
 **Publication** (steps at the end of the `create-release` job):
 
-1. `NIGHTLY_RELEASE_TOKEN` — a fine-grained PAT with *Contents: read/write*
-   on `4gray/iptvnator-nightly` — is required. Without it the run only warns;
+1. `NIGHTLY_RELEASE_TOKEN` — a fine-grained PAT with _Contents: read/write_
+   on `sarav-ai-labs/saravtv-nightly` — is required. Without it the run only warns;
    `GITHUB_TOKEN` cannot write to another repository. The nightly repository
    needs one commit on its default branch, because `gh release create`
    creates the release tag there.

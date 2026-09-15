@@ -180,7 +180,7 @@ export class EpgProgressPanelComponent {
                     ),
                     message: this.translateWithFallback(
                         'EPG.ALLOW_PRIVATE_SOURCE_WARNING',
-                        'Only allow this if you trust the EPG source. IPTVnator will let this exact EPG URL connect to private or local network addresses.'
+                        'Only allow this if you trust the EPG source. SaravTV will let this exact EPG URL connect to private or local network addresses.'
                     ),
                     confirmLabel: this.translateWithFallback(
                         'EPG.ALLOW_PRIVATE_SOURCE',
@@ -204,7 +204,7 @@ export class EpgProgressPanelComponent {
                 ),
                 message: this.translateWithFallback(
                     'EPG.TRUST_TLS_HOST_WARNING',
-                    'Only continue if you trust this host. IPTVnator will allow invalid TLS certificates for this host, but other hosts still require valid certificates.'
+                    'Only continue if you trust this host. SaravTV will allow invalid TLS certificates for this host, but other hosts still require valid certificates.'
                 ),
                 confirmLabel: this.translateWithFallback(
                     'EPG.TRUST_TLS_HOST',

@@ -1,6 +1,6 @@
 {
-    "appId": "com.fourgray.iptvnator",
-    "productName": "IPTVnator",
+    "appId": "com.saravtv.app",
+    "productName": "SaravTV",
     "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
     "fileAssociations": [
         {
@@ -21,8 +21,8 @@
     "publish": [
         {
             "provider": "github",
-            "owner": "4gray",
-            "repo": "iptvnator"
+            "owner": "sarav-ai-labs",
+            "repo": "saravtv"
         }
     ],
     "directories": {
@@ -52,9 +52,9 @@
         "**/embedded-mpv-runtime.json"
     ],
     "extraMetadata": {
-        "name": "iptvnator",
-        "productName": "IPTVnator",
-        "desktopName": "iptvnator",
+        "name": "saravtv",
+        "productName": "SaravTV",
+        "desktopName": "saravtv",
         "main": "electron-backend/main.js"
     },
     "extraResources": ["dist/apps/electron-backend/workers"],
@@ -76,11 +76,11 @@
         "entitlements": "apps/electron-backend/macos/entitlements.mac.plist",
         "entitlementsInherit": "apps/electron-backend/macos/entitlements.mac.inherit.plist",
         "notarize": true,
-        "icon": "apps/web/src/assets/icons/favicon.icns"
+        "icon": "apps/web/src/assets/icons/icon-1024.png"
     },
     "linux": {
         "category": "Video",
-        "executableName": "iptvnator",
+        "executableName": "saravtv",
         "executableArgs": ["--ozone-platform=x11"],
         "target": [
             {
@@ -114,9 +114,9 @@
     "appImage": {
         "desktop": {
             "entry": {
-                "X-AppImage-Name": "IPTVnator",
-                "X-AppImage-Homepage": "https://github.com/4gray/iptvnator",
-                "X-AppImage-UpdateURL": "https://github.com/4gray/iptvnator"
+                "X-AppImage-Name": "SaravTV",
+                "X-AppImage-Homepage": "https://github.com/sarav-ai-labs/saravtv",
+                "X-AppImage-UpdateURL": "https://github.com/sarav-ai-labs/saravtv"
             }
         }
     },
@@ -140,8 +140,8 @@
         ],
         "files": [
             [
-                "apps/electron-backend/linux/com.fourgray.iptvnator.metainfo.xml",
-                "/share/metainfo/com.fourgray.iptvnator.metainfo.xml"
+                "apps/electron-backend/linux/com.saravtv.app.metainfo.xml",
+                "/share/metainfo/com.saravtv.app.metainfo.xml"
             ]
         ]
     },

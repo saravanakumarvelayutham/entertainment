@@ -5,6 +5,8 @@ import {
     buildDashboardContinueWatchingActions,
     buildDashboardRailSeeAllState,
     buildDashboardSourceActions,
+    curateDashboardContentItems,
+    isDashboardHighRated,
     liveRailTitleKeyForSource,
     shouldShowLiveFavoritesSkeleton,
     shouldShowRecentContentSkeleton,
@@ -139,6 +141,42 @@ describe('buildDashboardContinueWatchingActions', () => {
             'remove-from-history',
         ]);
         expect(actions[1].separatorBefore).toBe(true);
+    });
+});
+
+describe('curateDashboardContentItems', () => {
+    it('keeps the strongest quality-labelled duplicate in the first slot', () => {
+        const items = [
+            { title: 'Dune 720p', id: 1 },
+            { title: 'Arrival', id: 2 },
+            { title: 'Dune [2160p]', id: 3 },
+        ];
+
+        expect(curateDashboardContentItems(items)).toEqual([
+            { title: 'Dune [2160p]', id: 3 },
+            { title: 'Arrival', id: 2 },
+        ]);
+    });
+
+    it('drops obvious capture releases but preserves audio variants', () => {
+        const items = [
+            { title: 'New Film CAMRip', id: 1 },
+            { title: 'New Film 1080p English', id: 2 },
+            { title: 'New Film 1080p Spanish', id: 3 },
+        ];
+
+        expect(curateDashboardContentItems(items)).toEqual(items.slice(1));
+    });
+});
+
+describe('isDashboardHighRated', () => {
+    it.each([
+        ['7.5', true],
+        ['8.9', true],
+        ['7.4', false],
+        [null, false],
+    ])('classifies %p at the 7.5 threshold', (rating, expected) => {
+        expect(isDashboardHighRated(rating)).toBe(expected);
     });
 });
 

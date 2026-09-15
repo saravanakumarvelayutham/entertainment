@@ -7,7 +7,7 @@
     "SHOW_LESS": "折りたたむ",
     "PLAYLISTS": "プレイリスト",
     "HOME": {
-        "TITLE": "IPTVnator",
+        "TITLE": "SaravTV",
         "SUBTITLE": "リストからプレイリストを選択するか、新しいプレイリストを追加してください",
         "TABS": {
             "RECENTLY_ADDED": "最近追加したプレイリスト",
@@ -20,7 +20,7 @@
         "PLAYLISTS": {
             "NO_PLAYLISTS": "プレイリストが追加されていません",
             "ADD_FIRST": "最初のプレイリストを追加してください",
-            "WELCOME_TITLE": "IPTVnatorへようこそ",
+            "WELCOME_TITLE": "SaravTVへようこそ",
             "WELCOME_DESCRIPTION": "最初のプレイリストを追加してストリーミングを始めましょう。お好みのIPTVサービスに接続して、ライブTV、映画、シリーズをお楽しみください。",
             "ADD_YOUR_FIRST": "最初のプレイリストを追加",
             "FEATURE_M3U": "M3U/M3U8ファイル",
@@ -168,7 +168,7 @@
             "ERROR_TLS_HOST_UNKNOWN": "プレイリストのホストを特定できませんでした。手動で再試行してください。",
             "TRUST_TLS_HOST": "ホストを信頼",
             "TRUST_TLS_HOST_TITLE": "無効な証明書を信頼しますか？",
-            "TRUST_TLS_HOST_WARNING": "このプレイリストホストを信頼できる場合のみ続行してください。IPTVnator はこのホストの無効な TLS 証明書を許可しますが、他のホストには引き続き有効な証明書が必要です。"
+            "TRUST_TLS_HOST_WARNING": "このプレイリストホストを信頼できる場合のみ続行してください。SaravTV はこのホストの無効な TLS 証明書を許可しますが、他のホストには引き続き有効な証明書が必要です。"
         },
         "TEXT_IMPORT": {
             "LABEL": "m3u(8)プレイリストをテキストとして挿入",
@@ -310,7 +310,7 @@
         "TMDB_ATTRIBUTION": "本製品は TMDB API を使用していますが、TMDB による承認または認証を受けたものではありません。",
         "APP_PREFERENCES": "アプリ設定",
         "HERO_EYEBROW": "ワークスペース設定",
-        "HERO_TITLE": "IPTVnatorをカスタマイズ",
+        "HERO_TITLE": "SaravTVをカスタマイズ",
         "HERO_DESCRIPTION": "現在のワークスペースの見た目を保ったまま、再生、番組表、リモートアクセス、データ管理を一カ所で調整できます。",
         "SUBTITLE": "アプリケーションの設定を変更",
         "DESCRIPTION": "以下のオプションを調整し、変更を保存ボタンで確定してください",
@@ -370,7 +370,7 @@
         "EPG_SOURCE_FORMATS_EXAMPLES": "Examples:",
         "VIDEO_PLAYER_DESCRIPTION": "デフォルトのビデオプレーヤーを選択",
         "WEB_PLAYER_SHARED_CONTROLS": "Webプレーヤーの統一コントロール",
-        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "HTML5、Video.js、ArtPlayerでIPTVnator共通のコントロールを使用します。",
+        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "HTML5、Video.js、ArtPlayerでSaravTV共通のコントロールを使用します。",
         "PLAYER_AMBIENT_MODE": "プレーヤー周囲のぼかし背景",
         "PLAYER_AMBIENT_MODE_DESCRIPTION": "プレーヤーの周囲をぼかしたポスター画像で埋め、通常の黒い枠の代わりに表示します。",
         "PLAYER_UP_NEXT_RAIL": "「次に再生」エピソードレール",
@@ -396,7 +396,7 @@
         "EPG_VIEW_MODE_TIMELINE": "タイムライン",
         "EPG_VIEW_MODE_LIST": "リスト",
         "STARTUP_BEHAVIOR": "起動時の表示",
-        "STARTUP_BEHAVIOR_DESCRIPTION": "IPTVnatorを起動したときに最初に利用可能なワークスペースビューを開くか、最後に表示していたセクションを復元するかを選択します。「最初のビュー」は、ダッシュボードが有効な場合はダッシュボード、無効な場合はソースを意味します。",
+        "STARTUP_BEHAVIOR_DESCRIPTION": "SaravTVを起動したときに最初に利用可能なワークスペースビューを開くか、最後に表示していたセクションを復元するかを選択します。「最初のビュー」は、ダッシュボードが有効な場合はダッシュボード、無効な場合はソースを意味します。",
         "STARTUP_BEHAVIOR_FIRST_VIEW": "最初に利用可能なビュー",
         "STARTUP_BEHAVIOR_RESTORE_LAST_VIEW": "最後のビューを復元",
         "STARTUP_WINDOW_MODE": "起動時のウィンドウ",
@@ -410,7 +410,7 @@
         "STRIP_COUNTRY_PREFIX": "チャンネル名から国名プレフィックスを削除",
         "STRIP_COUNTRY_PREFIX_DESCRIPTION": "アプリ全体で、ライブチャンネル名から \"US | \" や \"UK - \" のような国／グループのプレフィックスを削除します。",
         "VERSION_DESCRIPTION": "アプリケーションの現在のバージョン",
-        "ABOUT_SUBTITLE": "バージョン、プロジェクトのリンク、IPTVnatorをサポートする方法。",
+        "ABOUT_SUBTITLE": "バージョン、プロジェクトのリンク、SaravTVをサポートする方法。",
         "EMBEDDED_MPV_NOTICE_TITLE": "組み込みMPVランタイム",
         "EMBEDDED_MPV_NOTICE_DESCRIPTION": "デスクトップ版のビルドには、実験的な組み込みMPVプレーヤー用のlibmpvおよびFFmpegライブラリを同梱できます。MPVアプリを別途インストールする必要はありません。フォールバックとして外部MPVおよびVLCも引き続き利用できます。",
         "COMMUNITY": "プロジェクトとコミュニティ",
@@ -420,10 +420,10 @@
         "LINK_BLOG_DESCRIPTION": "リリースノート、ヒント、プロジェクトの最新情報",
         "LINK_TELEGRAM_DESCRIPTION": "お知らせ、コミュニティ、サポート",
         "SUPPORT_TITLE": "プロジェクトをサポート",
-        "SUPPORT_DESCRIPTION": "IPTVnatorはオープンに開発されている無料のオープンソースソフトウェアです。日々の利用に役立っているなら、わずかなご支援がプロジェクトの継続と今後の方向性を後押しします。ありがとうございます。",
+        "SUPPORT_DESCRIPTION": "SaravTVはオープンに開発されている無料のオープンソースソフトウェアです。日々の利用に役立っているなら、わずかなご支援がプロジェクトの継続と今後の方向性を後押しします。ありがとうございます。",
         "SUPPORT_SPONSORS_HINT": "定期または1回限り",
         "SUPPORT_KOFI_HINT": "コーヒーを奢る",
-        "EPG_NOTE": "現在、EPG は IPTVnator の Electron デスクトップ版でのみ利用できます。",
+        "EPG_NOTE": "現在、EPG は SaravTV の Electron デスクトップ版でのみ利用できます。",
         "EPG_NOTE_URL_TEXT": "こちらで確認",
         "IMPORT_EXPORT_DATA": "プレイリストバックアップのインポート/エクスポート",
         "IMPORT_EXPORT_DATA_DESCRIPTION": "M3U スナップショット、Xtream/Stalker 接続メタデータ、ユーザー状態、EPG ソース URL を含むプレイリストバックアップをエクスポートまたは復元します。",
@@ -450,10 +450,10 @@
         "PLAYLISTS_REMOVED": "すべてのプレイリストとプレイリストデータを削除しました。",
         "MPV_PLAYER_PATH_LABEL": "mpv のパス",
         "MPV_PLAYER_PATH_DESCRIPTION": "MPV へのパスを設定します。macOS では /Applications/mpv.app のような MPV アプリバンドル、または実行ファイルのパスを使用できます。",
-        "MPV_COMPATIBLE_PLAYER_TIP": "IINA は macOS で MPV 互換プレーヤーとして起動できますが、/Applications/IINA.app/Contents/MacOS/iina-cli または /Applications/IINA.app/Contents/MacOS/IINA のような実行ファイルのパスを指定してください。IPTVnator の操作、位置ポーリング、インスタンス再利用は MPV IPC でのみ保証されます。",
+        "MPV_COMPATIBLE_PLAYER_TIP": "IINA は macOS で MPV 互換プレーヤーとして起動できますが、/Applications/IINA.app/Contents/MacOS/iina-cli または /Applications/IINA.app/Contents/MacOS/IINA のような実行ファイルのパスを指定してください。SaravTV の操作、位置ポーリング、インスタンス再利用は MPV IPC でのみ保証されます。",
         "MPV_PLAYER_PATH": "mpvプレーヤーのパス",
         "MPV_PLAYER_ARGUMENTS_LABEL": "mpv のコマンドライン引数",
-        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "IPTVnator が新しい外部プレーヤープロセスを起動するときに mpv へ渡す任意の引数です。",
+        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "SaravTV が新しい外部プレーヤープロセスを起動するときに mpv へ渡す任意の引数です。",
         "MPV_PLAYER_ARGUMENTS": "mpv の引数",
         "MPV_REUSE_INSTANCE_LABEL": "MPVインスタンスを再利用",
         "MPV_REUSE_INSTANCE_DESCRIPTION": "有効にすると、異なるストリームの再生に同じMPVウィンドウが再利用されます。無効にすると、各ストリームが新しいMPVウィンドウで開きます。",
@@ -465,9 +465,9 @@
         "VLC_PLAYER_PATH_DESCRIPTION": "VLC へのパスを設定します。macOS では /Applications/VLC.app のような VLC アプリバンドル、または実行ファイルのパスを使用できます。",
         "VLC_PLAYER_PATH": "VLC プレーヤーのパス",
         "VLC_PLAYER_ARGUMENTS_LABEL": "VLC のコマンドライン引数",
-        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "IPTVnator が新しい外部プレーヤープロセスを起動するときに VLC へ渡す任意の引数です。",
+        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "SaravTV が新しい外部プレーヤープロセスを起動するときに VLC へ渡す任意の引数です。",
         "VLC_PLAYER_ARGUMENTS": "VLC の引数",
-        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "1 行に 1 つの引数を入力してください。これらの値は、IPTVnator のストリーム固有オプションより前に適用されます。",
+        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "1 行に 1 つの引数を入力してください。これらの値は、SaravTV のストリーム固有オプションより前に適用されます。",
         "VLC_REUSE_INSTANCE_LABEL": "VLCインスタンスを再利用",
         "VLC_REUSE_INSTANCE_DESCRIPTION": "有効にすると、異なるストリームの再生に同じVLCウィンドウが再利用されます。無効にすると、各ストリームが新しいVLCウィンドウで開きます。",
         "REMOTE_CONTROL": "リモートコントロール",
@@ -879,10 +879,10 @@
         "RETRY": "再試行",
         "ALLOW_PRIVATE_SOURCE": "ソースを許可",
         "ALLOW_PRIVATE_SOURCE_TITLE": "プライベートネットワークの EPG ソースを許可しますか？",
-        "ALLOW_PRIVATE_SOURCE_WARNING": "この EPG ソースを信頼できる場合のみ許可してください。IPTVnator は、この正確な EPG URL に限り、プライベートまたはローカルネットワークアドレスへの接続を許可します。",
+        "ALLOW_PRIVATE_SOURCE_WARNING": "この EPG ソースを信頼できる場合のみ許可してください。SaravTV は、この正確な EPG URL に限り、プライベートまたはローカルネットワークアドレスへの接続を許可します。",
         "TRUST_TLS_HOST": "ホストを信頼",
         "TRUST_TLS_HOST_TITLE": "無効な証明書を信頼しますか？",
-        "TRUST_TLS_HOST_WARNING": "このホストを信頼できる場合のみ続行してください。IPTVnator はこのホストの無効な TLS 証明書を許可しますが、他のホストには引き続き有効な証明書が必要です。",
+        "TRUST_TLS_HOST_WARNING": "このホストを信頼できる場合のみ続行してください。SaravTV はこのホストの無効な TLS 証明書を許可しますが、他のホストには引き続き有効な証明書が必要です。",
         "CURRENT_PROGRAM": "現在の番組",
         "ARCHIVE_PLAYBACK": "アーカイブ再生",
         "COLLAPSE_PANEL": "EPG パネルを折りたたむ",
@@ -999,7 +999,7 @@
     "NO": "いいえ",
     "MENU": {
         "OPEN": "メニューを開く",
-        "SUPPORT_ARIA": "GitHubでIPTVnatorをサポート",
+        "SUPPORT_ARIA": "GitHubでSaravTVをサポート",
         "SETTINGS_ARIA": "設定を開く",
         "BUG_REPORT": "バグを報告",
         "WHAT_IS_NEW": "新着情報",
@@ -1008,7 +1008,7 @@
         "SUPPORT_PROJECT": "プロジェクトをサポート"
     },
     "ABOUT": {
-        "TITLE": "IPTVnatorについて",
+        "TITLE": "SaravTVについて",
         "DESCRIPTION": "m3uやm3u8プレイリストのサポート、お気に入り、TV番組表、TVアーカイブ/キャッチアップなど、複数の機能を備えたクロスプラットフォームのIPTVプレーヤーアプリケーション。",
         "VERSION": "バージョン",
         "GITHUB_TOOLTIP": "GitHub上のITPVnatorリポジトリ",
@@ -1396,7 +1396,7 @@
         "STOP_RECORDING": "録画を停止",
         "REMOVE_RECORDING_DIALOG": {
             "TITLE": "録画をマネージャーから削除しますか？",
-            "MESSAGE": "IPTVnatorから項目を削除します。録画ファイルはディスクに残ります。"
+            "MESSAGE": "SaravTVから項目を削除します。録画ファイルはディスクに残ります。"
         },
         "RECORDING_DETAIL": {
             "PROGRAMS": "録画された番組",
@@ -1407,7 +1407,7 @@
         "REMOVE_FROM_MANAGER": "マネージャーから削除",
         "REMOVE_COMPLETED_DIALOG": {
             "TITLE": "マネージャーから削除しますか？",
-            "MESSAGE": "この項目を IPTVnator から削除します。ダウンロード済みのメディアファイルはディスク上に残ります。"
+            "MESSAGE": "この項目を SaravTV から削除します。ダウンロード済みのメディアファイルはディスク上に残ります。"
         },
         "REMOVE_PARTIAL_DIALOG": {
             "TITLE": "未完了のダウンロードを削除しますか？",
@@ -1464,8 +1464,8 @@
         "SUBTITLE": "IPTVプレーヤーをリモートで操作",
         "UP_CHANNEL": "前のチャンネル",
         "DOWN_CHANNEL": "次のチャンネル",
-        "HEADER": "IPTVnator リモコン",
-        "FOOTER": "IPTVnator リモコン"
+        "HEADER": "SaravTV リモコン",
+        "FOOTER": "SaravTV リモコン"
     },
     "WORKSPACE": {
         "FAVORITES_ONLY": "お気に入りのみ",
@@ -1526,7 +1526,7 @@
             "SOURCE_EXPIRED": "期限切れ"
         },
         "SHELL": {
-            "BRAND_ALT": "IPTVnator",
+            "BRAND_ALT": "SaravTV",
             "RAIL_DASHBOARD": "ダッシュボード",
             "OPEN_DASHBOARD": "ダッシュボードを開く",
             "RAIL_SOURCES": "ソース",
@@ -1721,7 +1721,7 @@
         },
         "SHORTCUTS": {
             "TITLE": "キーボードショートカット",
-            "SUBTITLE": "IPTVnator で使えるワークスペース、ナビゲーション、再生、ダイアログのショートカットです。",
+            "SUBTITLE": "SaravTV で使えるワークスペース、ナビゲーション、再生、ダイアログのショートカットです。",
             "OPEN_TOOLTIP": "キーボードショートカット（?）",
             "OPEN_ARIA": "キーボードショートカットを開く",
             "PLATFORM": {

@@ -178,9 +178,9 @@ export class SettingsService {
      */
     getAppVersion() {
         return this.http
-            .get<
-                { created_at: string; name: string }[]
-            >('https://api.github.com/repos/4gray/iptvnator/releases')
+            .get<{ created_at: string; name: string }[]>(
+                'https://api.github.com/repos/sarav-ai-labs/saravtv/releases'
+            )
             .pipe(
                 map((response) => {
                     // Filter out pre-release versions (beta, alpha, rc, etc.)

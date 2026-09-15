@@ -1,15 +1,14 @@
 {
-    "name": "iptvnator",
+    "name": "saravtv",
     "version": "0.23.0",
     "engines": {
         "node": "^22.22.3 || ^24.15.0"
     },
     "license": "MIT",
-    "description": "IPTV player application.",
-    "homepage": "https://github.com/4gray/iptvnator",
+    "description": "SaravTV desktop and web IPTV player.",
+    "homepage": "https://github.com/sarav-ai-labs/saravtv",
     "author": {
-        "name": "4gray",
-        "email": "fourgray@proton.me"
+        "name": "SaravTV contributors"
     },
     "keywords": [
         "angular",

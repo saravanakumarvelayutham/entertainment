@@ -879,7 +879,7 @@ export class EmbeddedMpvNativeService {
         mkdirSync(directory, { recursive: true });
 
         const fallbackChannelName =
-            options.title || session.title || 'IPTVnator recording';
+            options.title || session.title || 'SaravTV recording';
         const targetPath = this.reserveRecordingTargetPath(
             directory,
             fallbackChannelName
@@ -1415,7 +1415,7 @@ export class EmbeddedMpvNativeService {
         const windowHandle = App.mainWindow.getNativeWindowHandle();
         if (this.isInvalidLinuxWaylandWindowHandle(windowHandle)) {
             throw new Error(
-                'Embedded MPV on Linux requires Electron to run under X11 or Xwayland. Native Wayland embedding is not supported yet. Start IPTVnator with --ozone-platform=x11.'
+                'Embedded MPV on Linux requires Electron to run under X11 or Xwayland. Native Wayland embedding is not supported yet. Start SaravTV with --ozone-platform=x11.'
             );
         }
 
@@ -1479,7 +1479,7 @@ export class EmbeddedMpvNativeService {
             .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
             .replace(/\s+/g, ' ')
             .trim();
-        return (normalized || 'IPTVnator recording').slice(0, 120);
+        return (normalized || 'SaravTV recording').slice(0, 120);
     }
 
     private formatRecordingTimestamp(date: Date): string {
@@ -1543,7 +1543,7 @@ export class EmbeddedMpvNativeService {
             return 'Embedded MPV is not available in sandboxed Flatpak/Snap packages because they cannot access a system mpv executable. Use the built-in player, or install the .deb/.rpm/AppImage package to enable Embedded MPV.';
         }
 
-        return 'Embedded MPV on Linux requires the mpv executable on PATH. Install the mpv package for your distribution and restart IPTVnator.';
+        return 'Embedded MPV on Linux requires the mpv executable on PATH. Install the mpv package for your distribution and restart SaravTV.';
     }
 
     private isInvalidLinuxWaylandWindowHandle(windowHandle: Buffer): boolean {

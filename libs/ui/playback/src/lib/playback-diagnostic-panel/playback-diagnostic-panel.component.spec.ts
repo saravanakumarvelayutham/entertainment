@@ -507,7 +507,7 @@ describe('PlaybackDiagnosticPanelComponent', () => {
         expect(button).not.toBeNull();
         const copy = button.injector.get(CdkCopyToClipboard);
         expect(JSON.parse(copy.text)).toMatchObject({
-            app: 'IPTVnator',
+            app: 'SaravTV',
             code: DIAGNOSTIC.code,
         });
         expect(copy.text).not.toContain('example.com');

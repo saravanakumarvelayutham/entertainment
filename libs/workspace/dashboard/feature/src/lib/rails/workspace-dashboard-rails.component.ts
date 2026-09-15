@@ -82,6 +82,8 @@ import {
     buildDashboardContinueWatchingActions,
     buildDashboardRailSeeAllState,
     buildDashboardSourceActions,
+    curateDashboardContentItems,
+    isDashboardHighRated,
     liveRailTitleKeyForSource,
     RAIL_ITEM_LIMIT,
     shouldShowLiveFavoritesSkeleton,
@@ -334,8 +336,7 @@ export class WorkspaceDashboardRailsComponent {
     readonly liveSeeAllState = buildDashboardCollectionViewState('live');
 
     readonly xtreamRecentlyAddedCards = computed<DashboardRailCard[]>(() =>
-        this.data
-            .xtreamRecentlyAddedItems()
+        curateDashboardContentItems(this.data.xtreamRecentlyAddedItems())
             .slice(0, RAIL_ITEM_LIMIT)
             .map((item) => this.toRecentlyAddedCard(item))
     );
@@ -349,8 +350,24 @@ export class WorkspaceDashboardRailsComponent {
         }
         return this.trendingService
             .items()
+            .filter(
+                (item) =>
+                    item.match !== null && !isDashboardHighRated(item.rating)
+            )
             .map((item) => this.toTrendingCard(item));
     });
+
+    readonly highRatedCards = computed<DashboardRailCard[]>(() =>
+        this.trendingService
+            .items()
+            .filter(
+                (item) =>
+                    item.match !== null && isDashboardHighRated(item.rating)
+            )
+            .sort((a, b) => Number(b.rating) - Number(a.rating))
+            .slice(0, RAIL_ITEM_LIMIT)
+            .map((item) => this.toTrendingCard(item))
+    );
 
     readonly recommendationCards = computed<DashboardRailCard[]>(() => {
         if (!this.recommendationsService.isAvailable) {

@@ -13,27 +13,27 @@ import {
 /** The asset list of a real, complete v0.23.0 matrix build. */
 function completeAssets(version) {
     return [
-        `iptvnator-${version}-linux-amd64.deb`,
-        `iptvnator-${version}-linux-amd64.snap`,
-        `iptvnator-${version}-linux-arm64.AppImage`,
-        `iptvnator-${version}-linux-arm64.deb`,
-        `iptvnator-${version}-linux-armhf.snap`,
-        `iptvnator-${version}-linux-armv7l.AppImage`,
-        `iptvnator-${version}-linux-armv7l.deb`,
-        `iptvnator-${version}-linux-x64.pacman`,
-        `iptvnator-${version}-linux-x86_64.AppImage`,
-        `iptvnator-${version}-linux-x86_64.flatpak`,
-        `iptvnator-${version}-linux-x86_64.rpm`,
-        `iptvnator-${version}-mac-arm64.dmg`,
-        `iptvnator-${version}-mac-arm64.dmg.blockmap`,
-        `iptvnator-${version}-mac-arm64.zip`,
-        `iptvnator-${version}-mac-arm64.zip.blockmap`,
-        `iptvnator-${version}-mac-x64.dmg`,
-        `iptvnator-${version}-mac-x64.dmg.blockmap`,
-        `iptvnator-${version}-mac-x64.zip`,
-        `iptvnator-${version}-mac-x64.zip.blockmap`,
-        `iptvnator-${version}-windows-x64-setup.exe`,
-        `iptvnator-${version}-windows-x64-setup.exe.blockmap`,
+        `saravtv-${version}-linux-amd64.deb`,
+        `saravtv-${version}-linux-amd64.snap`,
+        `saravtv-${version}-linux-arm64.AppImage`,
+        `saravtv-${version}-linux-arm64.deb`,
+        `saravtv-${version}-linux-armhf.snap`,
+        `saravtv-${version}-linux-armv7l.AppImage`,
+        `saravtv-${version}-linux-armv7l.deb`,
+        `saravtv-${version}-linux-x64.pacman`,
+        `saravtv-${version}-linux-x86_64.AppImage`,
+        `saravtv-${version}-linux-x86_64.flatpak`,
+        `saravtv-${version}-linux-x86_64.rpm`,
+        `saravtv-${version}-mac-arm64.dmg`,
+        `saravtv-${version}-mac-arm64.dmg.blockmap`,
+        `saravtv-${version}-mac-arm64.zip`,
+        `saravtv-${version}-mac-arm64.zip.blockmap`,
+        `saravtv-${version}-mac-x64.dmg`,
+        `saravtv-${version}-mac-x64.dmg.blockmap`,
+        `saravtv-${version}-mac-x64.zip`,
+        `saravtv-${version}-mac-x64.zip.blockmap`,
+        `saravtv-${version}-windows-x64-setup.exe`,
+        `saravtv-${version}-windows-x64-setup.exe.blockmap`,
         'latest-linux-arm.yml',
         'latest-linux-arm64.yml',
         'latest-linux.yml',
@@ -104,8 +104,8 @@ describe('verifyReleaseAssets', () => {
         const { missing } = verifyReleaseAssets(withoutSnap, '0.24.0');
 
         assert.deepEqual(missing, [
-            'Snap (iptvnator-0.24.0-linux-amd64.snap)',
-            'Snap (iptvnator-0.24.0-linux-armhf.snap)',
+            'Snap (saravtv-0.24.0-linux-amd64.snap)',
+            'Snap (saravtv-0.24.0-linux-armhf.snap)',
         ]);
     });
 
@@ -121,7 +121,7 @@ describe('verifyReleaseAssets', () => {
     it('accepts the alternate pacman artifact shape', () => {
         const assets = completeAssets('0.24.0').map((name) =>
             name.endsWith('.pacman')
-                ? 'iptvnator-0.24.0-linux-x86_64.pkg.tar.zst'
+                ? 'saravtv-0.24.0-linux-x86_64.pkg.tar.zst'
                 : name
         );
 
@@ -130,21 +130,21 @@ describe('verifyReleaseAssets', () => {
 
     it('does not let the pacman pattern match across version dots', () => {
         const { extras } = verifyReleaseAssets(
-            ['iptvnator-0x24y0-linux-x64.pacman'],
+            ['saravtv-0x24y0-linux-x64.pacman'],
             '0.24.0'
         );
 
-        assert.deepEqual(extras, ['iptvnator-0x24y0-linux-x64.pacman']);
+        assert.deepEqual(extras, ['saravtv-0x24y0-linux-x64.pacman']);
     });
 
     it('surfaces unrecognized assets as extras, not errors', () => {
         const { missing, extras } = verifyReleaseAssets(
-            [...completeAssets('0.24.0'), 'iptvnator-0.24.0-win-arm64.exe'],
+            [...completeAssets('0.24.0'), 'saravtv-0.24.0-win-arm64.exe'],
             '0.24.0'
         );
 
         assert.deepEqual(missing, []);
-        assert.deepEqual(extras, ['iptvnator-0.24.0-win-arm64.exe']);
+        assert.deepEqual(extras, ['saravtv-0.24.0-win-arm64.exe']);
     });
 });
 
@@ -153,7 +153,7 @@ describe('parseVerifyArguments', () => {
         assert.deepEqual(parseVerifyArguments([]), {
             version: null,
             wait: true,
-            repo: '4gray/iptvnator',
+            repo: 'sarav-ai-labs/saravtv',
         });
     });
 
@@ -189,7 +189,7 @@ describe('parseVerifyArguments', () => {
 });
 
 describe('runVerification', () => {
-    const options = { version: '0.24.0', wait: true, repo: '4gray/iptvnator' };
+    const options = { version: '0.24.0', wait: true, repo: 'sarav-ai-labs/saravtv' };
 
     it('passes a complete draft and points at the manual next steps', async () => {
         const result = await runVerification(options, io());
@@ -286,7 +286,7 @@ describe('runVerification', () => {
             })
         );
 
-        assert.deepEqual(watched, [{ repo: '4gray/iptvnator', runId: 7 }]);
+        assert.deepEqual(watched, [{ repo: 'sarav-ai-labs/saravtv', runId: 7 }]);
         assert.equal(result.exitCode, 0);
     });
 
@@ -417,7 +417,7 @@ describe('runVerification', () => {
                     release({
                         assets: [
                             ...completeAssets('0.24.0'),
-                            'iptvnator-0.24.0-win-arm64.exe',
+                            'saravtv-0.24.0-win-arm64.exe',
                         ].map((name) => ({ name })),
                     }),
             })
@@ -426,7 +426,7 @@ describe('runVerification', () => {
         assert.equal(result.exitCode, 0);
         assert.match(
             result.lines.find((line) => line.startsWith('NOTE:')),
-            /unrecognized asset iptvnator-0\.24\.0-win-arm64\.exe/
+            /unrecognized asset saravtv-0\.24\.0-win-arm64\.exe/
         );
     });
 });

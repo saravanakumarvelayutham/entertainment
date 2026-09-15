@@ -8,7 +8,10 @@ import {
 import { SettingsAboutSectionComponent } from './settings-about-section.component';
 import { SETTINGS_UPDATE_CHANNEL_OPTIONS } from './settings-options';
 
-function getButton(fixture: ComponentFixture<SettingsAboutSectionComponent>, id: string) {
+function getButton(
+    fixture: ComponentFixture<SettingsAboutSectionComponent>,
+    id: string
+) {
     return fixture.nativeElement.querySelector(
         `[data-test-id="${id}"]`
     ) as HTMLButtonElement | null;
@@ -30,10 +33,7 @@ describe('SettingsAboutSectionComponent app updates', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [
-                SettingsAboutSectionComponent,
-                TranslateModule.forRoot(),
-            ],
+            imports: [SettingsAboutSectionComponent, TranslateModule.forRoot()],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SettingsAboutSectionComponent);
@@ -43,12 +43,14 @@ describe('SettingsAboutSectionComponent app updates', () => {
         const download = jest.fn();
         fixture.componentInstance.downloadAppUpdate.subscribe(download);
         const openNotes = jest.fn();
-        fixture.componentInstance.openAppUpdateReleaseNotes.subscribe(openNotes);
+        fixture.componentInstance.openAppUpdateReleaseNotes.subscribe(
+            openNotes
+        );
         configureComponent(fixture, {
             currentVersion: '0.22.0',
             latestVersion: '0.23.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Available,
             supportedSelfUpdate: true,
         });
@@ -71,7 +73,7 @@ describe('SettingsAboutSectionComponent app updates', () => {
             currentVersion: '0.22.0',
             latestVersion: '0.23.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Downloaded,
             supportedSelfUpdate: true,
         });
@@ -84,12 +86,14 @@ describe('SettingsAboutSectionComponent app updates', () => {
 
     it('shows release notes for the current version when no update is available', () => {
         const openNotes = jest.fn();
-        fixture.componentInstance.openAppUpdateReleaseNotes.subscribe(openNotes);
+        fixture.componentInstance.openAppUpdateReleaseNotes.subscribe(
+            openNotes
+        );
         configureComponent(fixture, {
             currentVersion: '0.22.0',
             latestVersion: '0.22.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.NotAvailable,
             supportedSelfUpdate: true,
         });
@@ -107,7 +111,7 @@ describe('SettingsAboutSectionComponent app updates', () => {
             currentVersion: '0.22.0',
             latestVersion: '0.23.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Unsupported,
             supportedSelfUpdate: false,
         });
@@ -122,7 +126,7 @@ describe('SettingsAboutSectionComponent app updates', () => {
         configureComponent(fixture, {
             currentVersion: '0.22.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Unsupported,
             supportedSelfUpdate: false,
         });
@@ -139,10 +143,7 @@ describe('SettingsAboutSectionComponent version display', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [
-                SettingsAboutSectionComponent,
-                TranslateModule.forRoot(),
-            ],
+            imports: [SettingsAboutSectionComponent, TranslateModule.forRoot()],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SettingsAboutSectionComponent);
@@ -211,7 +212,7 @@ describe('SettingsAboutSectionComponent update channel', () => {
         fixture.componentRef.setInput('appUpdateStatus', {
             currentVersion: '0.23.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Idle,
             supportedSelfUpdate: true,
             channel: 'stable',
@@ -223,10 +224,7 @@ describe('SettingsAboutSectionComponent update channel', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [
-                SettingsAboutSectionComponent,
-                TranslateModule.forRoot(),
-            ],
+            imports: [SettingsAboutSectionComponent, TranslateModule.forRoot()],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SettingsAboutSectionComponent);

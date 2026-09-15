@@ -114,7 +114,7 @@ describe('build-release-notes CLI arguments', () => {
         ]);
 
         assert.equal(result.status, 0);
-        assert.match(result.stdout, /🎉 IPTVnator v0\.24\.0 is out!/);
+        assert.match(result.stdout, /🎉 SaravTV v0\.24\.0 is out!/);
         assert.match(result.stdout, /✨ An example note\./);
         assert.match(result.stdout, /releases\/tag\/v0\.24\.0/);
     });
@@ -130,7 +130,7 @@ describe('build-release-notes CLI arguments', () => {
         ]);
 
         assert.equal(result.status, 0);
-        assert.match(result.stdout, /^Suggested title: IPTVnator v0\.24\.0/);
+        assert.match(result.stdout, /^Suggested title: SaravTV v0\.24\.0/);
         assert.match(result.stdout, /- \*\*playback\*\* — An example note\./);
     });
 

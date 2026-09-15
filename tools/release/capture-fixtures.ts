@@ -57,7 +57,7 @@ export const CAPTURE_REMOTE_CONTROL_URL = `http://127.0.0.1:${CAPTURE_REMOTE_CON
  * capture stubs Electron's folder dialog to return it, so no download ever
  * lands in the real OS Downloads folder and no personal path reaches a frame.
  */
-export const CAPTURE_DOWNLOAD_FOLDER_NAME = 'IPTVnator downloads';
+export const CAPTURE_DOWNLOAD_FOLDER_NAME = 'SaravTV downloads';
 
 /** Fictional playlist and guide addresses typed into forms for the M3U guide shots; never fetched. */
 export const M3U_FIXTURE_PLAYLIST_URL = `${XTREAM_MOCK_ORIGIN}/demo/channels.m3u8`;

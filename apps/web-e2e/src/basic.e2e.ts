@@ -13,7 +13,7 @@ test('@web @m3u basic playlist import flow', async ({ page }) => {
     await page.goto('/');
 
     // Basic checks
-    expect(await page.title()).toBe('IPTVnator');
+    expect(await page.title()).toBe('SaravTV');
 
     // Upload playlist test
     await page.getByRole('button', { name: 'Add playlist' }).click();
@@ -65,7 +65,9 @@ test('@web @auto-detect pasted provider message prefills the Xtream form', async
                 '├◉𝙿𝙰𝚂𝚂➤ e2epass'
         );
 
-    const candidate = dialog.locator('[data-test-id="auto-detect-candidate"]').first();
+    const candidate = dialog
+        .locator('[data-test-id="auto-detect-candidate"]')
+        .first();
     await expect(candidate).toBeVisible();
     await expect(candidate.getByText('e2euser')).toBeVisible();
     // The card must never print the password in clear.
@@ -105,7 +107,9 @@ test('@web @auto-detect keeps the pasted message when switching methods', async 
     const message = 'Portal: http://stb.example.com/c/\nMAC: 00:1A:79:12:34:56';
     await dialog.locator('[data-test-id="auto-detect-textarea"]').fill(message);
 
-    const candidate = dialog.locator('[data-test-id="auto-detect-candidate"]').first();
+    const candidate = dialog
+        .locator('[data-test-id="auto-detect-candidate"]')
+        .first();
     await expect(candidate.getByText('00:1A:79:12:34:56')).toBeVisible();
     await candidate.locator('[data-test-id="auto-detect-use"]').click();
 
@@ -114,15 +118,15 @@ test('@web @auto-detect keeps the pasted message when switching methods', async 
     ).toBeChecked();
     // Exact: the derive-device-IDs checkbox is labelled "Generate device IDs
     // from the MAC address", which a substring match would also resolve to.
-    await expect(
-        dialog.getByLabel('Mac Address', { exact: true })
-    ).toHaveValue('00:1A:79:12:34:56');
+    await expect(dialog.getByLabel('Mac Address', { exact: true })).toHaveValue(
+        '00:1A:79:12:34:56'
+    );
 
     // Returning to auto-detect must not cost the user their paste.
     await dialog.getByRole('radio', { name: /Auto-detect/i }).click();
-    await expect(dialog.locator('[data-test-id="auto-detect-textarea"]')).toHaveValue(
-        message
-    );
+    await expect(
+        dialog.locator('[data-test-id="auto-detect-textarea"]')
+    ).toHaveValue(message);
 });
 
 test('@web @m3u reads an existing v1 IndexedDB playlist after application upgrade', async ({

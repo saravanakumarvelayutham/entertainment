@@ -212,8 +212,7 @@ export class AppUpdateService {
         );
         this.releaseFetcher =
             options.releaseFetcher ??
-            ((url, init) =>
-                fetch(url, init) as Promise<ReleaseFetchResponse>);
+            ((url, init) => fetch(url, init) as Promise<ReleaseFetchResponse>);
         this.status = {
             currentVersion: this.currentVersion,
             manualDownloadUrl: appUpdateReleasesPageUrl(this.channel),
@@ -250,7 +249,8 @@ export class AppUpdateService {
         const busy =
             this.status.status ===
                 ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Downloading ||
-            this.status.status === ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Downloaded;
+            this.status.status ===
+                ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Downloaded;
 
         if (busy || !this.isPackaged) {
             this.setStatus({});
@@ -324,7 +324,8 @@ export class AppUpdateService {
             request.version ? appVersionChannel(request.version) : this.channel
         );
         const canFallbackToLatest =
-            !request.direction && (!request.version || request.fallbackToLatest);
+            !request.direction &&
+            (!request.version || request.fallbackToLatest);
 
         if (canFallbackToLatest) {
             await catalog.ensureFirstReleaseLoaded();
@@ -346,7 +347,10 @@ export class AppUpdateService {
 
         if (request.direction === 'previous') {
             index += 1;
-            while (index >= catalog.releases.length && !catalog.loadedAllReleases) {
+            while (
+                index >= catalog.releases.length &&
+                !catalog.loadedAllReleases
+            ) {
                 await catalog.ensurePageLoaded(catalog.loadedReleasePages + 1);
             }
         } else if (request.direction === 'next') {
@@ -476,7 +480,7 @@ export class AppUpdateService {
             catalog = new AppUpdateReleaseCatalog(
                 channel,
                 this.releaseFetcher,
-                `iptvnator/${this.currentVersion}`
+                `saravtv/${this.currentVersion}`
             );
             this.catalogs.set(channel, catalog);
         }

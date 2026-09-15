@@ -116,9 +116,9 @@ export function createWebBackendApp(
         optionsSuccessStatus: 200,
     });
 
-    app.get('/', (_req, res) => res.send('IPTVnator web backend'));
+    app.get('/', (_req, res) => res.send('SaravTV web backend'));
     app.get('/health', (_req, res) =>
-        res.json({ status: 'ok', service: 'iptvnator-web-backend' })
+        res.json({ status: 'ok', service: 'saravtv-web-backend' })
     );
 
     app.get('/config.js', corsMiddleware, (_req, res) => {

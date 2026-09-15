@@ -30,7 +30,7 @@ describe('AppUpdateEvents', () => {
         const status: ElectronBridgeAppUpdateStatus = {
             currentVersion: '0.22.0',
             manualDownloadUrl:
-                'https://github.com/4gray/iptvnator/releases/latest',
+                'https://github.com/sarav-ai-labs/saravtv/releases/latest',
             status: ELECTRON_BRIDGE_APP_UPDATE_STATUSES.Idle,
             supportedSelfUpdate: true,
             channel: 'stable',
@@ -51,7 +51,7 @@ describe('AppUpdateEvents', () => {
                 hasNext: false,
                 hasPrevious: true,
                 htmlUrl:
-                    'https://github.com/4gray/iptvnator/releases/tag/v0.23.0',
+                    'https://github.com/sarav-ai-labs/saravtv/releases/tag/v0.23.0',
                 publishedAt: '2026-06-28T00:00:00.000Z',
                 releaseName: 'v0.23.0',
                 tagName: 'v0.23.0',

@@ -256,7 +256,7 @@ async function waitForRemoteControlServer(): Promise<void> {
     }
 
     throw new Error(
-        `Remote control server did not answer at ${statusUrl} — is port ${CAPTURE_REMOTE_CONTROL_PORT} held by another IPTVnator instance?`
+        `Remote control server did not answer at ${statusUrl} — is port ${CAPTURE_REMOTE_CONTROL_PORT} held by another SaravTV instance?`
     );
 }
 

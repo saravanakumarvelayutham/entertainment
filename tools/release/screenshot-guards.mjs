@@ -333,7 +333,7 @@ export function isAllowedRequestUrl(url) {
  */
 export const STUB_URL_PREFIXES = [
     // Settings "release notes" / update check.
-    'https://api.github.com/repos/4gray/iptvnator/releases',
+    'https://api.github.com/repos/sarav-ai-labs/saravtv/releases',
 ];
 
 export function stubbedResponseFor(url) {
@@ -592,7 +592,7 @@ export function compareDatabaseStates(before, after) {
             from.mtimeMs !== to.mtimeMs ||
             from.ino !== to.ino
         ) {
-            return `the real database file ${name} was modified during the capture run (close IPTVnator and any other process using it, then retry)`;
+            return `the real database file ${name} was modified during the capture run (close SaravTV and any other process using it, then retry)`;
         }
     }
 

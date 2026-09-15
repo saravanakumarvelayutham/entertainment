@@ -110,7 +110,7 @@ function buildPrompt(fixture: MarketingArtworkFixture, kind: ArtworkKind): strin
     const profile = promptProfileForTitle(fixture.name);
     const direction = visualDirectionForTitle(fixture.name);
     const shared = [
-        `Create original fictional demo artwork for IPTVnator release screenshots.`,
+        `Create original fictional demo artwork for SaravTV release screenshots.`,
         `Fictional ${fixture.contentType}: "${fixture.name}" (${fixture.year}).`,
         `Genre: ${fixture.genre}.`,
         `Story seed: ${fixture.tagline} ${fixture.description}`,

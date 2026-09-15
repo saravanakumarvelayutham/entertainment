@@ -351,7 +351,7 @@ describe('renderGithubBody', () => {
         const body = renderGithubBody([note({ issues: [1187] })], { links });
 
         assert.match(body, /^## Features\n\n- \*\*playback\*\* — Series now/);
-        assert.match(body, /\[#1231\]\(https:\/\/github\.com\/4gray\/iptvnator\/pull\/1231\)/);
+        assert.match(body, /\[#1231\]\(https:\/\/github\.com\/sarav-ai-labs\/saravtv\/pull\/1231\)/);
         assert.match(body, /closes \[#1187\]/);
     });
 
@@ -384,7 +384,7 @@ describe('renderChangelogSection', () => {
 
         assert.match(
             section,
-            /^# \[0\.24\.0\]\(https:\/\/github\.com\/4gray\/iptvnator\/compare\/v0\.23\.0\.\.\.v0\.24\.0\) \(2026-08-01\)/
+            /^# \[0\.24\.0\]\(https:\/\/github\.com\/sarav-ai-labs\/saravtv\/compare\/v0\.23\.0\.\.\.v0\.24\.0\) \(2026-08-01\)/
         );
     });
 
@@ -497,11 +497,11 @@ describe('renderBlogScaffold', () => {
         assert.match(content, /## TODO headline \(playback\)/);
         assert.match(
             content,
-            /\/iptvnator\/blog\/v0-24\/screenshots\/up-next-rail-dark\.png/
+            /\/saravtv\/blog\/v0-24\/screenshots\/up-next-rail-dark\.png/
         );
         assert.match(
             content,
-            /\/iptvnator\/blog\/v0-24\/screenshots\/up-next-rail-light\.png/
+            /\/saravtv\/blog\/v0-24\/screenshots\/up-next-rail-light\.png/
         );
         assert.match(content, /<Alert type="info" title="About the screenshots">/);
         assert.match(content, /import BlogImageSlider from/);
@@ -625,7 +625,7 @@ describe('renderBlogScaffold', () => {
         assert.match(content, /<Alert type="warning" title="Before updating">\nPlease back up/);
         assert.match(content, /## Thanks\n\n\{\/\* TODO/);
         assert.match(content, /## Download\n\n<LinkCards/);
-        assert.match(content, /label: 'Download v0\.24\.0',\n\s+href: 'https:\/\/github\.com\/4gray\/iptvnator\/releases\/tag\/v0\.24\.0'/);
+        assert.match(content, /label: 'Download v0\.24\.0',\n\s+href: 'https:\/\/github\.com\/sarav-ai-labs\/saravtv\/releases\/tag\/v0\.24\.0'/);
         assert.match(content, /label: 'All Releases'/);
         assert.doesNotMatch(content, /Full Changelog/);
     });
@@ -802,7 +802,7 @@ const changelog = [
     '',
     '<!-- next-release -->',
     '',
-    '# [0.24.0](https://github.com/4gray/iptvnator/compare/v0.23.0...v0.24.0) (2026-08-01)',
+    '# [0.24.0](https://github.com/sarav-ai-labs/saravtv/compare/v0.23.0...v0.24.0) (2026-08-01)',
     '',
     '### Features',
     '',
@@ -815,7 +815,7 @@ const changelog = [
     '',
     '</details>',
     '',
-    '# [0.12.0](https://github.com/4gray/iptvnator/compare/v0.11.1...v0.12.0) (2023-03-11)',
+    '# [0.12.0](https://github.com/sarav-ai-labs/saravtv/compare/v0.11.1...v0.12.0) (2023-03-11)',
     '',
     '### Bug Fixes',
     '',

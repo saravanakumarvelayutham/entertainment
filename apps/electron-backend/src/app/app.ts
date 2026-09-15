@@ -107,7 +107,8 @@ export function getMainWindowWebPreferences(): Electron.BrowserWindowConstructor
             (process.env.IPTVNATOR_ENABLE_EMBEDDED_MPV_FRAME_COPY ?? '')
                 .trim()
                 .toLowerCase()
-        ) && isFrameCopyRuntimeUsable();
+        ) &&
+        isFrameCopyRuntimeUsable();
     return {
         contextIsolation: true,
         nodeIntegration: false,
@@ -119,7 +120,10 @@ export function getMainWindowWebPreferences(): Electron.BrowserWindowConstructor
 }
 
 export async function clearElectronServiceWorkerStorage(
-    electronSession: Pick<Electron.Session, 'clearStorageData'> = session.defaultSession
+    electronSession: Pick<
+        Electron.Session,
+        'clearStorageData'
+    > = session.defaultSession
 ): Promise<void> {
     try {
         await electronSession.clearStorageData({
@@ -470,7 +474,7 @@ export default class App {
 
         // Create the browser window.
         App.mainWindow = new BrowserWindow({
-            title: 'IPTVnator',
+            title: 'SaravTV',
             width: width,
             height: height,
             show: false,

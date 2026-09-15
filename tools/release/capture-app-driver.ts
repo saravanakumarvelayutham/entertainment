@@ -175,7 +175,7 @@ async function assertStalkerMockServerIdentity(): Promise<void> {
     for (const expected of STALKER_MOCK_FIXTURE_CATEGORIES) {
         if (!titles.has(expected)) {
             throw new Error(
-                `The server on ${STALKER_MOCK_ORIGIN} is not the IPTVnator marketing mock (missing live category "${expected}"). Refusing to capture screenshots from unknown data.`
+                `The server on ${STALKER_MOCK_ORIGIN} is not the SaravTV marketing mock (missing live category "${expected}"). Refusing to capture screenshots from unknown data.`
             );
         }
     }
@@ -206,7 +206,7 @@ async function assertMockServerIdentity(): Promise<void> {
 
         if (!names.has(expected.name)) {
             throw new Error(
-                `The server on ${XTREAM_MOCK_ORIGIN} is not the IPTVnator marketing mock (missing ${expected.action} entry "${expected.name}"). Refusing to capture screenshots from unknown data.`
+                `The server on ${XTREAM_MOCK_ORIGIN} is not the SaravTV marketing mock (missing ${expected.action} entry "${expected.name}"). Refusing to capture screenshots from unknown data.`
             );
         }
     }

@@ -1,26 +1,32 @@
-# IPTVnator - IPTV Player Application
+# SaravTV
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/4gray/iptvnator/electron/src/assets/icons/favicon.256x256.png" alt="IPTVnator icon" title="Free IPTV player application" />
+  <img src="./apps/web/src/assets/icons/icon-tv-256.png" alt="SaravTV icon" title="SaravTV" />
 </p>
 <p align="center">
-  <a href="https://github.com/4gray/iptvnator/releases"><img src="https://img.shields.io/github/release/4gray/iptvnator.svg?style=for-the-badge&logo=github" alt="Release"></a>
-  <a href="https://github.com/4gray/iptvnator/releases"><img src="https://img.shields.io/github/v/release/4gray/iptvnator?include_prereleases&label=pre-release&logo=github&style=for-the-badge" /></a>
- <a href="https://github.com/4gray/iptvnator/actions/workflows/ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/4gray/iptvnator/ci.yml?branch=master&style=for-the-badge&logo=github&label=CI"></a> <a href="https://github.com/4gray/iptvnator/releases"><img src="https://img.shields.io/github/downloads/4gray/iptvnator/total?style=for-the-badge&logo=github" alt="Releases"></a> <a href="https://app.codecov.io/gh/4gray/iptvnator"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/4gray/iptvnator?branch=master&style=for-the-badge&logo=codecov&logoColor=white"></a> <a href="https://t.me/iptvnator"><img src="https://img.shields.io/badge/telegram-iptvnator-blue?logo=telegram&style=for-the-badge" alt="Telegram"></a> <a href="https://bsky.app/profile/iptvnator.bsky.social"><img src="https://img.shields.io/badge/bluesky-iptvnator-darkblue?logo=bluesky&style=for-the-badge" alt="Bluesky"></a>
+  <a href="https://github.com/sarav-ai-labs/saravtv"><img src="https://img.shields.io/badge/source-SaravTV-5b5cf0?style=for-the-badge&logo=github" alt="SaravTV source"></a>
+  <a href="https://github.com/4gray/iptvnator"><img src="https://img.shields.io/badge/upstream-IPTVnator-263238?style=for-the-badge&logo=github" alt="IPTVnator upstream"></a>
 </p>
 
-🌐 **[Website](https://4gray.github.io/iptvnator/)** | <a href="https://t.me/iptvnator">Telegram channel for discussions</a> | <a href="https://ko-fi.com/4gray" target="_blank">Buy me a coffee</a> | <a href="https://github.com/sponsors/4gray">GitHub Sponsors</a>
-
-**IPTVnator** is a video player application that provides support for IPTV playlist playback (m3u, m3u8). The application allows users to import playlists using remote URLs or by uploading files from the local file system. Additionally, it supports EPG information in XMLTV format which can be provided via URL.
+**SaravTV** is a personalized IPTV library for user-supplied M3U, Xtream Codes,
+and Stalker sources. It combines live TV, movies, series, favorites, watch
+history, continue-watching, and optional TMDB-powered discovery.
 
 The application is a cross-platform, open-source project built with Electron and Angular.
 
-⚠️ Note: IPTVnator does not provide any playlists or other digital content. The channels and pictures in the screenshots are for demonstration purposes only.
+⚠️ SaravTV does not provide any playlists or other digital content. The channels and pictures in screenshots are for demonstration purposes only.
 
 > [!IMPORTANT]
-> **Official sources only.** IPTVnator is a free, open-source **player** — it never sells IPTV subscriptions, channels, or playlists. Websites offering "IPTVnator subscriptions/channels/premium/activated" builds are **not affiliated** with this project. Get the app only from the [official website](https://4gray.github.io/iptvnator/) or [GitHub Releases](https://github.com/4gray/iptvnator/releases). See [Beware of unofficial IPTVnator websites and IPTV services](https://4gray.github.io/iptvnator/blog/beware-unofficial-iptvnator-websites/) for details.
+> SaravTV is a player only. It does not sell subscriptions, channels, playlists,
+> or activated builds.
 
-![IPTVnator: Channels list, player and epg list](./apps/website/public/screenshots/screenshot-player.webp)
+SaravTV is a fork of [IPTVnator](https://github.com/4gray/iptvnator), used under
+the MIT license. The upstream copyright and license notice remain in
+[LICENSE](./LICENSE). SaravTV uses its own name, application identifiers, release
+feeds, and original icon; the `@iptvnator/*` aliases and `IPTVNATOR_*`
+environment variables remain internal compatibility contracts.
+
+![SaravTV: channels list, player and EPG list](./apps/website/public/screenshots/screenshot-player.webp)
 
 ## Features
 
@@ -33,7 +39,7 @@ The application is a cross-platform, open-source project built with Electron and
 **Playback**
 
 - Built-in HTML5 player (HLS.js or Video.js) with a resizable, resumable inline view
-- Optional unified IPTVnator controls for HTML5, Video.js, and ArtPlayer, enabled in **Settings → Playback** _(experimental)_
+- Optional unified SaravTV controls for HTML5, Video.js, and ArtPlayer, enabled in **Settings → Playback** _(experimental)_
 - External players — MPV, VLC, and IINA on macOS (`mpv.app` / `VLC.app` bundle paths supported) _(desktop)_
 - Embedded MPV — native mpv rendered inside the app window on macOS, Windows & Linux 🖥️ _(experimental · desktop)_
 - Dedicated radio player for `radio="true"` streams 📻
@@ -73,26 +79,26 @@ The application is a cross-platform, open-source project built with Electron and
 
 Press `?` or `Shift+/` in the workspace to open the in-app shortcuts list.
 
-| Area              | Shortcut                    | Action                                                     |
-| ----------------- | --------------------------- | ---------------------------------------------------------- |
-| Global            | `Ctrl/Cmd+K`                | Open command palette                                       |
-| Global            | `Ctrl/Cmd+F`                | Open global search in the desktop app                      |
-| Global            | `Ctrl/Cmd+R`                | Open recently viewed in the desktop app                    |
-| Global            | `Enter` in workspace search | Submit the current search                                  |
-| Global            | `F11`                       | Toggle app window fullscreen in the desktop app            |
-| Navigation        | `Ctrl/Cmd+B`                | Toggle the live sidebar                                    |
-| Navigation        | `0-9`                       | Select an M3U channel by number                            |
-| Playback          | `Space` / `K`               | Play or pause playback                                     |
-| Playback          | `F`                         | Toggle player fullscreen                                   |
-| Playback          | `ArrowLeft` / `ArrowRight`  | Seek VOD playback by 5 seconds                             |
-| Playback          | `ArrowUp` / `ArrowDown`     | Adjust volume by 5%                                        |
-| Playback          | `M`                         | Mute audio                                                 |
-| Dialogs and lists | `ArrowUp` / `ArrowDown`     | Move command palette selection                             |
-| Dialogs and lists | `Enter`                     | Run the selected command or open a focused item            |
-| Dialogs and lists | `Escape`                    | Close dialogs and dismiss overlays                         |
+| Area              | Shortcut                    | Action                                          |
+| ----------------- | --------------------------- | ----------------------------------------------- |
+| Global            | `Ctrl/Cmd+K`                | Open command palette                            |
+| Global            | `Ctrl/Cmd+F`                | Open global search in the desktop app           |
+| Global            | `Ctrl/Cmd+R`                | Open recently viewed in the desktop app         |
+| Global            | `Enter` in workspace search | Submit the current search                       |
+| Global            | `F11`                       | Toggle app window fullscreen in the desktop app |
+| Navigation        | `Ctrl/Cmd+B`                | Toggle the live sidebar                         |
+| Navigation        | `0-9`                       | Select an M3U channel by number                 |
+| Playback          | `Space` / `K`               | Play or pause playback                          |
+| Playback          | `F`                         | Toggle player fullscreen                        |
+| Playback          | `ArrowLeft` / `ArrowRight`  | Seek VOD playback by 5 seconds                  |
+| Playback          | `ArrowUp` / `ArrowDown`     | Adjust volume by 5%                             |
+| Playback          | `M`                         | Mute audio                                      |
+| Dialogs and lists | `ArrowUp` / `ArrowDown`     | Move command palette selection                  |
+| Dialogs and lists | `Enter`                     | Run the selected command or open a focused item |
+| Dialogs and lists | `Escape`                    | Close dialogs and dismiss overlays              |
 
 The desktop app can also open at its last size, maximized, or fullscreen on
-every launch (Settings → General → "Window on startup"), and `iptvnator
+every launch (Settings → General → "Window on startup"), and `saravtv
 --fullscreen` forces a single fullscreen launch for TV or HTPC autostart
 scripts without changing that setting.
 
@@ -142,20 +148,21 @@ such as MPV, VLC, or IINA.
 
 ## Download
 
-Download the latest version of the application for macOS, Windows, and Linux from the [release page](https://github.com/4gray/iptvnator/releases).
+Download SaravTV builds for macOS, Windows, and Linux from the [release page](https://github.com/sarav-ai-labs/saravtv/releases).
 
-Alternatively, you can install the application using one of the following package managers:
+The package-manager commands below install upstream IPTVnator, not SaravTV;
+they remain as reference material until fork-specific packages are published.
 
 ### Nightly builds
 
 Every merge into `master` is published as a prerelease in
-[4gray/iptvnator-nightly](https://github.com/4gray/iptvnator-nightly). The
+[sarav-ai-labs/saravtv-nightly](https://github.com/sarav-ai-labs/saravtv-nightly). The
 desktop app can follow them: **Settings → About → Update channel → Nightly**
 offers each new build through the built-in updater (macOS, Windows, and the
 Linux AppImage). Nightly builds are untested snapshots — they may break, and
 their database changes are permanent, so switching back to **Stable** keeps
 the installed nightly until the next stable release is newer. Back up your
-playlists first, and mention the version and commit shown in *About* when
+playlists first, and mention the version and commit shown in _About_ when
 reporting a bug from a nightly.
 
 ### Homebrew
@@ -191,7 +198,7 @@ sudo emerge iptvnator-bin
 ### Linux Embedded MPV Support
 
 Embedded MPV on Linux is experimental and currently supports x64 desktop
-sessions where IPTVnator runs under X11 or Xwayland. Native Wayland embedding
+sessions where SaravTV runs under X11 or Xwayland. Native Wayland embedding
 is not supported yet. Linux package launchers request X11 with
 `--ozone-platform=x11`, so Wayland desktops still need Xwayland available.
 
@@ -216,18 +223,18 @@ the host `mpv` executable to the embedded backend by default.
 Older unsigned macOS builds may require removing the quarantine flag from the downloaded application:
 
 ```bash
-xattr -c /Applications/IPTVnator.app
+xattr -c /Applications/SaravTV.app
 ```
 
 Alternatively, if the app is located in a different directory:
 
 ```bash
-xattr -c ~/Downloads/IPTVnator.app
+xattr -c ~/Downloads/SaravTV.app
 ```
 
 ### Linux: chrome-sandbox Issues
 
-If you encounter the following error when launching IPTVnator:
+If you encounter the following error when launching SaravTV:
 
 ```
 The SUID sandbox helper binary was found, but is not configured correctly.
@@ -237,7 +244,7 @@ You need to make sure that chrome-sandbox is owned by root and has mode 4755.
 
 **Solution 1: Fix chrome-sandbox permissions (Recommended for .deb/.rpm installations)**
 
-Navigate to the IPTVnator installation directory and run:
+Navigate to the SaravTV installation directory and run:
 
 ```bash
 sudo chown root:root chrome-sandbox
@@ -249,30 +256,30 @@ sudo chmod 4755 chrome-sandbox
 Edit the desktop launcher file to add the `--no-sandbox` flag:
 
 1. Find your desktop file location:
-    - **Ubuntu/Debian**: `~/.local/share/applications/iptvnator.desktop`
-    - **System-wide**: `/usr/share/applications/iptvnator.desktop`
+    - **Ubuntu/Debian**: `~/.local/share/applications/saravtv.desktop`
+    - **System-wide**: `/usr/share/applications/saravtv.desktop`
 
 2. Edit the file and modify the `Exec` line:
 
     ```
-    Exec=iptvnator --no-sandbox %U
+    Exec=saravtv --no-sandbox %U
     ```
 
 3. Save the file and relaunch the application from your application menu.
 
-Alternatively, you can launch IPTVnator from the terminal with the flag:
+Alternatively, you can launch SaravTV from the terminal with the flag:
 
 ```bash
-iptvnator --no-sandbox
+saravtv --no-sandbox
 ```
 
 ### GNU/Linux: Wayland startup failure
 
-If IPTVnator exits on GNU/Linux with errors about failing to connect to
+If SaravTV exits on GNU/Linux with errors about failing to connect to
 Wayland or initialize the Ozone platform, force X11/XWayland instead:
 
 ```bash
-iptvnator --ozone-platform=x11
+saravtv --ozone-platform=x11
 ```
 
 This workaround is mainly for older or problematic Linux graphics stacks. The
@@ -378,11 +385,13 @@ $ pnpm run serve:frontend
 
 ## Disclaimer
 
-**IPTVnator doesn't provide any playlists or other digital content.**
+**SaravTV doesn't provide any playlists or other digital content.**
 
 ## Trademark
 
-The name **"IPTVnator"** and the IPTVnator logo are unregistered trademarks of the project owner. The MIT license covers the source code only — it does **not** grant rights to the name or logo. Forks and redistributions (including app-store submissions) must use a different name and their own icon. See [TRADEMARK.md](./TRADEMARK.md) for details.
+The upstream name **"IPTVnator"** and logo remain the upstream project owner's
+branding. SaravTV deliberately uses a different name and original icon. See the
+upstream [trademark policy](https://github.com/4gray/iptvnator/blob/master/TRADEMARK.md).
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 

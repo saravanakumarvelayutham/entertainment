@@ -7,7 +7,7 @@
     "SHOW_LESS": "Kevesebb mutatása",
     "PLAYLISTS": "Lejátszási listák",
     "HOME": {
-        "TITLE": "IPTVnator",
+        "TITLE": "SaravTV",
         "SUBTITLE": "Válasszon egy meglévő lejátszási listát, vagy adjon hozzá újat",
         "TABS": {
             "RECENTLY_ADDED": "Legutóbb hozzáadott lejátszási listák",
@@ -20,7 +20,7 @@
         "PLAYLISTS": {
             "NO_PLAYLISTS": "Még nincs hozzáadott lejátszási lista",
             "ADD_FIRST": "Adja hozzá az első lejátszási listát",
-            "WELCOME_TITLE": "Üdvözli Önt az IPTVnator!",
+            "WELCOME_TITLE": "Üdvözli Önt az SaravTV!",
             "WELCOME_DESCRIPTION": "Első lépésként adja hozzá lejátszási listáját. Kapcsolódjon kedvenc IPTV-szolgáltatásához, és élvezze az élő tévéadásokat, filmeket és sorozatokat.",
             "ADD_YOUR_FIRST": "Első lejátszási lista hozzáadása",
             "FEATURE_M3U": "M3U/M3U8-fájlok",
@@ -168,7 +168,7 @@
             "ERROR_TLS_HOST_UNKNOWN": "Nem sikerült meghatározni a lejátszási lista kiszolgálóját. Próbálja újra kézzel.",
             "TRUST_TLS_HOST": "Kiszolgáló megbízhatónak jelölése",
             "TRUST_TLS_HOST_TITLE": "Megbízik ebben a kiszolgálóban az érvénytelen tanúsítvány ellenére?",
-            "TRUST_TLS_HOST_WARNING": "Csak akkor folytassa, ha megbízik a lejátszási lista kiszolgálójában. Az IPTVnator ennél a kiszolgálónál engedélyezi az érvénytelen TLS-tanúsítványokat, más kiszolgálóknál azonban továbbra is érvényes tanúsítványt követel meg."
+            "TRUST_TLS_HOST_WARNING": "Csak akkor folytassa, ha megbízik a lejátszási lista kiszolgálójában. Az SaravTV ennél a kiszolgálónál engedélyezi az érvénytelen TLS-tanúsítványokat, más kiszolgálóknál azonban továbbra is érvényes tanúsítványt követel meg."
         },
         "TEXT_IMPORT": {
             "LABEL": "M3U/M3U8-lejátszási lista beillesztése szövegként",
@@ -310,7 +310,7 @@
         "TMDB_ATTRIBUTION": "Ez a termék a TMDB API-ját használja, de a TMDB nem hagyta jóvá és nem tanúsította.",
         "APP_PREFERENCES": "Az alkalmazás beállításai",
         "HERO_EYEBROW": "Munkaterület-beállítások",
-        "HERO_TITLE": "Az IPTVnator személyre szabása",
+        "HERO_TITLE": "Az SaravTV személyre szabása",
         "HERO_DESCRIPTION": "A lejátszás, a műsorújság, a távoli hozzáférés és az adatkezelés beállítása egy helyen, a munkaterület jelenlegi megjelenésének megtartásával.",
         "SUBTITLE": "Az alkalmazás beállításainak módosítása",
         "DESCRIPTION": "Módosítsa az alábbi beállításokat, majd erősítse meg a változtatásokat a Változtatások mentése gombbal.",
@@ -370,7 +370,7 @@
         "EPG_SOURCE_FORMATS_EXAMPLES": "Examples:",
         "VIDEO_PLAYER_DESCRIPTION": "Az alapértelmezett videólejátszó kiválasztása",
         "WEB_PLAYER_SHARED_CONTROLS": "Egységes vezérlők a webes lejátszókhoz",
-        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "Az IPTVnator közös vezérlőinek használata a HTML5-, Video.js- és ArtPlayer-lejátszóban.",
+        "WEB_PLAYER_SHARED_CONTROLS_DESCRIPTION": "Az SaravTV közös vezérlőinek használata a HTML5-, Video.js- és ArtPlayer-lejátszóban.",
         "PLAYER_AMBIENT_MODE": "Ambient background fill",
         "PLAYER_AMBIENT_MODE_DESCRIPTION": "Fill the space around the player with a blurred, dimmed poster instead of plain black bars.",
         "PLAYER_UP_NEXT_RAIL": "„Következik” epizódsáv",
@@ -396,7 +396,7 @@
         "EPG_VIEW_MODE_TIMELINE": "Idővonal",
         "EPG_VIEW_MODE_LIST": "Lista",
         "STARTUP_BEHAVIOR": "Indításkori nézet",
-        "STARTUP_BEHAVIOR_DESCRIPTION": "Válassza ki, hogy induláskor az első elérhető munkaterület-nézet nyíljon meg, vagy az IPTVnator állítsa vissza a legutóbb használt szakasznézetet. Az első nézet bekapcsolt Vezérlőpult esetén a Vezérlőpult, egyébként a Források.",
+        "STARTUP_BEHAVIOR_DESCRIPTION": "Válassza ki, hogy induláskor az első elérhető munkaterület-nézet nyíljon meg, vagy az SaravTV állítsa vissza a legutóbb használt szakasznézetet. Az első nézet bekapcsolt Vezérlőpult esetén a Vezérlőpult, egyébként a Források.",
         "STARTUP_BEHAVIOR_FIRST_VIEW": "Első elérhető nézet",
         "STARTUP_BEHAVIOR_RESTORE_LAST_VIEW": "Legutóbbi nézet visszaállítása",
         "STARTUP_WINDOW_MODE": "Ablak indításkor",
@@ -410,7 +410,7 @@
         "STRIP_COUNTRY_PREFIX": "Ország- és csoportelőtagok eltávolítása a csatornanevekből",
         "STRIP_COUNTRY_PREFIX_DESCRIPTION": "Eltávolítja az élő csatornák nevéből az olyan ország- vagy csoportelőtagokat, mint az „US | ” vagy az „UK - ”.",
         "VERSION_DESCRIPTION": "Az alkalmazás jelenlegi verziója",
-        "ABOUT_SUBTITLE": "Verzióadatok, a projekt hivatkozásai és az IPTVnator támogatási lehetőségei.",
+        "ABOUT_SUBTITLE": "Verzióadatok, a projekt hivatkozásai és az SaravTV támogatási lehetőségei.",
         "EMBEDDED_MPV_NOTICE_TITLE": "Beágyazott MPV-futtatókörnyezet",
         "EMBEDDED_MPV_NOTICE_DESCRIPTION": "Az asztali kiadások tartalmazhatják a kísérleti beágyazott MPV-lejátszóhoz szükséges libmpv- és FFmpeg-könyvtárakat. A felhasználóknak nem kell külön telepíteniük az MPV alkalmazást; szükség esetén továbbra is használható külső MPV- vagy VLC-lejátszó.",
         "COMMUNITY": "Projekt és közösség",
@@ -420,10 +420,10 @@
         "LINK_BLOG_DESCRIPTION": "Kiadási hírek, tippek és projektfrissítések",
         "LINK_TELEGRAM_DESCRIPTION": "Bejelentések, közösség és támogatás",
         "SUPPORT_TITLE": "A projekt támogatása",
-        "SUPPORT_DESCRIPTION": "Az IPTVnator ingyenes és nyílt forráskódú alkalmazás, amelynek fejlesztése is nyilvánosan zajlik. Ha a mindennapjai részévé vált, egy kisebb hozzájárulás is segít életben tartani a projektet és alakítani a jövőjét – köszönjük.",
+        "SUPPORT_DESCRIPTION": "Az SaravTV ingyenes és nyílt forráskódú alkalmazás, amelynek fejlesztése is nyilvánosan zajlik. Ha a mindennapjai részévé vált, egy kisebb hozzájárulás is segít életben tartani a projektet és alakítani a jövőjét – köszönjük.",
         "SUPPORT_SPONSORS_HINT": "Rendszeres vagy egyszeri támogatás",
         "SUPPORT_KOFI_HINT": "Hívjon meg egy kávéra",
-        "EPG_NOTE": "Az EPG jelenleg csak az IPTVnator Electron-alapú változatában érhető el.",
+        "EPG_NOTE": "Az EPG jelenleg csak az SaravTV Electron-alapú változatában érhető el.",
         "EPG_NOTE_URL_TEXT": "Itt ellenőrizheti",
         "IMPORT_EXPORT_DATA": "Lejátszási listák biztonsági mentéseinek importálása és exportálása",
         "IMPORT_EXPORT_DATA_DESCRIPTION": "Lejátszási lista biztonsági mentéseinek exportálása vagy visszaállítása, beleértve az M3U-pillanatképeket, az Xtream/Stalker-kapcsolati metaadatokat, a felhasználói állapotot és az EPG-források URL-címeit.",
@@ -450,10 +450,10 @@
         "PLAYLISTS_REMOVED": "Eltávolítottuk az összes lejátszási listát és kapcsolódó adatot.",
         "MPV_PLAYER_PATH_LABEL": "MPV elérési útvonala",
         "MPV_PLAYER_PATH_DESCRIPTION": "Adja meg az MPV elérési útját. macOS rendszeren használható az MPV alkalmazáscsomag, például /Applications/mpv.app, vagy a futtatható fájl elérési útja.",
-        "MPV_COMPATIBLE_PLAYER_TIP": "macOS rendszeren az IINA MPV-kompatibilis lejátszóként indítható, de a futtatható fájl elérési útját adja meg, például /Applications/IINA.app/Contents/MacOS/iina-cli vagy /Applications/IINA.app/Contents/MacOS/IINA. Az IPTVnator vezérlőfunkciói, a lejátszási pozíció lekérdezése és a példány újrafelhasználása csak MPV IPC használatakor garantált.",
+        "MPV_COMPATIBLE_PLAYER_TIP": "macOS rendszeren az IINA MPV-kompatibilis lejátszóként indítható, de a futtatható fájl elérési útját adja meg, például /Applications/IINA.app/Contents/MacOS/iina-cli vagy /Applications/IINA.app/Contents/MacOS/IINA. Az SaravTV vezérlőfunkciói, a lejátszási pozíció lekérdezése és a példány újrafelhasználása csak MPV IPC használatakor garantált.",
         "MPV_PLAYER_PATH": "MPV-lejátszó elérési útvonala",
         "MPV_PLAYER_ARGUMENTS_LABEL": "MPV parancssori argumentumai",
-        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "Az IPTVnator új külső lejátszófolyamat indításakor ezeket a nem kötelező argumentumokat adja át az MPV-nek.",
+        "MPV_PLAYER_ARGUMENTS_DESCRIPTION": "Az SaravTV új külső lejátszófolyamat indításakor ezeket a nem kötelező argumentumokat adja át az MPV-nek.",
         "MPV_PLAYER_ARGUMENTS": "MPV-argumentumok",
         "MPV_REUSE_INSTANCE_LABEL": "MPV-példány újrafelhasználása",
         "MPV_REUSE_INSTANCE_DESCRIPTION": "Bekapcsolásakor ugyanaz az MPV-ablak használható különböző adatfolyamok lejátszására. Kikapcsolásakor minden adatfolyam új MPV-ablakban nyílik meg.",
@@ -465,9 +465,9 @@
         "VLC_PLAYER_PATH_DESCRIPTION": "Adja meg a VLC elérési útját. macOS rendszeren használható a VLC alkalmazáscsomag, például /Applications/VLC.app, vagy a futtatható fájl elérési útja.",
         "VLC_PLAYER_PATH": "VLC-lejátszó elérési útja",
         "VLC_PLAYER_ARGUMENTS_LABEL": "VLC parancssori argumentumai",
-        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "Az IPTVnator új külső lejátszófolyamat indításakor ezeket a nem kötelező argumentumokat adja át a VLC-nek.",
+        "VLC_PLAYER_ARGUMENTS_DESCRIPTION": "Az SaravTV új külső lejátszófolyamat indításakor ezeket a nem kötelező argumentumokat adja át a VLC-nek.",
         "VLC_PLAYER_ARGUMENTS": "VLC-argumentumok",
-        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "Soronként egy argumentumot adjon meg. Az alkalmazás ezeket az adatfolyamhoz tartozó IPTVnator-beállítások előtt alkalmazza.",
+        "EXTERNAL_PLAYER_ARGUMENTS_HINT": "Soronként egy argumentumot adjon meg. Az alkalmazás ezeket az adatfolyamhoz tartozó SaravTV-beállítások előtt alkalmazza.",
         "VLC_REUSE_INSTANCE_LABEL": "VLC-példány újrafelhasználása",
         "VLC_REUSE_INSTANCE_DESCRIPTION": "Bekapcsolásakor ugyanaz a VLC-ablak használható különböző adatfolyamok lejátszására. Kikapcsolásakor minden adatfolyam új VLC-ablakban nyílik meg.",
         "REMOTE_CONTROL": "Távvezérlés",
@@ -879,10 +879,10 @@
         "RETRY": "Újrapróbálkozás",
         "ALLOW_PRIVATE_SOURCE": "Forrás engedélyezése",
         "ALLOW_PRIVATE_SOURCE_TITLE": "Engedélyezi a magánhálózaton található EPG-forrást?",
-        "ALLOW_PRIVATE_SOURCE_WARNING": "Csak akkor engedélyezze, ha megbízik az EPG-forrásban. Az IPTVnator engedélyezi, hogy ez a pontos EPG URL privát vagy helyi hálózati címekhez kapcsolódjon.",
+        "ALLOW_PRIVATE_SOURCE_WARNING": "Csak akkor engedélyezze, ha megbízik az EPG-forrásban. Az SaravTV engedélyezi, hogy ez a pontos EPG URL privát vagy helyi hálózati címekhez kapcsolódjon.",
         "TRUST_TLS_HOST": "Kiszolgáló megbízhatónak jelölése",
         "TRUST_TLS_HOST_TITLE": "Megbízik ebben a kiszolgálóban az érvénytelen tanúsítvány ellenére?",
-        "TRUST_TLS_HOST_WARNING": "Csak akkor folytassa, ha megbízik ebben a kiszolgálóban. Az IPTVnator ennél a kiszolgálónál engedélyezi az érvénytelen TLS-tanúsítványokat, más kiszolgálóknál azonban továbbra is érvényes tanúsítványt követel meg.",
+        "TRUST_TLS_HOST_WARNING": "Csak akkor folytassa, ha megbízik ebben a kiszolgálóban. Az SaravTV ennél a kiszolgálónál engedélyezi az érvénytelen TLS-tanúsítványokat, más kiszolgálóknál azonban továbbra is érvényes tanúsítványt követel meg.",
         "CURRENT_PROGRAM": "Aktuális műsor",
         "ARCHIVE_PLAYBACK": "Műsor visszanézése",
         "COLLAPSE_PANEL": "EPG-panel összecsukása",
@@ -999,7 +999,7 @@
     "NO": "Nem",
     "MENU": {
         "OPEN": "Menü megnyitása",
-        "SUPPORT_ARIA": "Az IPTVnator támogatása a GitHubon",
+        "SUPPORT_ARIA": "Az SaravTV támogatása a GitHubon",
         "SETTINGS_ARIA": "Beállítások megnyitása",
         "BUG_REPORT": "Hibabejelentés",
         "WHAT_IS_NEW": "Újdonságok",
@@ -1008,10 +1008,10 @@
         "SUPPORT_PROJECT": "A projekt támogatása"
     },
     "ABOUT": {
-        "TITLE": "Az IPTVnator névjegye",
+        "TITLE": "Az SaravTV névjegye",
         "DESCRIPTION": "Többplatformos IPTV-lejátszó számos funkcióval, többek között M3U- és M3U8-lejátszási listák, kedvencek, műsorújság, tévéarchívum és visszanézés támogatásával.",
         "VERSION": "Verzió",
-        "GITHUB_TOOLTIP": "Az IPTVnator GitHub-adattára",
+        "GITHUB_TOOLTIP": "Az SaravTV GitHub-adattára",
         "BUY_ME_A_COFFEE_TOOLTIP": "Hívj meg egy kávéra",
         "TWITTER_TOOLTIP": "Megosztás a Twitteren"
     },
@@ -1396,7 +1396,7 @@
         "STOP_RECORDING": "Felvétel leállítása",
         "REMOVE_RECORDING_DIALOG": {
             "TITLE": "Eltávolítja a felvételt a kezelőből?",
-            "MESSAGE": "A művelet eltávolítja a bejegyzést az IPTVnator alkalmazásból. A felvett fájl a lemezen marad."
+            "MESSAGE": "A művelet eltávolítja a bejegyzést az SaravTV alkalmazásból. A felvett fájl a lemezen marad."
         },
         "RECORDING_DETAIL": {
             "PROGRAMS": "Felvett műsorok",
@@ -1407,7 +1407,7 @@
         "REMOVE_FROM_MANAGER": "Eltávolítás a letöltéskezelőből",
         "REMOVE_COMPLETED_DIALOG": {
             "TITLE": "Eltávolítja a letöltéskezelőből?",
-            "MESSAGE": "Ezzel az elem eltávolításra kerül az IPTVnatorból. A letöltött médiafájl a lemezen marad."
+            "MESSAGE": "Ezzel az elem eltávolításra kerül az SaravTVból. A letöltött médiafájl a lemezen marad."
         },
         "REMOVE_PARTIAL_DIALOG": {
             "TITLE": "Eltávolítja a részleges letöltést?",
@@ -1464,8 +1464,8 @@
         "SUBTITLE": "Az IPTV-lejátszó távvezérlése",
         "UP_CHANNEL": "Előző csatorna",
         "DOWN_CHANNEL": "Következő csatorna",
-        "HEADER": "IPTVnator távvezérlő",
-        "FOOTER": "IPTVnator távvezérlő"
+        "HEADER": "SaravTV távvezérlő",
+        "FOOTER": "SaravTV távvezérlő"
     },
     "WORKSPACE": {
         "FAVORITES_ONLY": "Csak kedvencek",
@@ -1526,7 +1526,7 @@
             "SOURCE_EXPIRED": "Lejárt"
         },
         "SHELL": {
-            "BRAND_ALT": "IPTVnator",
+            "BRAND_ALT": "SaravTV",
             "RAIL_DASHBOARD": "Vezérlőpult",
             "OPEN_DASHBOARD": "Vezérlőpult megnyitása",
             "RAIL_SOURCES": "Források",
@@ -1721,7 +1721,7 @@
         },
         "SHORTCUTS": {
             "TITLE": "Billentyűparancsok",
-            "SUBTITLE": "Az IPTVnatorban elérhető munkaterületi, navigációs, lejátszási és párbeszédpanel-billentyűparancsok.",
+            "SUBTITLE": "Az SaravTVban elérhető munkaterületi, navigációs, lejátszási és párbeszédpanel-billentyűparancsok.",
             "OPEN_TOOLTIP": "Billentyűparancsok (?)",
             "OPEN_ARIA": "Billentyűparancsok megnyitása",
             "PLATFORM": {

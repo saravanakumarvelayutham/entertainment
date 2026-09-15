@@ -56,10 +56,10 @@ function resolvePackagedExecutable() {
                 executable: path.join(
                     executablesRoot,
                     'mac',
-                    'IPTVnator.app',
+                    'SaravTV.app',
                     'Contents',
                     'MacOS',
-                    'IPTVnator'
+                    'SaravTV'
                 ),
             },
             {
@@ -67,10 +67,10 @@ function resolvePackagedExecutable() {
                 executable: path.join(
                     executablesRoot,
                     'mac-arm64',
-                    'IPTVnator.app',
+                    'SaravTV.app',
                     'Contents',
                     'MacOS',
-                    'IPTVnator'
+                    'SaravTV'
                 ),
             },
         ];
@@ -82,11 +82,11 @@ function resolvePackagedExecutable() {
     }
 
     if (currentPlatform === 'windows') {
-        return findUnpackedExecutable('win', ['IPTVnator.exe']);
+        return findUnpackedExecutable('win', ['SaravTV.exe']);
     }
 
     if (currentPlatform === 'linux') {
-        return findUnpackedExecutable('linux', ['IPTVnator', 'iptvnator']);
+        return findUnpackedExecutable('linux', ['SaravTV', 'saravtv']);
     }
 
     return undefined;

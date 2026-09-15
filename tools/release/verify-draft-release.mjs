@@ -50,42 +50,42 @@ export function requiredAssetRules(version) {
 
     for (const arch of ['x64', 'arm64']) {
         for (const extension of ['dmg', 'zip']) {
-            const base = `iptvnator-${version}-mac-${arch}.${extension}`;
+            const base = `saravtv-${version}-mac-${arch}.${extension}`;
 
             rules.push(exact('macOS', base));
             rules.push(exact('macOS blockmap', `${base}.blockmap`));
         }
     }
 
-    const windowsSetup = `iptvnator-${version}-windows-x64-setup.exe`;
+    const windowsSetup = `saravtv-${version}-windows-x64-setup.exe`;
 
     rules.push(exact('Windows', windowsSetup));
     rules.push(exact('Windows blockmap', `${windowsSetup}.blockmap`));
 
     for (const arch of ['amd64', 'arm64', 'armv7l']) {
-        rules.push(exact('DEB', `iptvnator-${version}-linux-${arch}.deb`));
+        rules.push(exact('DEB', `saravtv-${version}-linux-${arch}.deb`));
     }
 
     for (const arch of ['x86_64', 'arm64', 'armv7l']) {
         rules.push(
-            exact('AppImage', `iptvnator-${version}-linux-${arch}.AppImage`)
+            exact('AppImage', `saravtv-${version}-linux-${arch}.AppImage`)
         );
     }
 
     for (const arch of ['amd64', 'armhf']) {
-        rules.push(exact('Snap', `iptvnator-${version}-linux-${arch}.snap`));
+        rules.push(exact('Snap', `saravtv-${version}-linux-${arch}.snap`));
     }
 
-    rules.push(exact('RPM', `iptvnator-${version}-linux-x86_64.rpm`));
-    rules.push(exact('Flatpak', `iptvnator-${version}-linux-x86_64.flatpak`));
+    rules.push(exact('RPM', `saravtv-${version}-linux-x86_64.rpm`));
+    rules.push(exact('Flatpak', `saravtv-${version}-linux-x86_64.flatpak`));
 
     // Electron Builder has shipped both pacman artifact shapes; accept either.
     // Compared as plain strings rather than through a regex built from the
     // version: this function is exported, so escaping the interpolated value
     // correctly would be a standing trap. Only the compression suffix, a
     // literal pattern, is matched by regex.
-    const pacmanExact = `iptvnator-${version}-linux-x64.pacman`;
-    const pacmanPrefix = `iptvnator-${version}-linux-x86_64.pkg.tar.`;
+    const pacmanExact = `saravtv-${version}-linux-x64.pacman`;
+    const pacmanPrefix = `saravtv-${version}-linux-x86_64.pkg.tar.`;
 
     rules.push({
         label: `Pacman (${pacmanExact} or …-linux-x86_64.pkg.tar.*)`,

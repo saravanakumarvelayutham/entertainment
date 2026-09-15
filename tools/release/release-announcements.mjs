@@ -12,7 +12,7 @@
 import { groupNotes, REPO_URL } from './release-notes.mjs';
 import { releaseSlug } from './release-notes-render.mjs';
 
-export const WEBSITE_URL = 'https://4gray.github.io/iptvnator';
+export const WEBSITE_URL = 'https://sarav-ai-labs.github.io/saravtv';
 
 /**
  * Telegram truncates nothing — it rejects messages over 4096 characters, so
@@ -42,7 +42,7 @@ export const REDDIT_TITLE_LIMIT = 300;
  * @returns {string}
  */
 export function buildRedditTitle(version, highlights) {
-    const prefix = `IPTVnator v${version}`;
+    const prefix = `SaravTV v${version}`;
 
     if (highlights.length === 0) {
         return `${prefix} released`;
@@ -157,7 +157,7 @@ export function renderTelegramPost(notes, { version }) {
         const more = hiddenCount > 0 ? moreLine(hiddenCount) : null;
 
         return [
-            `🎉 IPTVnator v${version} is out!`,
+            `🎉 SaravTV v${version} is out!`,
             lines.join('\n'),
             more,
             footer,

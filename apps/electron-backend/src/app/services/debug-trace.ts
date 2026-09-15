@@ -4,7 +4,7 @@ import {
 } from '@iptvnator/shared/logging';
 
 const TRACE_ENV_TRUE_VALUES = new Set(['1', 'true', 'yes', 'on']);
-const TRACE_PREFIX = '[IPTVnator Trace]';
+const TRACE_PREFIX = '[SaravTV Trace]';
 const MAX_TRACE_ARRAY_ITEMS = 5;
 const MAX_TRACE_OBJECT_KEYS = 8;
 const MAX_TRACE_STRING_LENGTH = 180;
