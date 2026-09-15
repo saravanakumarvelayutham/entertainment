@@ -1507,6 +1507,7 @@
             "XTREAM_RECENTLY_ADDED": "Xtream'de Yeni Eklenenler",
             "TMDB_TRENDING": "Bu hafta trend olanlar",
             "TMDB_RECOMMENDED": "Size özel öneriler",
+            "TMDB_YOUR_GENRE": "Size özel {{genre}} seçkisi",
             "TMDB_RECOMMENDED_BECAUSE": "{{title}} izlediğiniz için",
             "NO_HISTORY": "Bu filtre için öğe bulunamadı.",
             "NO_HISTORY_HINT": "Oynatma listelerinizden içerik oynatmaya başladığınızda izleme geçmişiniz burada görünecektir.",

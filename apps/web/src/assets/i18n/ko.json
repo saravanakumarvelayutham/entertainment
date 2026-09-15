@@ -1507,6 +1507,7 @@
             "XTREAM_RECENTLY_ADDED": "Xtream에 최근 추가됨",
             "TMDB_TRENDING": "이번 주 트렌드",
             "TMDB_RECOMMENDED": "맞춤 추천",
+            "TMDB_YOUR_GENRE": "회원님을 위한 {{genre}} 추천",
             "TMDB_RECOMMENDED_BECAUSE": "{{title}} 시청 기반 추천",
             "NO_HISTORY": "이 필터에 해당하는 항목이 없습니다.",
             "NO_HISTORY_HINT": "재생목록에서 콘텐츠를 재생하기 시작하면 시청 기록이 여기에 표시됩니다.",

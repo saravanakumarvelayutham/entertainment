@@ -691,6 +691,15 @@ export interface ElectronRecordingItem {
 }
 
 export interface ElectronBridgeApi {
+    /** Opens a local Netflix viewing-history CSV and returns only its title/date rows. */
+    importNetflixViewingHistory: () => Promise<
+        | { cancelled: true }
+        | {
+              cancelled: false;
+              entries: Array<{ title: string; watchedAt: string }>;
+              skipped: number;
+          }
+    >;
     onPortalDebugEvent?: (
         callback: (data: PortalDebugEvent) => void
     ) => () => void;

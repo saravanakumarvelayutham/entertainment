@@ -29,6 +29,39 @@
     </div>
 
     <div formGroupName="dashboardRails">
+        <div class="setting-item setting-item--stacked">
+            <div class="setting-item__meta">
+                <h4>{{ 'SETTINGS.NETFLIX_HISTORY' | translate }}</h4>
+                <p>{{ 'SETTINGS.NETFLIX_HISTORY_DESCRIPTION' | translate }}</p>
+                @if (importStatus(); as status) {
+                    <div
+                        class="settings-import-status"
+                        [class.settings-import-status--success]="status.tone === 'success'"
+                        [class.settings-import-status--error]="status.tone === 'error'"
+                        [attr.role]="status.tone === 'error' ? 'alert' : 'status'"
+                        aria-live="polite"
+                        data-test-id="netflix-history-status"
+                    >
+                        <mat-icon>{{ status.icon }}</mat-icon>
+                        <span>{{ status.key | translate: status.params }}</span>
+                    </div>
+                }
+            </div>
+            <div class="setting-item__control">
+                <button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="importBusy()"
+                    [attr.aria-busy]="importBusy()"
+                    (click)="importNetflixHistory()"
+                    data-test-id="import-netflix-history"
+                >
+                    <mat-icon>upload_file</mat-icon>
+                    {{ 'SETTINGS.NETFLIX_HISTORY_IMPORT' | translate }}
+                </button>
+            </div>
+        </div>
+
         <div class="setting-item">
             <div class="setting-item__meta">
                 <h4>{{ 'SETTINGS.DASHBOARD_HERO' | translate }}</h4>

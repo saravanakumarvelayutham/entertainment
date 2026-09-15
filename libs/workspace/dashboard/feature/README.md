@@ -36,6 +36,11 @@ rails also require the underlying data slice to have at least one item.
   and the Electron DB worker (hidden in the PWA), and hides itself below
   five matched cards. Data:
   `DashboardRecommendationsService` in `workspace/dashboard/data-access`.
+- The `tmdbRecommendations` setting also enables up to two "Your Genre"
+  rails. Genre affinity is ranked locally from recent activity, playback
+  completion, favorites and the TMDB rating of each seed. TMDB Discover
+  supplies candidates, then the catalog matcher removes watched, favorited
+  and unavailable titles. Data: `DashboardGenreRecommendationsService`.
 - `tmdbTrending` shows TMDB's weekly trending titles, matched against the
   imported Xtream libraries. Unmatched titles stay off the dashboard, and a
   separate High Rated rail projects matched entries rated 7.5 or higher.
@@ -66,3 +71,14 @@ underlying item. Rail "See all" links may also pass router state:
 
 This keeps the global collection pages from defaulting to Live TV when a
 dashboard rail is clearly about movies or series.
+## External watch history
+
+Settings → Dashboard can import a user-selected Netflix `ViewingActivity.csv`.
+The settings row keeps the last successful import count and time visible,
+reports cancellation or failure explicitly, and recalculates Your Picks as soon
+as a new file is saved. The result names the genres produced, or explains when
+TMDB/library matching could not produce a new rail.
+SaravTV parses it locally and stores only title/date entries in its local app
+database. These are preference seeds for the TMDB-backed **Your Genre Picks**
+rails; they never create playback positions or appear in **Continue Watching**.
+The importer does not access Netflix accounts, cookies, or a Downloads folder.

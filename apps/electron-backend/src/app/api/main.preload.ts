@@ -275,6 +275,8 @@ function wrapElectronApi<T extends object>(api: T): T {
 }
 
 const electronApi: ElectronBridgeApi = {
+    importNetflixViewingHistory: () =>
+        ipcRenderer.invoke('IMPORT_NETFLIX_VIEWING_HISTORY'),
     // Remote control channel change listener
     onChannelChange: (
         callback: (data: { direction: 'up' | 'down' }) => void

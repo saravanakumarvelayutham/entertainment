@@ -1507,6 +1507,7 @@
             "XTREAM_RECENTLY_ADDED": "Neu auf Xtream",
             "TMDB_TRENDING": "Diese Woche im Trend",
             "TMDB_RECOMMENDED": "Empfehlungen für Sie",
+            "TMDB_YOUR_GENRE": "Ihre {{genre}}-Favoriten",
             "TMDB_RECOMMENDED_BECAUSE": "Weil Sie {{title}} angesehen haben",
             "NO_HISTORY": "Keine Elemente für diesen Filter gefunden.",
             "NO_HISTORY_HINT": "Dein Wiedergabeverlauf erscheint hier, sobald du Inhalte aus deinen Playlists abspielst.",

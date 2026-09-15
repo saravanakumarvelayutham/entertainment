@@ -1,0 +1,37 @@
+app-settings-dashboard-section {
+    display: contents;
+}
+
+.settings-import-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--app-widget-border);
+    border-radius: 10px;
+    color: var(--app-on-surface);
+    background: var(--app-widget-bg);
+    font-size: 0.82rem;
+    line-height: 1.4;
+
+    mat-icon {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+    }
+
+    &--success {
+        border-color: var(--app-selection-border);
+        background: var(--app-selection-surface);
+        color: var(--app-selection-color);
+    }
+
+    &--error {
+        border-color: var(--settings-item-danger-border);
+        background: var(--settings-item-danger-bg);
+    }
+}

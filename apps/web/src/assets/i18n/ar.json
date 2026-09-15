@@ -1507,6 +1507,7 @@
             "XTREAM_RECENTLY_ADDED": "أُضيفت مؤخرًا على Xtream",
             "TMDB_TRENDING": "الرائج هذا الأسبوع",
             "TMDB_RECOMMENDED": "مقترحات لك",
+            "TMDB_YOUR_GENRE": "اختيارات {{genre}} لك",
             "TMDB_RECOMMENDED_BECAUSE": "لأنك شاهدت {{title}}",
             "NO_HISTORY": "لم يتم العثور على عناصر لهذا الفلتر.",
             "NO_HISTORY_HINT": "سيظهر سجل المشاهدة هنا بمجرد بدء تشغيل محتوى من قوائم التشغيل الخاصة بك.",

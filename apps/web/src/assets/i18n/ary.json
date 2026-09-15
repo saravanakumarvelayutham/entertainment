@@ -1507,6 +1507,7 @@
             "XTREAM_RECENTLY_ADDED": "تزادو مؤخراً على Xtream",
             "TMDB_TRENDING": "الرائج هاد السيمانة",
             "TMDB_RECOMMENDED": "مقترحات ليك",
+            "TMDB_YOUR_GENRE": "اختيارات {{genre}} ديالك",
             "TMDB_RECOMMENDED_BECAUSE": "حيتاش تفرجتي ف {{title}}",
             "NO_HISTORY": "ما تلقاو حتى عناصر لهاد الفلتر.",
             "NO_HISTORY_HINT": "سجل المشاهدات ديالك غادي يبان هنا منين تبدا تشغل محتوى من قوائم التشغيل ديالك.",

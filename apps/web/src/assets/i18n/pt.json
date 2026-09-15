@@ -1507,6 +1507,7 @@
             "XTREAM_RECENTLY_ADDED": "Adicionados recentemente no Xtream",
             "TMDB_TRENDING": "Tendências da semana",
             "TMDB_RECOMMENDED": "Recomendado para si",
+            "TMDB_YOUR_GENRE": "A sua seleção de {{genre}}",
             "TMDB_RECOMMENDED_BECAUSE": "Porque viu {{title}}",
             "NO_HISTORY": "Nenhum item encontrado para este filtro.",
             "NO_HISTORY_HINT": "Seu histórico aparecerá aqui assim que você começar a reproduzir conteúdo das suas playlists.",

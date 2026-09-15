@@ -15,6 +15,7 @@ import './database/playlist.events';
 import './database/recently-viewed.events';
 import './database/recordings.events';
 import './database/tmdb.events';
+import './netflix-history.events';
 import './database/vod-sources.events';
 import './database/xtream.events';
 

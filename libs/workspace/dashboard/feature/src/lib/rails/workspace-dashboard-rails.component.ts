@@ -43,6 +43,7 @@ import {
 import {
     DashboardDataService,
     DashboardFavoriteItem,
+    DashboardGenreRecommendationsService,
     DashboardRecentlyAddedItem,
     DashboardRecommendationItem,
     DashboardRecommendationsService,
@@ -137,6 +138,9 @@ export class WorkspaceDashboardRailsComponent {
     private readonly sourceExpiry = inject(DashboardSourceExpiryService);
     readonly trendingService = inject(DashboardTrendingService);
     readonly recommendationsService = inject(DashboardRecommendationsService);
+    readonly genreRecommendationsService = inject(
+        DashboardGenreRecommendationsService
+    );
 
     readonly hasPlaylists = computed(() => this.data.playlists().length > 0);
     readonly ready = this.data.dashboardReady;
@@ -391,6 +395,19 @@ export class WorkspaceDashboardRailsComponent {
             : this.t('WORKSPACE.DASHBOARD.TMDB_RECOMMENDED');
     });
 
+    readonly genreRails = computed(() => {
+        this.languageTick();
+        if (!this.genreRecommendationsService.isAvailable) return [];
+        return this.genreRecommendationsService.rails().map((rail) => ({
+            genre: rail.genre,
+            label: this.translate.instant(
+                'WORKSPACE.DASHBOARD.TMDB_YOUR_GENRE',
+                { genre: rail.genre }
+            ),
+            cards: rail.items.map((item) => this.toRecommendationCard(item)),
+        }));
+    });
+
     // Minute heartbeat for the expiry badges: resolveSourceExpiryBadge reads
     // the wall clock, so without a reactive tick a dashboard left open would
     // never cross a day-countdown or expiration boundary. interval() emits
@@ -523,6 +540,23 @@ export class WorkspaceDashboardRailsComponent {
             // Language feeds the service's load key (localized payloads)
             this.languageTick();
             untracked(() => void this.recommendationsService.load());
+        });
+
+        // Your Genres shares the recommendation opt-in, then ranks affinity
+        // from favorites, recent activity, completion and TMDB seed quality.
+        effect(() => {
+            if (
+                !this.dashboardRails().tmdbRecommendations ||
+                !this.data.globalFavoritesLoaded()
+            ) {
+                return;
+            }
+            this.data.globalRecentVodItems();
+            this.data.globalFavoriteItems();
+            this.data.playlists();
+            this.data.playbackPositions$();
+            this.languageTick();
+            untracked(() => void this.genreRecommendationsService.load());
         });
     }
 

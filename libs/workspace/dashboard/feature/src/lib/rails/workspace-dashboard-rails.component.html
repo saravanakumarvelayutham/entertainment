@@ -386,6 +386,36 @@
             </section>
         }
 
+        <!-- Personalized genre rails; every card resolves to imported content. -->
+        @if (dashboardRails().tmdbRecommendations) {
+            @for (rail of genreRails(); track rail.genre) {
+                <lib-dashboard-rail
+                    [label]="rail.label"
+                    [items]="rail.cards"
+                    [totalCount]="rail.cards.length"
+                    [testId]="'dashboard-your-genre-' + rail.genre"
+                />
+            }
+        }
+        @if (
+            dashboardRails().tmdbRecommendations &&
+            genreRecommendationsService.loading() &&
+            genreRails().length === 0
+        ) {
+            <section
+                class="rails-page__skeleton-rail"
+                aria-hidden="true"
+                aria-busy="true"
+            >
+                <div class="rails-page__skeleton-header"></div>
+                <div class="rails-page__skeleton-track">
+                    @for (slot of skeletonSlots; track slot) {
+                        <div class="rails-page__skeleton-card"></div>
+                    }
+                </div>
+            </section>
+        }
+
         <!-- TMDB trending rail (opt-in; Electron only — needs title matching) -->
         @if (dashboardRails().tmdbTrending && trendingCards().length > 0) {
             <lib-dashboard-rail
