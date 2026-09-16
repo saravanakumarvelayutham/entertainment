@@ -20,6 +20,10 @@ import {
 import { httpServer } from '../server/http-server';
 import { setHostConnectivityGuardEnabled } from '../util/host-connectivity-guard';
 import { persistAppUpdateChannel } from '../services/app-update-channel';
+import {
+    readSecureTmdbSettings,
+    writeSecureTmdbSettings,
+} from '../services/tmdb-settings-vault';
 
 export default class SettingsEvents {
     static bootstrapSettingsEvents(): Electron.IpcMain {
@@ -119,3 +123,8 @@ ipcMain.handle('SETTINGS_UPDATE', (_event, arg) => {
         httpServer.updateSettings(enabled, port);
     }
 });
+
+ipcMain.handle('TMDB_SETTINGS_GET', () => readSecureTmdbSettings());
+ipcMain.handle('TMDB_SETTINGS_SET', (_event, settings) =>
+    writeSecureTmdbSettings(settings)
+);

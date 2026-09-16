@@ -93,4 +93,8 @@ On startup, every dashboard caller awaits the same persisted-history read. The
 rail stays in its loading state while picks are rebuilt, and a failed database
 read remains retryable instead of making the saved import look empty for the
 rest of the session.
+Desktop TMDB settings are restored from an OS-encrypted, SQLite-backed mirror
+before recommendation work begins. The dashboard effects also track TMDB
+availability, so restoring or enabling metadata retriggers Trending and Your
+Picks without another restart.
 The importer does not access Netflix accounts, cookies, or a Downloads folder.

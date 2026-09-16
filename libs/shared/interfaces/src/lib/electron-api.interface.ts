@@ -690,6 +690,11 @@ export interface ElectronRecordingItem {
     fileAvailability: ElectronDownloadFileAvailability | 'unknown';
 }
 
+export interface ElectronBridgeTmdbSettings {
+    enabled: boolean;
+    apiKey: string;
+}
+
 export interface ElectronBridgeApi {
     /** Opens a local Netflix viewing-history CSV and returns only its title/date rows. */
     importNetflixViewingHistory: () => Promise<
@@ -700,6 +705,11 @@ export interface ElectronBridgeApi {
               skipped: number;
           }
     >;
+    /** Desktop-wide TMDB settings restored independently of Chromium profiles. */
+    getSecureTmdbSettings: () => Promise<ElectronBridgeTmdbSettings | null>;
+    setSecureTmdbSettings: (
+        settings: ElectronBridgeTmdbSettings
+    ) => Promise<ElectronBridgeResult>;
     onPortalDebugEvent?: (
         callback: (data: PortalDebugEvent) => void
     ) => () => void;

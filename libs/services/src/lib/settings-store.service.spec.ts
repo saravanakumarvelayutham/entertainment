@@ -32,12 +32,14 @@ const expectedDashboardRails = (
 describe('SettingsStore dashboard rail settings', () => {
     let storedSettings: Partial<Settings> | null;
     let injector: Injector;
+    let originalElectron: typeof window.electron;
     let storage: {
         get: jest.Mock;
         set: jest.Mock;
     };
 
     beforeEach(() => {
+        originalElectron = window.electron;
         storedSettings = null;
         storage = {
             get: jest.fn(() => of(storedSettings)),
@@ -54,6 +56,10 @@ describe('SettingsStore dashboard rail settings', () => {
                 },
             ],
         });
+    });
+
+    afterEach(() => {
+        window.electron = originalElectron;
     });
 
     it('reconciles only after persistence and restores the previous EPG list on a failed save', async () => {
@@ -248,6 +254,43 @@ describe('SettingsStore dashboard rail settings', () => {
         expect(store.getSettings().dashboardRails).toEqual(
             expectedDashboardRails()
         );
+    });
+
+    it('restores desktop TMDB settings ahead of profile-local settings', async () => {
+        storedSettings = { tmdb: { enabled: false, apiKey: '' } };
+        window.electron = {
+            getSecureTmdbSettings: jest.fn().mockResolvedValue({
+                enabled: true,
+                apiKey: 'desktop-key',
+            }),
+        } as unknown as typeof window.electron;
+        const store = injector.get(SettingsStore);
+
+        await store.loadSettings();
+
+        expect(store.getSettings().tmdb).toEqual({
+            enabled: true,
+            apiKey: 'desktop-key',
+        });
+    });
+
+    it('mirrors TMDB settings outside the Chromium profile on save', async () => {
+        const setSecureTmdbSettings = jest
+            .fn()
+            .mockResolvedValue({ success: true });
+        window.electron = {
+            setSecureTmdbSettings,
+        } as unknown as typeof window.electron;
+        const store = injector.get(SettingsStore);
+
+        await store.updateSettings({
+            tmdb: { enabled: true, apiKey: 'desktop-key' },
+        });
+
+        expect(setSecureTmdbSettings).toHaveBeenCalledWith({
+            enabled: true,
+            apiKey: 'desktop-key',
+        });
     });
 
     it('defaults shared web controls to true when the stored field is missing', async () => {

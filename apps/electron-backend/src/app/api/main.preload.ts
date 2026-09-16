@@ -716,6 +716,9 @@ const electronApi: ElectronBridgeApi = {
         ipcRenderer.invoke('SET_VLC_PLAYER_PATH', vlcPlayerPath),
     updateSettings: (settings: Partial<Settings>) =>
         ipcRenderer.invoke('SETTINGS_UPDATE', settings),
+    getSecureTmdbSettings: () => ipcRenderer.invoke('TMDB_SETTINGS_GET'),
+    setSecureTmdbSettings: (settings) =>
+        ipcRenderer.invoke('TMDB_SETTINGS_SET', settings),
     getAiSettings: () => ipcRenderer.invoke('GET_AI_SETTINGS'),
     cancelSourceProbe: (id: string) =>
         ipcRenderer.invoke('SOURCE_HEALTH_CANCEL', id),

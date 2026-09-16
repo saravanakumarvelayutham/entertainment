@@ -26,6 +26,11 @@ Related:
 - Enrichment is **opt-in** via `Settings > Metadata (TMDB)` because it sends
   movie/series titles to a third-party API. Default: disabled. Users supply
   their own TMDB API key; distributed builds ship without a shared key.
+- On desktop, the opt-in and API key are mirrored outside Chromium's profile in
+  the shared `app_state` database. Electron encrypts the key with `safeStorage`
+  before it reaches SQLite and restores it before TMDB consumers run. The
+  renderer's IndexedDB value remains the PWA source of truth and the one-time
+  migration source for desktop installs without a mirror.
 - The detail view renders provider data **immediately**; enrichment runs
   asynchronously and patches the selected item once TMDB responds. A
   staleness guard drops responses that arrive after the user navigated away.
@@ -54,6 +59,7 @@ store imports):
 | `tmdb-credits.ts`            | People out of credit payloads: display cast, person chips, and the two-shape union a series cast needs                                       |
 | `tmdb-cache-payload.ts`      | Trims a details payload before caching (aggregate roles/crew) without changing what a merge over it produces                                 |
 | `tmdb-runtime.service.ts`    | Shared runtime context: opt-in gate, effective API key, language resolution                                                                  |
+| `tmdb-settings-persistence.ts` | Renderer bridge that restores and migrates the encrypted desktop TMDB mirror while retaining IndexedDB for PWA                              |
 | `tmdb-enrichment.service.ts` | Movie/TV orchestrator and facade: id resolution → details fetch → cache; delegates person/season lookups                                     |
 | `tmdb-person.service.ts`     | Cached person details + combined filmography (`person:<id>` rows)                                                                            |
 | `tmdb-season.service.ts`     | Cached lazy per-season payloads — overview + episode list (`id:<id>\|season:<n>` rows)                                                       |

@@ -34,6 +34,11 @@ import {
     normalizeDashboardRailsSettings,
     normalizeStartupWindowMode,
 } from '@iptvnator/shared/interfaces';
+import {
+    migrateDesktopTmdbSettings,
+    readDesktopTmdbSettings,
+    saveDesktopTmdbSettings,
+} from './tmdb/tmdb-settings-persistence';
 
 const DEFAULT_SETTINGS: Settings = {
     player: VideoPlayer.VideoJs,
@@ -167,6 +172,7 @@ export const SettingsStore = signalStore(
                     const stored = await firstValueFrom(
                         storage.get(STORE_KEY.Settings)
                     );
+                    const desktopTmdb = await readDesktopTmdbSettings();
                     patchState(store, { storageFailure: null });
                     if (stored) {
                         const storedSettings = stored as Partial<Settings>;
@@ -180,7 +186,14 @@ export const SettingsStore = signalStore(
                             dashboardRails: normalizeDashboardRailsSettings(
                                 storedSettings.dashboardRails
                             ),
+                            tmdb:
+                                desktopTmdb ??
+                                storedSettings.tmdb ??
+                                DEFAULT_TMDB_SETTINGS,
                         });
+                        if (!desktopTmdb && storedSettings.tmdb) {
+                            migrateDesktopTmdbSettings(storedSettings.tmdb);
+                        }
                         void this.sanitizeEmbeddedMpvSelection().catch(
                             (error) => {
                                 console.warn(
@@ -239,6 +252,7 @@ export const SettingsStore = signalStore(
                     await firstValueFrom(
                         storage.set(STORE_KEY.Settings, completeSettings)
                     );
+                    await saveDesktopTmdbSettings(completeSettings.tmdb);
                     patchState(store, { storageFailure: null });
                     if (completeSettings.player === VideoPlayer.EmbeddedMpv) {
                         scheduleEmbeddedMpvPrepare();

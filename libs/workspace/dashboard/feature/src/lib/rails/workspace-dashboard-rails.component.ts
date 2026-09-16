@@ -524,7 +524,8 @@ export class WorkspaceDashboardRailsComponent {
         effect(() => {
             if (
                 !this.dashboardRails().tmdbTrending ||
-                !this.data.globalFavoritesLoaded()
+                !this.data.globalFavoritesLoaded() ||
+                !this.trendingService.isAvailable
             ) {
                 return;
             }
@@ -540,7 +541,8 @@ export class WorkspaceDashboardRailsComponent {
         effect(() => {
             if (
                 !this.dashboardRails().tmdbRecommendations ||
-                !this.data.globalFavoritesLoaded()
+                !this.data.globalFavoritesLoaded() ||
+                !this.recommendationsService.isAvailable
             ) {
                 return;
             }
@@ -557,7 +559,8 @@ export class WorkspaceDashboardRailsComponent {
         effect(() => {
             if (
                 !this.dashboardRails().tmdbRecommendations ||
-                !this.data.globalFavoritesLoaded()
+                !this.data.globalFavoritesLoaded() ||
+                !this.genreRecommendationsService.isAvailable
             ) {
                 return;
             }
