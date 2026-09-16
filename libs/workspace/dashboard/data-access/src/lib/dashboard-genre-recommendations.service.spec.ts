@@ -47,6 +47,7 @@ describe('DashboardGenreRecommendationsService', () => {
     let isDismissed: jest.Mock;
     let affinityWeights: jest.Mock;
     let feedbackCacheKey: jest.Mock;
+    let matchedTitleIds: Map<string, number>;
 
     function createService(): DashboardGenreRecommendationsService {
         TestBed.configureTestingModule({
@@ -106,6 +107,7 @@ describe('DashboardGenreRecommendationsService', () => {
         isDismissed = jest.fn().mockReturnValue(false);
         affinityWeights = jest.fn().mockReturnValue(new Map());
         feedbackCacheKey = jest.fn().mockReturnValue('');
+        matchedTitleIds = new Map();
         enrichMovie = jest.fn().mockImplementation(async ({ title }) => ({
             vote_average: title === 'Recent Action' ? 8 : 7,
             vote_count: 100,
@@ -123,15 +125,20 @@ describe('DashboardGenreRecommendationsService', () => {
                     : discoveries('Comedy')
             );
         matchTitles = jest.fn().mockImplementation(async (titles: string[]) =>
-            titles.map((title, index) => ({
-                queryTitle: title,
-                playlistId: 'pl-1',
-                playlistName: 'My Library',
-                categoryId: 9,
-                xtreamId: index + 500,
-                type: 'movie',
-                trailingYear: null,
-            }))
+            titles.map((title) => {
+                if (!matchedTitleIds.has(title)) {
+                    matchedTitleIds.set(title, matchedTitleIds.size + 500);
+                }
+                return {
+                    queryTitle: title,
+                    playlistId: 'pl-1',
+                    playlistName: 'My Library',
+                    categoryId: 9,
+                    xtreamId: matchedTitleIds.get(title),
+                    type: 'movie',
+                    trailingYear: null,
+                };
+            })
         );
     });
 
@@ -272,6 +279,92 @@ describe('DashboardGenreRecommendationsService', () => {
         expect(enrichMovie).toHaveBeenCalledWith(
             expect.objectContaining({ title: 'Netflix Action' })
         );
+    });
+
+    it('keeps imported history represented when local recents fill the seed budget', async () => {
+        recentItems = Array.from({ length: 20 }, (_, index) =>
+            recent(`Recent ${index + 1}`, index + 1)
+        );
+        externalEntries = [
+            { title: 'Netflix Action', watchedAt: '2026-09-14T12:00:00.000Z' },
+        ];
+        const service = createService();
+
+        await service.load();
+
+        expect(enrichMovie).toHaveBeenCalledWith(
+            expect.objectContaining({ title: 'Netflix Action' })
+        );
+    });
+
+    it('can surface four distinct taste rails', async () => {
+        recentItems = [
+            recent('Action Seed', 1),
+            recent('Comedy Seed', 2),
+            recent('Drama Seed', 3),
+            recent('Science Fiction Seed', 4),
+        ];
+        const genres = new Map([
+            ['Action Seed', { id: 28, name: 'Action' }],
+            ['Comedy Seed', { id: 35, name: 'Comedy' }],
+            ['Drama Seed', { id: 18, name: 'Drama' }],
+            ['Science Fiction Seed', { id: 878, name: 'Science Fiction' }],
+        ]);
+        enrichMovie.mockImplementation(async ({ title }) => ({
+            vote_average: 8,
+            vote_count: 100,
+            genres: [genres.get(title)],
+        }));
+        discoverTitles.mockImplementation(async (_type, filters) =>
+            discoveries(`Genre ${filters.genreId}`)
+        );
+        const service = createService();
+
+        await service.load();
+
+        expect(service.rails().map(({ genre }) => genre)).toEqual([
+            'Action',
+            'Comedy',
+            'Drama',
+            'Science Fiction',
+        ]);
+    });
+
+    it('does not repeat a catalog title across personalized rails', async () => {
+        recentItems = [recent('Action Seed', 1), recent('Comedy Seed', 2)];
+        enrichMovie.mockImplementation(async ({ title }) => ({
+            vote_average: 8,
+            vote_count: 100,
+            genres: [
+                title === 'Action Seed'
+                    ? { id: 28, name: 'Action' }
+                    : { id: 35, name: 'Comedy' },
+            ],
+        }));
+        discoverTitles.mockImplementation(async (_type, filters) => [
+            ...discoveries('Shared'),
+            ...discoveries(`Genre ${filters.genreId}`).map((item) => ({
+                ...item,
+                tmdbId: item.tmdbId + filters.genreId,
+            })),
+        ]);
+        const service = createService();
+
+        await service.load();
+
+        const [first, second] = service.rails();
+        expect(first.items).toHaveLength(12);
+        expect(second.items).toHaveLength(6);
+        expect(
+            first.items.some((left) =>
+                second.items.some(
+                    (right) =>
+                        left.match.playlistId === right.match.playlistId &&
+                        left.match.type === right.match.type &&
+                        left.match.xtreamId === right.match.xtreamId
+                )
+            )
+        ).toBe(false);
     });
 
     it('looks up Netflix episode history as a TV series seed', async () => {

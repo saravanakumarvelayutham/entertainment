@@ -36,13 +36,16 @@ rails also require the underlying data slice to have at least one item.
   and the Electron DB worker (hidden in the PWA), and hides itself below
   five matched cards. Data:
   `DashboardRecommendationsService` in `workspace/dashboard/data-access`.
-- The `tmdbRecommendations` setting also enables up to two "Your Genre"
+- The `tmdbRecommendations` setting also enables up to four "Your Genre"
   rails. Genre affinity is ranked locally from recent activity, playback
   completion, favorites, imported history and the TMDB rating of each seed.
+  Seed selection rotates across recent activity, favorites and imported
+  history, so a large source cannot consume the complete bounded seed budget.
   TMDB Discover supplies candidates, then the local hybrid recommender weighs
   taste overlap, source relevance, rating confidence, popularity and freshness
-  before applying bounded media/era/interest diversity. The catalog matcher
-  then removes watched, favorited and unavailable titles. Pure ranking lives in
+  before applying bounded media/era/interest diversity. Earlier rails claim
+  their catalog rows so later rails backfill with different titles. The catalog
+  matcher then removes watched, favorited and unavailable titles. Pure ranking lives in
   `@iptvnator/recommendations/util`; orchestration remains in
   `DashboardGenreRecommendationsService`.
 - `tmdbTrending` shows TMDB's weekly trending titles, matched against the

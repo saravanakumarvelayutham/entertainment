@@ -580,7 +580,7 @@ since shipped.)
   `dashboardRails.tmdbRecommendations` toggle): TMDB has no account-free
   "recommendations for you" endpoint, so `DashboardRecommendationsService`
   (`libs/workspace/dashboard/data-access`) seeds from the user's most
-  recently watched movies/series (up to 3 distinct seeds). Each seed
+  recently watched movies/series (up to 6 distinct seeds). Each seed
   resolves through the enrichment facade using the shared
   `dashboard-tmdb-lookup.util.ts` attempt builder (the same one the hero
   uses, including the Stalker hints and the movie→tv retry), and the
@@ -666,6 +666,14 @@ since shipped.)
   are serialized, become visible only after persistence succeeds, and are part
   of the genre service load key so the affected rails rebuild immediately and
   after restart. No TMDB account or remote profile is involved.
+- **Personalized genre rails**: `DashboardGenreRecommendationsService` builds
+  a bounded set of up to 16 distinct taste seeds round-robin across recent
+  activity, favorites and imported history. This preserves each source even
+  when another contains hundreds of entries. The four strongest inferred
+  genres become catalog-backed rails of up to 20 cards, ranked by the pure
+  `@iptvnator/recommendations/util` engine. Rails resolve strongest-first;
+  catalog rows selected by an earlier rail are unavailable to later rails, so
+  each visible rail contributes different titles.
 - **Hero extras**: `DashboardHeroTmdbService`
   (`libs/workspace/dashboard/feature`) patches the hero card with a TMDB
   backdrop (when the activity row has none), a rating badge and up to two

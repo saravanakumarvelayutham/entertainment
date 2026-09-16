@@ -34,8 +34,8 @@ interface SeedRecommendations {
  * two cards reads worse than no rail.
  */
 export const MIN_RECOMMENDATION_MATCHES = 5;
-const MAX_SEEDS = 3;
-const MAX_ITEMS = 18;
+const MAX_SEEDS = 6;
+const MAX_ITEMS = 20;
 
 /**
  * "Because you watched" dashboard rail data. TMDB has no account-free

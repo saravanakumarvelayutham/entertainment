@@ -131,7 +131,7 @@ Render rules:
        fallback order (`tvg-id` -> `tvg-name` -> channel name); EPG enrichment
        must use that key before falling back to the card title.
     4. `xtreamRecentlyAddedCards` — maps `xtreamRecentlyAddedItems()` to rail
-       cards. Aggregates newly added VOD and series across *all* Xtream
+       cards. Aggregates newly added VOD and series across _all_ Xtream
        playlists via `DashboardDataService.reloadXtreamRecentlyAddedItems()`,
        which calls `getGlobalRecentlyAdded('all', limit, 'xtream')` with the
        DB-level `playlists.type = 'xtream'` filter. The rail is Electron-only
@@ -157,7 +157,11 @@ Render rules:
        Recommendation cards also use the shared card action menu for a passive
        explanation plus persistent `More like this` and `Not for me` feedback.
        The dashboard hides dismissed identities immediately; the data-access
-       service owns persistence and hybrid-ranking signals.
+       service owns persistence and hybrid-ranking signals. Up to four
+       personalized genre rails draw a bounded seed set round-robin from local
+       recents, favorites and imported history so no larger source starves the
+       others. Rails are resolved strongest-first and do not repeat the same
+       catalog row across genres.
     6. `sourceCards` — maps `recentPlaylists()` to rail cards. `recentPlaylists()`
        ranks M3U, Xtream, and Stalker sources by their latest recent activity
        from `globalRecentItems()`, then falls back to playlist

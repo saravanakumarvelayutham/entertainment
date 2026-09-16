@@ -12,6 +12,7 @@ import {
     HybridRecommendationCandidate,
     TasteAffinity,
     rankHybridRecommendations,
+    selectBalancedRecommendationSeeds,
 } from '@iptvnator/recommendations/util';
 import { DashboardDataService } from './dashboard-data.service';
 import { ExternalWatchHistoryService } from './external-watch-history.service';
@@ -50,9 +51,9 @@ interface PreferenceSeed {
     readonly external: boolean;
 }
 
-const MAX_SEEDS = 8;
-const MAX_GENRES = 2;
-const MAX_ITEMS = 18;
+const MAX_SEEDS = 16;
+const MAX_GENRES = 4;
+const MAX_ITEMS = 20;
 const MIN_ITEMS = 5;
 
 /** Personalized library rails inferred locally from activity and favorites. */
@@ -95,14 +96,17 @@ export class DashboardGenreRecommendationsService {
                 if (loadKey !== this.loadedKey) {
                     const preferences = await this.rankGenres(seeds);
                     const excluded = this.exclusionIndex();
-                    const rails = await Promise.all(
-                        preferences.map((preference) =>
-                            this.buildRail(preference, preferences, excluded)
-                        )
-                    );
-                    const visible = rails.filter(
-                        (rail): rail is DashboardGenreRail => !!rail
-                    );
+                    const claimedRows = new Set<string>();
+                    const visible: DashboardGenreRail[] = [];
+                    for (const preference of preferences) {
+                        const rail = await this.buildRail(
+                            preference,
+                            preferences,
+                            excluded,
+                            claimedRows
+                        );
+                        if (rail) visible.push(rail);
+                    }
                     this.rails.set(visible);
                     // Empty matching can also mean a transient worker failure.
                     // Keep it retryable instead of hiding genre discovery all session.
@@ -127,26 +131,30 @@ export class DashboardGenreRecommendationsService {
             .globalFavoriteItems()
             .filter((item) => item.type === 'movie' || item.type === 'series');
         const favoriteKeys = new Set(favorites.map(dashboardTmdbLookupKey));
-        const seeds: PreferenceSeed[] = [];
-        const seen = new Set<string>();
+        const recentSeeds: PreferenceSeed[] = [];
+        const favoriteSeeds: PreferenceSeed[] = [];
+        const externalSeeds: PreferenceSeed[] = [];
 
         const add = (
+            seeds: PreferenceSeed[],
             item: DashboardTmdbLookupItem,
             recentIndex: number | null,
             favorite: boolean,
             external = false
         ): void => {
             if (buildDashboardTmdbAttempts(item).length === 0) return;
-            const key = dashboardTmdbLookupKey(item);
-            if (seen.has(key)) return;
-            seen.add(key);
             seeds.push({ item, recentIndex, favorite, external });
         };
 
         recent.forEach((item, index) =>
-            add(item, index, favoriteKeys.has(dashboardTmdbLookupKey(item)))
+            add(
+                recentSeeds,
+                item,
+                index,
+                favoriteKeys.has(dashboardTmdbLookupKey(item))
+            )
         );
-        favorites.forEach((item) => add(item, null, true));
+        favorites.forEach((item) => add(favoriteSeeds, item, null, true));
         this.externalHistory.entries().forEach((entry, index) => {
             // Netflix series rows have a stable "Show: Season N: Episode N"
             // shape. Preserve colons in movie titles while reducing that one
@@ -155,6 +163,7 @@ export class DashboardGenreRecommendationsService {
             const isSeries = episodeSuffix.test(entry.title);
             const title = entry.title.replace(episodeSuffix, '');
             add(
+                externalSeeds,
                 {
                     title,
                     type: isSeries ? 'series' : 'movie',
@@ -165,7 +174,13 @@ export class DashboardGenreRecommendationsService {
                 true
             );
         });
-        return seeds.slice(0, MAX_SEEDS);
+        return selectBalancedRecommendationSeeds(
+            [recentSeeds, favoriteSeeds, externalSeeds],
+            {
+                limit: MAX_SEEDS,
+                key: ({ item }) => dashboardTmdbLookupKey(item),
+            }
+        );
     }
 
     private async rankGenres(
@@ -241,7 +256,8 @@ export class DashboardGenreRecommendationsService {
     private async buildRail(
         preference: GenrePreference,
         profile: readonly GenrePreference[],
-        excluded: ExclusionIndex
+        excluded: ExclusionIndex,
+        claimedRows: Set<string>
     ): Promise<DashboardGenreRail | null> {
         const discoveries = await Promise.all([
             preference.movieId
@@ -261,10 +277,12 @@ export class DashboardGenreRecommendationsService {
             profile,
             excluded
         );
-        const items = await this.attachMatches(candidates);
-        return items.length >= MIN_ITEMS
-            ? { genre: preference.name, score: preference.score, items }
-            : null;
+        const items = await this.attachMatches(candidates, claimedRows);
+        if (items.length < MIN_ITEMS) return null;
+        for (const item of items) {
+            claimedRows.add(this.catalogRowKey(item));
+        }
+        return { genre: preference.name, score: preference.score, items };
     }
 
     private toCandidates(
@@ -339,7 +357,8 @@ export class DashboardGenreRecommendationsService {
     }
 
     private async attachMatches(
-        candidates: readonly RecommendationCandidate[]
+        candidates: readonly RecommendationCandidate[],
+        claimedRows: ReadonlySet<string>
     ): Promise<DashboardRecommendationItem[]> {
         const titles: string[] = [];
         for (const candidate of candidates) {
@@ -356,12 +375,16 @@ export class DashboardGenreRecommendationsService {
             const match = pickTitleMatch(candidateLookup(candidate), grouped);
             if (!match) continue;
             const row = `${match.playlistId}:${match.type}:${match.xtreamId}`;
-            if (rows.has(row)) continue;
+            if (rows.has(row) || claimedRows.has(row)) continue;
             rows.add(row);
             items.push({ ...candidate, match });
             if (items.length === MAX_ITEMS) break;
         }
         return items;
+    }
+
+    private catalogRowKey(item: DashboardRecommendationItem): string {
+        return `${item.match.playlistId}:${item.match.type}:${item.match.xtreamId}`;
     }
 
     private exclusionIndex(): ExclusionIndex {
