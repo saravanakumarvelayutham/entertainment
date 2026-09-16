@@ -314,6 +314,22 @@ for local development.
 
 This will open the Electron app in a separate window, while the Angular dev server will run at http://localhost:4200.
 
+### One-click local Windows install
+
+Double-click `install-saravtv-local.cmd` in the repository root, or run:
+
+```powershell
+pnpm run install:local:windows
+```
+
+The pipeline relinks dependencies to `pnpm-lock.yaml` with lifecycle scripts
+disabled, confirms the bundled Windows x64 SQLite prebuild, closes the running
+app, forces a current production build, creates only the Windows x64 installer,
+verifies the packaged workers and native module, installs silently for the
+current user, and relaunches SaravTV. Packaging also sets `npmRebuild=false`,
+avoiding a local Visual Studio/Python toolchain requirement. Electron/NSIS
+assets can be downloaded on the first run.
+
 The equivalent Nx command is:
 
 ```
