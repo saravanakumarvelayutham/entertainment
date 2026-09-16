@@ -7,6 +7,7 @@ import {
 } from '@iptvnator/shared/interfaces';
 import {
     DashboardTmdbLookupItem,
+    buildDashboardTmdbAttempts,
     dashboardTmdbLookupKey,
 } from './dashboard-tmdb-lookup.util';
 
@@ -27,6 +28,8 @@ export interface DashboardRecommendationItem {
     posterUrl: string | null;
     /** vote_average rounded to one decimal, null without votes */
     rating: string | null;
+    /** TMDB genre identifiers used only for local recommendation ranking. */
+    genreIds: readonly number[];
     /** Confident match in an imported Xtream playlist — unmatched entries are dropped */
     match: CatalogTitleMatch;
     /** Display title of the watched item this recommendation came from */
@@ -79,6 +82,37 @@ export interface ExclusionIndex {
      * year appear here, so the base tier is always year-gated.
      */
     readonly baseYears: ReadonlyMap<string, readonly number[]>;
+}
+
+export function buildRecommendationExclusionIndex(
+    items: readonly DashboardTmdbLookupItem[]
+): ExclusionIndex {
+    const exact = new Map<string, (number | null)[]>();
+    const baseYears = new Map<string, number[]>();
+    for (const item of items) {
+        if (item.type !== 'movie' && item.type !== 'series') continue;
+        const [primary] = buildDashboardTmdbAttempts(item);
+        const type = primary?.mediaType === 'tv' ? 'series' : item.type;
+        const year = trustedReleaseYear(item);
+        for (const title of [
+            item.title,
+            primary?.title,
+            primary?.originalTitle,
+        ]) {
+            const keys = normalizeTitleKeys(title);
+            if (!keys.exact) continue;
+            const exactKey = `${type}:${keys.exact}`;
+            exact.set(exactKey, [...(exact.get(exactKey) ?? []), year]);
+            if (keys.trailingYear !== null) {
+                const baseKey = `${type}:${keys.base}`;
+                baseYears.set(baseKey, [
+                    ...(baseYears.get(baseKey) ?? []),
+                    keys.trailingYear,
+                ]);
+            }
+        }
+    }
+    return { exact, baseYears };
 }
 
 /** Normalized keys for one candidate alias, both matching tiers */
@@ -218,6 +252,7 @@ export function toCandidates(
                 year: extractYear(result.release_date ?? result.first_air_date),
                 posterUrl: tmdbPosterUrl(result.poster_path),
                 rating,
+                genreIds: result.genre_ids ?? [],
                 seedTitle,
             };
         })

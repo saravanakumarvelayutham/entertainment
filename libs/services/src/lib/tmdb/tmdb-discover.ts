@@ -2,6 +2,11 @@ import { tmdbPosterUrl } from './tmdb-config';
 import { extractYear } from './tmdb-matcher';
 import { TmdbSearchResult } from './tmdb.types';
 
+const nonNegative = (value: number | undefined): number =>
+    typeof value === 'number' && Number.isFinite(value)
+        ? Math.max(0, value)
+        : 0;
+
 /**
  * View-friendly projection of a `/discover` result, shared by the portal
  * Discover pages. Structurally a subset of `ActorFilmographyCredit`, so
@@ -19,6 +24,11 @@ export interface DiscoverTitle {
     originalTitle: string | null;
     year: number | null;
     posterUrl: string | null;
+    /** Raw ranking features retained for local, privacy-preserving scoring. */
+    genreIds?: readonly number[];
+    popularity?: number;
+    voteAverage?: number | null;
+    voteCount?: number;
 }
 
 /**
@@ -44,6 +54,7 @@ export function mapDiscoverResults(
             result.original_name ??
             ''
         ).trim();
+        const voteCount = nonNegative(result.vote_count);
         titles.push({
             tmdbId: result.id,
             mediaType,
@@ -52,6 +63,15 @@ export function mapDiscoverResults(
                 originalTitle && originalTitle !== title ? originalTitle : null,
             year: extractYear(result.release_date ?? result.first_air_date),
             posterUrl: tmdbPosterUrl(result.poster_path),
+            genreIds: (result.genre_ids ?? []).filter(
+                (id) => Number.isInteger(id) && id > 0
+            ),
+            popularity: nonNegative(result.popularity),
+            voteAverage:
+                voteCount > 0
+                    ? Math.min(10, nonNegative(result.vote_average))
+                    : null,
+            voteCount,
         });
     }
 

@@ -173,6 +173,13 @@ other utility projects, including shared interface contracts, while
 `ui-playback` and feature hosts may depend on it to render and execute
 session-local recovery actions.
 
+Recommendation ranking follows the same pure boundary. The
+`recommendations-util` project lives in `libs/recommendations/util`, is imported
+through `@iptvnator/recommendations/util`, and owns provider-neutral taste
+affinity scoring and diversity selection. It has no Angular, TMDB, persistence,
+catalog, or Electron knowledge; dashboard data-access translates those runtime
+facts into explicit candidates and affinities.
+
 ## Project Tags
 
 Every Nx project keeps one tag from each family in `project.json`:

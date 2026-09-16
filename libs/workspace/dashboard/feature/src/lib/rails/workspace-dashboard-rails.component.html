@@ -367,6 +367,7 @@
                 [items]="recommendationCards()"
                 [totalCount]="recommendationCards().length"
                 [testId]="'dashboard-tmdb-recommendations-rail'"
+                (actionSelected)="onRecommendationActionSelected($event)"
             />
         } @else if (
             dashboardRails().tmdbRecommendations &&
@@ -394,6 +395,7 @@
                     [items]="rail.cards"
                     [totalCount]="rail.cards.length"
                     [testId]="'dashboard-your-genre-' + rail.genre"
+                    (actionSelected)="onRecommendationActionSelected($event)"
                 />
             }
         }

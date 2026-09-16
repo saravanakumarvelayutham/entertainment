@@ -41,10 +41,7 @@ describe('TmdbDiscoverService', () => {
                 { provide: TmdbApiService, useValue: { discoverTitles } },
             ],
         });
-        return runInInjectionContext(
-            injector,
-            () => new TmdbDiscoverService()
-        );
+        return runInInjectionContext(injector, () => new TmdbDiscoverService());
     }
 
     beforeEach(() => {
@@ -60,7 +57,9 @@ describe('TmdbDiscoverService', () => {
         isEnabled = false;
         const service = createService();
 
-        expect(await service.discoverTitles('movie', { year: 1990 })).toBeNull();
+        expect(
+            await service.discoverTitles('movie', { year: 1990 })
+        ).toBeNull();
         expect(discoverTitles).not.toHaveBeenCalled();
     });
 
@@ -94,6 +93,10 @@ describe('TmdbDiscoverService', () => {
             originalTitle: null,
             year: 1990,
             posterUrl: null,
+            genreIds: [],
+            popularity: 0,
+            voteAverage: null,
+            voteCount: 0,
         });
     });
 

@@ -5,6 +5,7 @@ import {
 } from '@iptvnator/services';
 import { DashboardDataService } from './dashboard-data.service';
 import { ExternalWatchHistoryService } from './external-watch-history.service';
+import { RecommendationFeedbackService } from './recommendation-feedback.service';
 import { DashboardGenreRecommendationsService } from './dashboard-genre-recommendations.service';
 
 describe('DashboardGenreRecommendationsService', () => {
@@ -28,6 +29,7 @@ describe('DashboardGenreRecommendationsService', () => {
             originalTitle: null,
             year: 2020 + index,
             posterUrl: null,
+            genreIds: index === 1 ? [35] : [28],
         }));
 
     let recentItems: ReturnType<typeof recent>[];
@@ -40,7 +42,11 @@ describe('DashboardGenreRecommendationsService', () => {
     let enrichTv: jest.Mock;
     let discoverTitles: jest.Mock;
     let matchTitles: jest.Mock;
+    let loadExternalHistory: jest.Mock;
     let externalEntries: { title: string; watchedAt: string }[];
+    let isDismissed: jest.Mock;
+    let affinityWeights: jest.Mock;
+    let feedbackCacheKey: jest.Mock;
 
     function createService(): DashboardGenreRecommendationsService {
         TestBed.configureTestingModule({
@@ -73,8 +79,17 @@ describe('DashboardGenreRecommendationsService', () => {
                 {
                     provide: ExternalWatchHistoryService,
                     useValue: {
-                        load: jest.fn(),
+                        load: loadExternalHistory,
                         entries: () => externalEntries,
+                    },
+                },
+                {
+                    provide: RecommendationFeedbackService,
+                    useValue: {
+                        load: jest.fn().mockResolvedValue(undefined),
+                        isDismissed,
+                        affinityWeights,
+                        cacheKey: feedbackCacheKey,
                     },
                 },
             ],
@@ -87,6 +102,10 @@ describe('DashboardGenreRecommendationsService', () => {
         favorites = [];
         positions = {};
         externalEntries = [];
+        loadExternalHistory = jest.fn().mockResolvedValue(undefined);
+        isDismissed = jest.fn().mockReturnValue(false);
+        affinityWeights = jest.fn().mockReturnValue(new Map());
+        feedbackCacheKey = jest.fn().mockReturnValue('');
         enrichMovie = jest.fn().mockImplementation(async ({ title }) => ({
             vote_average: title === 'Recent Action' ? 8 : 7,
             vote_count: 100,
@@ -130,6 +149,47 @@ describe('DashboardGenreRecommendationsService', () => {
         expect(discoverTitles).toHaveBeenCalledWith('movie', { genreId: 28 });
     });
 
+    it('removes titles marked not for me', async () => {
+        isDismissed.mockImplementation(
+            (item: { tmdbId: number }) => item.tmdbId === 100
+        );
+        const service = createService();
+
+        await service.load();
+
+        expect(
+            service.rails()[0].items.map((item) => item.tmdbId)
+        ).not.toContain(100);
+    });
+
+    it('uses more-like-this genre affinities in candidate ranking', async () => {
+        affinityWeights.mockReturnValue(new Map([['movie:genre:35', 20]]));
+        feedbackCacheKey.mockReturnValue('movie:101:more-like-this:35');
+        const service = createService();
+
+        await service.load();
+
+        expect(service.rails()[0].items[0].tmdbId).toBe(101);
+    });
+
+    it('stays in the loading state while persisted history is restored', async () => {
+        let resolveHistory!: () => void;
+        loadExternalHistory.mockReturnValue(
+            new Promise<void>((resolve) => {
+                resolveHistory = resolve;
+            })
+        );
+        const service = createService();
+
+        const load = service.load();
+        expect(service.loading()).toBe(true);
+        resolveHistory();
+        await load;
+
+        expect(service.loading()).toBe(false);
+        expect(service.rails()[0].genre).toBe('Action');
+    });
+
     it('gives favorites enough weight to lead a merely recent genre', async () => {
         favorites = [favorite('Favorite Comedy', 2)];
         const service = createService();
@@ -153,6 +213,41 @@ describe('DashboardGenreRecommendationsService', () => {
         await service.load();
 
         expect(service.rails()[0].genre).toBe('Comedy');
+    });
+
+    it('uses the full taste profile to rank candidates within a genre', async () => {
+        recentItems = [recent('Recent Action', 1), recent('Recent Comedy', 2)];
+        favorites = [favorite('Recent Action', 1)];
+        enrichMovie.mockImplementation(async ({ title }) => ({
+            vote_average: 8,
+            vote_count: 100,
+            genres:
+                title === 'Recent Action'
+                    ? [{ id: 28, name: 'Action' }]
+                    : [{ id: 35, name: 'Comedy' }],
+        }));
+        discoverTitles.mockImplementation(async (_type, filters) => {
+            const results =
+                filters.genreId === 28
+                    ? discoveries('Action')
+                    : discoveries('Comedy');
+            return results.map((item, index) => ({
+                ...item,
+                genreIds:
+                    filters.genreId === 28 && index === 4
+                        ? [28, 35]
+                        : [filters.genreId],
+                popularity: 10,
+                voteAverage: 7,
+                voteCount: 100,
+            }));
+        });
+        const service = createService();
+
+        await service.load();
+
+        expect(service.rails()[0].genre).toBe('Action');
+        expect(service.rails()[0].items[0].title).toBe('Action 5');
     });
 
     it('uses imported Netflix titles as private genre-preference seeds', async () => {

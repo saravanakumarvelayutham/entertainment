@@ -90,7 +90,7 @@ pnpm nx show projects
 ```
 
 - Run the install step in a fresh worktree before relying on Nx discovery, lint, test, or build commands. Without `node_modules`, local Nx modules are unavailable.
-- On Windows, use `install-saravtv-local.cmd` (or `pnpm run install:local:windows`) for a fresh local x64 package/install cycle. It stops the running app before packaging, bypasses Nx cache, skips the unsupported local native rebuild, verifies package layout, installs silently, and relaunches the installed executable.
+- On Windows, use `try-saravtv-local.cmd` (or `pnpm run try:local:windows`) for the fast incremental Electron edit/test loop. Use `install-saravtv-local.cmd` (or `pnpm run install:local:windows`) for the fresh local x64 package/install gate. Both verify pinned pnpm and skip dependency relinking while the installed lock snapshot is current; the package gate keeps valid Nx cache hits, skips the unsupported local native rebuild, verifies package layout, installs silently, and relaunches the installed executable.
 - Re-run the install whenever the checkout moves — `git pull`, `git reset --hard`, a rebase, or a worktree branch being re-pointed. Git rewrites `pnpm-lock.yaml` but never re-links `node_modules`, so a tree installed at an older commit keeps serving the old dependency versions and tests fail locally while CI stays green. Check with `cmp pnpm-lock.yaml node_modules/.pnpm/lock.yaml`; any difference means the tree is stale, and a plain `pnpm install --frozen-lockfile` in that directory repairs it. Each worktree needs its own install — with no local `node_modules`, Nx aborts with `Could not find ".modules.yaml"`.
 - Use scoped path aliases from `tsconfig.base.json` such as `@iptvnator/services`, `@iptvnator/shared/interfaces`, and `@iptvnator/ui/components`.
 - Do not add new imports from legacy bare aliases such as `services`, `shared-interfaces`, `components`, `m3u-state`, or `database`.
@@ -386,6 +386,7 @@ This is an Nx monorepo with the following structure:
     - **portal/catalog/feature** - Portal catalog UI
     - **portal/downloads/feature** - Download manager UI
     - **portal/shared/{data-access,ui,util}** - Cross-portal shared code: stateful collection services and VOD multi-source discovery/resolve/ranking live in `data-access`; reusable views live in `ui`; `util` is for pure contracts/helpers
+    - **recommendations/util** - Pure, provider-neutral hybrid recommendation scoring and diversity selection; runtime data-access layers supply explicit taste affinities and candidates
     - **services** - Abstract DataService contract and shared app services (incl. the TMDB metadata enrichment module in `lib/tmdb/`)
     - **shared/interfaces** - TypeScript interfaces and types (incl. `ElectronBridgeApi`)
     - **shared/logging** - Dependency-free structured redaction for diagnostic logs
@@ -1602,6 +1603,13 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
 - Manual EPG mapping (Electron only): right-click a channel in any list (M3U views, Xtream portal list, Stalker ITV sidebar, global favorites) → "Map EPG channel" attaches it to an uploaded-XMLTV channel; stored in `epg_channel_mappings` keyed by the M3U lookup key or a playlist-scoped portal key (`xtream:{playlistId}:{id}` / `stalker:{playlistId}:{id}`, helpers in `libs/shared/interfaces/src/lib/epg-mapping-key.util.ts`); resolved on every EPG path (single + batch IPC lookups, portal detail views, preview queues); dialog: `libs/ui/components/src/lib/channel-list-container/epg-mapping-dialog/`
 
 **TMDB Metadata Enrichment** (opt-in):
+
+- Dashboard Your Genre Picks use the pure `@iptvnator/recommendations/util`
+  hybrid ranker after taste inference. It scores candidate overlap against
+  persistent watches, completion, favorites and imported history, combines
+  that with TMDB source position, rating confidence, popularity and freshness,
+  then applies bounded interest/media/era diversity before catalog matching.
+  The ranker has no Angular, TMDB, storage or Electron dependencies.
 
 - Enriches Xtream and Stalker VOD/series detail views with TMDB data (plot, cast with avatar chips, director, genres, rating, artwork, YouTube trailers) via a field-level merge — the provider stays authoritative for stream data and any field TMDB can't fill; Cyrillic titles are searched with `ru-RU` so exact-title matching works
 - The M3U player consumes it too: entries recognized as movie files open in the VOD detail shell fed purely by `enrichMovie` (no provider payload to merge); the extra `Settings.m3uVodDetails` toggle (default on) sits in the TMDB settings section — see "M3U Movie Recognition" above

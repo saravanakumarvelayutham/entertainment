@@ -154,6 +154,10 @@ Render rules:
        falls back to a prefilled global search for unmatched titles.
        Contracts: `docs/architecture/tmdb-metadata-enrichment.md`
        ("Dashboard Integration").
+       Recommendation cards also use the shared card action menu for a passive
+       explanation plus persistent `More like this` and `Not for me` feedback.
+       The dashboard hides dismissed identities immediately; the data-access
+       service owns persistence and hybrid-ranking signals.
     6. `sourceCards` — maps `recentPlaylists()` to rail cards. `recentPlaylists()`
        ranks M3U, Xtream, and Stalker sources by their latest recent activity
        from `globalRecentItems()`, then falls back to playlist

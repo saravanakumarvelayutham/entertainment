@@ -29,6 +29,9 @@ describe('DatabaseService browser guards', () => {
 
     it('treats app state persistence as unavailable without the Electron bridge', async () => {
         await expect(service.getAppState('xtream-key')).resolves.toBeNull();
+        await expect(service.getAppStateOrThrow('xtream-key')).rejects.toThrow(
+            'Electron app state persistence is unavailable.'
+        );
         await expect(
             service.setAppState('xtream-key', 'completed')
         ).resolves.toBe(false);

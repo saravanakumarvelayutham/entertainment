@@ -7,12 +7,15 @@ import {
     groupTitleMatchesByKey,
     pickTitleMatch,
 } from '@iptvnator/services';
+import { PortalActivityItem } from '@iptvnator/shared/interfaces';
 import {
-    PortalActivityItem,
-    normalizeTitleKeys,
-} from '@iptvnator/shared/interfaces';
+    HybridRecommendationCandidate,
+    TasteAffinity,
+    rankHybridRecommendations,
+} from '@iptvnator/recommendations/util';
 import { DashboardDataService } from './dashboard-data.service';
 import { ExternalWatchHistoryService } from './external-watch-history.service';
+import { RecommendationFeedbackService } from './recommendation-feedback.service';
 import {
     DashboardTmdbLookupItem,
     buildDashboardTmdbAttempts,
@@ -22,9 +25,9 @@ import {
     DashboardRecommendationItem,
     ExclusionIndex,
     RecommendationCandidate,
+    buildRecommendationExclusionIndex,
     candidateLookup,
     isExcludedCandidate,
-    trustedReleaseYear,
 } from './dashboard-recommendations.util';
 
 export interface DashboardGenreRail {
@@ -59,6 +62,7 @@ export class DashboardGenreRecommendationsService {
     private readonly titleMatch = inject(CatalogTitleMatchService);
     private readonly data = inject(DashboardDataService);
     private readonly externalHistory = inject(ExternalWatchHistoryService);
+    private readonly feedback = inject(RecommendationFeedbackService);
 
     readonly rails = signal<readonly DashboardGenreRail[]>([]);
     readonly loading = signal(false);
@@ -71,37 +75,40 @@ export class DashboardGenreRecommendationsService {
 
     async load(): Promise<void> {
         if (!this.isAvailable) return;
-        await this.externalHistory.load();
         if (this.loading()) {
             this.rerunQueued = true;
             return;
         }
 
-        const seeds = this.selectSeeds();
-        if (seeds.length === 0) {
-            this.rails.set([]);
-            this.loadedKey = null;
-            return;
-        }
-        const loadKey = this.loadKey(seeds);
-        if (loadKey === this.loadedKey) return;
-
         this.loading.set(true);
         try {
-            const preferences = await this.rankGenres(seeds);
-            const excluded = this.exclusionIndex();
-            const rails = await Promise.all(
-                preferences.map((preference) =>
-                    this.buildRail(preference, excluded)
-                )
-            );
-            const visible = rails.filter(
-                (rail): rail is DashboardGenreRail => !!rail
-            );
-            this.rails.set(visible);
-            // Empty matching can also mean a transient worker failure. Keep
-            // it retryable instead of hiding genre discovery all session.
-            this.loadedKey = visible.length > 0 ? loadKey : null;
+            await Promise.all([
+                this.externalHistory.load(),
+                this.feedback.load(),
+            ]);
+            const seeds = this.selectSeeds();
+            if (seeds.length === 0) {
+                this.rails.set([]);
+                this.loadedKey = null;
+            } else {
+                const loadKey = this.loadKey(seeds);
+                if (loadKey !== this.loadedKey) {
+                    const preferences = await this.rankGenres(seeds);
+                    const excluded = this.exclusionIndex();
+                    const rails = await Promise.all(
+                        preferences.map((preference) =>
+                            this.buildRail(preference, preferences, excluded)
+                        )
+                    );
+                    const visible = rails.filter(
+                        (rail): rail is DashboardGenreRail => !!rail
+                    );
+                    this.rails.set(visible);
+                    // Empty matching can also mean a transient worker failure.
+                    // Keep it retryable instead of hiding genre discovery all session.
+                    this.loadedKey = visible.length > 0 ? loadKey : null;
+                }
+            }
         } catch (error) {
             console.warn('Dashboard genre recommendations load failed:', error);
         } finally {
@@ -178,7 +185,9 @@ export class DashboardGenreRecommendationsService {
                     seed.recentIndex === null
                         ? 0
                         : Math.max(1, 4 - seed.recentIndex * 0.5);
-                const completion = seed.external ? 0 : this.completionWeight(seed.item as PortalActivityItem);
+                const completion = seed.external
+                    ? 0
+                    : this.completionWeight(seed.item as PortalActivityItem);
                 const weight =
                     recency + completion + rating + (seed.favorite ? 5 : 0);
 
@@ -231,6 +240,7 @@ export class DashboardGenreRecommendationsService {
 
     private async buildRail(
         preference: GenrePreference,
+        profile: readonly GenrePreference[],
         excluded: ExclusionIndex
     ): Promise<DashboardGenreRail | null> {
         const discoveries = await Promise.all([
@@ -248,6 +258,7 @@ export class DashboardGenreRecommendationsService {
         const candidates = this.toCandidates(
             discoveries,
             preference.name,
+            profile,
             excluded
         );
         const items = await this.attachMatches(candidates);
@@ -259,10 +270,12 @@ export class DashboardGenreRecommendationsService {
     private toCandidates(
         discoveries: readonly (readonly DiscoverTitle[] | null)[],
         genre: string,
+        profile: readonly GenrePreference[],
         excluded: ExclusionIndex
     ): RecommendationCandidate[] {
         const seen = new Set<string>();
-        const candidates: RecommendationCandidate[] = [];
+        const candidates: HybridRecommendationCandidate<RecommendationCandidate>[] =
+            [];
         const longest = Math.max(
             0,
             ...discoveries.map((list) => list?.length ?? 0)
@@ -274,16 +287,55 @@ export class DashboardGenreRecommendationsService {
                 const candidate: RecommendationCandidate = {
                     ...title,
                     rating: null,
+                    genreIds: title.genreIds ?? [],
                     seedTitle: genre,
                 };
                 const key = `${candidate.mediaType}:${candidate.tmdbId}`;
-                if (seen.has(key) || isExcludedCandidate(candidate, excluded))
+                if (
+                    seen.has(key) ||
+                    isExcludedCandidate(candidate, excluded) ||
+                    this.feedback.isDismissed(candidate)
+                )
                     continue;
                 seen.add(key);
-                candidates.push(candidate);
+                candidates.push({
+                    id: key,
+                    value: candidate,
+                    affinityKeys: (title.genreIds ?? []).map(
+                        (id) => `${title.mediaType}:genre:${id}`
+                    ),
+                    sourceRank: index,
+                    rating: title.voteAverage ?? null,
+                    voteCount: title.voteCount ?? 0,
+                    popularity: title.popularity ?? 0,
+                    year: title.year,
+                    mediaType: title.mediaType,
+                });
             }
         }
-        return candidates;
+        const affinities: TasteAffinity[] = [];
+        for (const preference of profile) {
+            if (preference.movieId) {
+                affinities.push({
+                    key: `movie:genre:${preference.movieId}`,
+                    label: preference.name,
+                    weight: preference.score,
+                });
+            }
+            if (preference.tvId) {
+                affinities.push({
+                    key: `tv:genre:${preference.tvId}`,
+                    label: preference.name,
+                    weight: preference.score,
+                });
+            }
+        }
+        for (const [key, weight] of this.feedback.affinityWeights()) {
+            affinities.push({ key, label: key, weight });
+        }
+        return rankHybridRecommendations(affinities, candidates, {
+            limit: candidates.length,
+        }).map(({ value }) => value);
     }
 
     private async attachMatches(
@@ -313,36 +365,10 @@ export class DashboardGenreRecommendationsService {
     }
 
     private exclusionIndex(): ExclusionIndex {
-        const exact = new Map<string, (number | null)[]>();
-        const baseYears = new Map<string, number[]>();
-        const items = [
+        return buildRecommendationExclusionIndex([
             ...this.data.globalRecentItems(),
             ...this.data.globalFavoriteItems(),
-        ];
-        for (const item of items) {
-            if (item.type !== 'movie' && item.type !== 'series') continue;
-            const [primary] = buildDashboardTmdbAttempts(item);
-            const type = primary?.mediaType === 'tv' ? 'series' : item.type;
-            const year = trustedReleaseYear(item);
-            for (const title of [
-                item.title,
-                primary?.title,
-                primary?.originalTitle,
-            ]) {
-                const keys = normalizeTitleKeys(title);
-                if (!keys.exact) continue;
-                const exactKey = `${type}:${keys.exact}`;
-                exact.set(exactKey, [...(exact.get(exactKey) ?? []), year]);
-                if (keys.trailingYear !== null) {
-                    const baseKey = `${type}:${keys.base}`;
-                    baseYears.set(baseKey, [
-                        ...(baseYears.get(baseKey) ?? []),
-                        keys.trailingYear,
-                    ]);
-                }
-            }
-        }
-        return { exact, baseYears };
+        ]);
     }
 
     private loadKey(seeds: readonly PreferenceSeed[]): string {
@@ -370,6 +396,6 @@ export class DashboardGenreRecommendationsService {
             .entries()
             .map((entry) => `${entry.title}:${entry.watchedAt}`)
             .join('|');
-        return `${this.enrichment.language()}//${catalog}//${seedKey}//${activityKey}//${externalKey}`;
+        return `${this.enrichment.language()}//${catalog}//${seedKey}//${activityKey}//${externalKey}//${this.feedback.cacheKey()}`;
     }
 }

@@ -1,5 +1,6 @@
 export * from './lib/dashboard-data.service';
 export * from './lib/external-watch-history.service';
+export * from './lib/recommendation-feedback.service';
 export * from './lib/dashboard-genre-recommendations.service';
 export * from './lib/dashboard-recommendations.service';
 export * from './lib/dashboard-recommendations.util';

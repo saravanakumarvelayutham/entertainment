@@ -314,21 +314,33 @@ for local development.
 
 This will open the Electron app in a separate window, while the Angular dev server will run at http://localhost:4200.
 
-### One-click local Windows install
+### One-click Windows development and install
 
-Double-click `install-saravtv-local.cmd` in the repository root, or run:
+For the fastest edit/test loop, double-click `try-saravtv-local.cmd` or run:
+
+```powershell
+pnpm run try:local:windows
+```
+
+This starts the Electron app in incremental watch mode and keeps the terminal
+open. It verifies the pinned pnpm version and installs dependencies only when
+`pnpm-lock.yaml` differs from the installed snapshot; ordinary source edits do
+not relink dependencies or build an installer.
+
+For a clean packaged-app check, double-click `install-saravtv-local.cmd` in the
+repository root, or run:
 
 ```powershell
 pnpm run install:local:windows
 ```
 
-The pipeline relinks dependencies to `pnpm-lock.yaml` with lifecycle scripts
-disabled, confirms the bundled Windows x64 SQLite prebuild, closes the running
-app, forces a current production build, creates only the Windows x64 installer,
-verifies the packaged workers and native module, installs silently for the
-current user, and relaunches SaravTV. Packaging also sets `npmRebuild=false`,
-avoiding a local Visual Studio/Python toolchain requirement. Electron/NSIS
-assets can be downloaded on the first run.
+The packaged pipeline performs the same dependency freshness check, confirms
+the bundled Windows x64 SQLite prebuild, closes the running app, creates only
+the Windows x64 installer, verifies the packaged workers and native module,
+installs silently for the current user, and relaunches SaravTV. Safe Nx task
+cache hits are retained instead of forcing every production input to rebuild.
+Packaging also sets `npmRebuild=false`, avoiding a local Visual Studio/Python
+toolchain requirement. Electron/NSIS assets can be downloaded on the first run.
 
 The equivalent Nx command is:
 

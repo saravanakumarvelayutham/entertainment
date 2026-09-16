@@ -38,9 +38,13 @@ rails also require the underlying data slice to have at least one item.
   `DashboardRecommendationsService` in `workspace/dashboard/data-access`.
 - The `tmdbRecommendations` setting also enables up to two "Your Genre"
   rails. Genre affinity is ranked locally from recent activity, playback
-  completion, favorites and the TMDB rating of each seed. TMDB Discover
-  supplies candidates, then the catalog matcher removes watched, favorited
-  and unavailable titles. Data: `DashboardGenreRecommendationsService`.
+  completion, favorites, imported history and the TMDB rating of each seed.
+  TMDB Discover supplies candidates, then the local hybrid recommender weighs
+  taste overlap, source relevance, rating confidence, popularity and freshness
+  before applying bounded media/era/interest diversity. The catalog matcher
+  then removes watched, favorited and unavailable titles. Pure ranking lives in
+  `@iptvnator/recommendations/util`; orchestration remains in
+  `DashboardGenreRecommendationsService`.
 - `tmdbTrending` shows TMDB's weekly trending titles, matched against the
   imported Xtream libraries. Unmatched titles stay off the dashboard, and a
   separate High Rated rail projects matched entries rated 7.5 or higher.
@@ -71,6 +75,7 @@ underlying item. Rail "See all" links may also pass router state:
 
 This keeps the global collection pages from defaulting to Live TV when a
 dashboard rail is clearly about movies or series.
+
 ## External watch history
 
 Settings → Dashboard can import a user-selected Netflix `ViewingActivity.csv`.
@@ -81,4 +86,8 @@ TMDB/library matching could not produce a new rail.
 SaravTV parses it locally and stores only title/date entries in its local app
 database. These are preference seeds for the TMDB-backed **Your Genre Picks**
 rails; they never create playback positions or appear in **Continue Watching**.
+On startup, every dashboard caller awaits the same persisted-history read. The
+rail stays in its loading state while picks are rebuilt, and a failed database
+read remains retryable instead of making the saved import look empty for the
+rest of the session.
 The importer does not access Netflix accounts, cookies, or a Downloads folder.

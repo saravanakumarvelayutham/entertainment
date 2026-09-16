@@ -656,6 +656,16 @@ since shipped.)
   re-run afterwards; a load where no seed resolved (TMDB unreachable)
   does not latch and retries instead. Same gating as trending: TMDB
   opt-in + Electron DB worker, deferred behind the dashboard's own data.
+
+- **Local recommendation feedback**: recommendation card menus show their
+  watched-title or genre reason and expose `More like this` / `Not for me`.
+  `RecommendationFeedbackService` persists the latest choice per TMDB identity
+  under `recommendations:feedback:v1` in the existing `app_state` store. A
+  dismissal excludes that exact candidate; a positive choice contributes
+  weighted TMDB genre affinities to the provider-neutral hybrid ranker. Writes
+  are serialized, become visible only after persistence succeeds, and are part
+  of the genre service load key so the affected rails rebuild immediately and
+  after restart. No TMDB account or remote profile is involved.
 - **Hero extras**: `DashboardHeroTmdbService`
   (`libs/workspace/dashboard/feature`) patches the hero card with a TMDB
   backdrop (when the activity row has none), a rating badge and up to two
@@ -736,6 +746,7 @@ Contracts worth keeping:
   unfixable after the fact — a real provider date arriving later cannot
   correct it. The same marker is what `trustedReleaseYear` (the
   recommendations exclusion index) must consult if it ever reads this column.
+
 - **The id is stored unvetted.** Every consumer reaches TMDB through
   `TmdbEnrichmentService`, whose `detailsForProviderId` runs
   `assessProviderId` and lets the title search take over when the years

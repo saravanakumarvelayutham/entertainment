@@ -544,11 +544,19 @@ export class DatabaseService {
         }
 
         try {
-            return await window.electron.dbGetAppState(key);
+            return await this.getAppStateOrThrow(key);
         } catch (error) {
             console.error('Error getting app state:', error);
             return null;
         }
+    }
+
+    async getAppStateOrThrow(key: string): Promise<string | null> {
+        if (typeof window.electron?.dbGetAppState !== 'function') {
+            throw new Error('Electron app state persistence is unavailable.');
+        }
+
+        return window.electron.dbGetAppState(key);
     }
 
     async setAppState(key: string, value: string): Promise<boolean> {

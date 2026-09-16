@@ -17,9 +17,7 @@ describe('mapDiscoverResults', () => {
         // TMDB localizes `title` while the catalog stores whatever the
         // panel named the file, which is often the original
         expect(movie.title).toBe('Ирония судьбы');
-        expect(movie.originalTitle).toBe(
-            'Ирония судьбы, или С лёгким паром!'
-        );
+        expect(movie.originalTitle).toBe('Ирония судьбы, или С лёгким паром!');
     });
 
     it('reads the original name for tv results', () => {
@@ -51,5 +49,30 @@ describe('mapDiscoverResults', () => {
         );
 
         expect(mapped.map((entry) => entry.tmdbId)).toEqual([4]);
+    });
+
+    it('retains discover ranking signals for local recommendation scoring', () => {
+        const [movie] = mapDiscoverResults(
+            [
+                {
+                    id: 6,
+                    title: 'Arrival',
+                    genre_ids: [18, 878],
+                    popularity: 42,
+                    vote_average: 7.6,
+                    vote_count: 19000,
+                },
+            ],
+            'movie'
+        );
+
+        expect(movie).toEqual(
+            expect.objectContaining({
+                genreIds: [18, 878],
+                popularity: 42,
+                voteAverage: 7.6,
+                voteCount: 19000,
+            })
+        );
     });
 });

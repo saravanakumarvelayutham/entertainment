@@ -7,6 +7,14 @@ import test from 'node:test';
 const root = join(import.meta.dirname, '..', '..');
 const scriptPath = join(root, 'tools', 'windows', 'install-local-saravtv.ps1');
 const launcherPath = join(root, 'install-saravtv-local.cmd');
+const tryScriptPath = join(root, 'tools', 'windows', 'try-local-saravtv.ps1');
+const tryLauncherPath = join(root, 'try-saravtv-local.cmd');
+const toolchainPath = join(
+    root,
+    'tools',
+    'windows',
+    'saravtv-local-toolchain.ps1'
+);
 const optionsPath = join(
     root,
     'apps',
@@ -19,22 +27,40 @@ const optionsPath = join(
 
 test('Windows local installer keeps the build fresh and verified', () => {
     const source = readFileSync(scriptPath, 'utf8');
-    assert.match(source, /--skip-nx-cache/);
-    assert.match(source, /--frozen-lockfile', '--ignore-scripts/);
+    assert.doesNotMatch(source, /--skip-nx-cache/);
+    assert.match(source, /Ensure-SaravTvDependencies/);
+    assert.match(source, /'run', 'make:app', '--'/);
     assert.match(source, /local-install\.options\.json/);
     assert.match(source, /prebuilds\\win32-x64\.node/);
     assert.match(source, /Remove-Item Env:FORCE_COLOR/);
     assert.match(source, /NX_TASKS_RUNNER_DYNAMIC_OUTPUT/);
-    assert.match(source, /\$env:PATH = "\$pnpmDirectory;\$env:PATH"/);
     assert.match(source, /verify-electron-package-layout\.mjs windows x64/);
     assert.match(source, /LastWriteTime -lt \$pipelineStartedAt/);
     assert.match(source, /Start-Process -FilePath \$installerPath/);
+});
+
+test('shared toolchain pins pnpm and skips dependency work when current', () => {
+    const source = readFileSync(toolchainPath, 'utf8');
+    assert.match(source, /SaravTvExpectedPnpmVersion = '10\.33\.0'/);
+    assert.match(source, /node_modules\\\.pnpm\\lock\.yaml/);
+    assert.match(source, /node_modules\\\.modules\.yaml/);
+    assert.match(source, /Dependencies already match pnpm-lock\.yaml/);
+    assert.match(source, /--frozen-lockfile', '--ignore-scripts/);
 });
 
 test('one-click launcher delegates to the checked-in PowerShell pipeline', () => {
     const source = readFileSync(launcherPath, 'utf8');
     assert.match(source, /install-local-saravtv\.ps1/);
     assert.match(source, /pause/i);
+});
+
+test('one-click try launcher uses incremental Electron watch mode', () => {
+    const source = readFileSync(tryScriptPath, 'utf8');
+    const launcher = readFileSync(tryLauncherPath, 'utf8');
+    assert.match(source, /Ensure-SaravTvDependencies/);
+    assert.match(source, /'run', 'serve:backend'/);
+    assert.match(source, /incremental watch mode/);
+    assert.match(launcher, /try-local-saravtv\.ps1/);
 });
 
 test('local maker profile builds only Windows x64 and skips native rebuild', () => {
@@ -44,17 +70,23 @@ test('local maker profile builds only Windows x64 and skips native rebuild', () 
     assert.equal(options.win.target, 'nsis');
 });
 
-test('PowerShell pipeline parses on Windows', { skip: process.platform !== 'win32' }, () => {
-    const escapedPath = scriptPath.replaceAll("'", "''");
-    const result = spawnSync(
-        'powershell.exe',
-        [
-            '-NoLogo',
-            '-NoProfile',
-            '-Command',
-            `$null = [ScriptBlock]::Create((Get-Content -Raw -LiteralPath '${escapedPath}'))`,
-        ],
-        { encoding: 'utf8' }
-    );
-    assert.equal(result.status, 0, result.stderr || result.stdout);
-});
+test(
+    'PowerShell pipeline parses on Windows',
+    { skip: process.platform !== 'win32' },
+    () => {
+        const escapedPaths = [scriptPath, tryScriptPath, toolchainPath]
+            .map((path) => `'${path.replaceAll("'", "''")}'`)
+            .join(',');
+        const result = spawnSync(
+            'powershell.exe',
+            [
+                '-NoLogo',
+                '-NoProfile',
+                '-Command',
+                `$paths = @(${escapedPaths}); foreach ($path in $paths) { $null = [ScriptBlock]::Create((Get-Content -Raw -LiteralPath $path)) }`,
+            ],
+            { encoding: 'utf8' }
+        );
+        assert.equal(result.status, 0, result.stderr || result.stdout);
+    }
+);

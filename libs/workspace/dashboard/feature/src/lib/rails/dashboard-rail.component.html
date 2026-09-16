@@ -21,8 +21,7 @@
                             'WORKSPACE.DASHBOARD.SEE_ALL_COUNT'
                                 | translate
                                     : {
-                                          count:
-                                              totalCount() ?? items().length,
+                                          count: totalCount() ?? items().length,
                                       }
                         }}
                     } @else {
@@ -177,7 +176,10 @@
                                     </div>
                                 }
 
-                                @if (card.watchProgress !== null && card.watchProgress !== undefined) {
+                                @if (
+                                    card.watchProgress !== null &&
+                                    card.watchProgress !== undefined
+                                ) {
                                     <span
                                         class="rail__art-progress"
                                         aria-hidden="true"
@@ -261,7 +263,13 @@
                         (click)="selectAction(card, action, $event)"
                     >
                         <mat-icon>{{ action.icon }}</mat-icon>
-                        <span>{{ action.labelKey | translate }}</span>
+                        <span>
+                            @if (action.label) {
+                                {{ action.label }}
+                            } @else {
+                                {{ action.labelKey ?? '' | translate }}
+                            }
+                        </span>
                     </button>
                 }
             </ng-template>

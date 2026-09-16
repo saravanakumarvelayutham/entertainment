@@ -202,9 +202,18 @@ export default [
                             ],
                         },
                         {
+                            sourceTag: 'domain:recommendations',
+                            onlyDependOnLibsWithTags: [
+                                'domain:recommendations',
+                                'domain:shared-contracts',
+                                'scope:shared',
+                            ],
+                        },
+                        {
                             sourceTag: 'domain:workspace',
                             onlyDependOnLibsWithTags: [
                                 'domain:workspace',
+                                'domain:recommendations',
                                 'domain:portal-shared',
                                 'domain:xtream',
                                 'domain:stalker',

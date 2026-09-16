@@ -9,50 +9,10 @@ $packageJsonPath = Join-Path $repoRoot 'package.json'
 $localMakerOptions = 'apps/electron-backend/src/app/options/local-install.options.json'
 $installedAppPath = Join-Path $env:LOCALAPPDATA 'Programs\saravtv\SaravTV.exe'
 $pipelineStartedAt = Get-Date
+. (Join-Path $PSScriptRoot 'saravtv-local-toolchain.ps1')
 
 function Write-Step([string]$Message) {
     Write-Host "`n==> $Message" -ForegroundColor Cyan
-}
-
-function Resolve-PnpmCommand {
-    $direct = Get-Command pnpm.cmd -ErrorAction SilentlyContinue
-    if ($direct) {
-        return @{ Command = $direct.Source; UseCorepack = $false }
-    }
-
-    $cacheRoot = Join-Path $env:LOCALAPPDATA 'pnpm-cache\dlx'
-    if (Test-Path $cacheRoot) {
-        $cached = Get-ChildItem -LiteralPath $cacheRoot -Filter pnpm.cmd -File -Recurse -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-        if ($cached) {
-            return @{ Command = $cached.FullName; UseCorepack = $false }
-        }
-    }
-
-    $corepack = Get-Command corepack.cmd -ErrorAction SilentlyContinue
-    if ($corepack) {
-        return @{ Command = $corepack.Source; UseCorepack = $true }
-    }
-
-    throw 'pnpm 10.33.0 was not found. Install Node from .nvmrc, enable Corepack, then run this installer again.'
-}
-
-$pnpm = Resolve-PnpmCommand
-if (!$pnpm.UseCorepack) {
-    $pnpmDirectory = Split-Path -Parent $pnpm.Command
-    $env:PATH = "$pnpmDirectory;$env:PATH"
-}
-
-function Invoke-Pnpm([string[]]$CommandArguments) {
-    if ($pnpm.UseCorepack) {
-        & $pnpm.Command pnpm @CommandArguments
-    } else {
-        & $pnpm.Command @CommandArguments
-    }
-    if ($LASTEXITCODE -ne 0) {
-        throw "pnpm $($CommandArguments -join ' ') failed with exit code $LASTEXITCODE."
-    }
 }
 
 function Stop-SaravTV {
@@ -92,8 +52,8 @@ try {
         Write-Warning 'This repository expects Node ^22.22.3 or ^24.15.0.'
     }
 
-    Write-Step 'Relinking dependencies to the current lockfile without native lifecycle rebuilds'
-    Invoke-Pnpm @('install', '--frozen-lockfile', '--ignore-scripts')
+    Write-Step 'Checking dependency freshness'
+    Ensure-SaravTvDependencies $repoRoot
     $sqlitePrebuild = Get-ChildItem -Path (Join-Path $repoRoot 'node_modules\.pnpm\better-sqlite3@*\node_modules\better-sqlite3\prebuilds\win32-x64.node') -File -ErrorAction SilentlyContinue |
         Select-Object -First 1
     if (!$sqlitePrebuild) {
@@ -109,10 +69,9 @@ try {
     Remove-Item Env:FORCE_COLOR -ErrorAction SilentlyContinue
 
     Write-Step 'Building a fresh Windows x64 installer from the current working tree'
-    Invoke-Pnpm @(
-        'nx', 'run', 'electron-backend:make',
-        "--makerOptionsPath=$localMakerOptions",
-        '--skip-nx-cache'
+    Invoke-SaravTvPnpm @(
+        'run', 'make:app', '--',
+        "--makerOptionsPath=$localMakerOptions"
     )
 
     $version = (Get-Content -Raw -LiteralPath $packageJsonPath | ConvertFrom-Json).version
@@ -155,6 +114,7 @@ try {
 
     Write-Host "`nSaravTV $version is installed and running." -ForegroundColor Green
     Write-Host "Installer: $installerPath"
+    Write-Host "Pipeline duration: $([math]::Round(((Get-Date) - $pipelineStartedAt).TotalSeconds, 1)) seconds"
 } catch {
     Write-Host "`nLocal install failed: $($_.Exception.Message)" -ForegroundColor Red
     exit 1

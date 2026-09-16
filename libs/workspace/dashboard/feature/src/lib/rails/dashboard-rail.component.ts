@@ -21,7 +21,9 @@ import { applyChannelNameStrip } from '@iptvnator/shared/m3u-utils';
 
 export interface DashboardRailAction {
     id: string;
-    labelKey: string;
+    labelKey?: string;
+    /** Already-localized copy for contextual actions such as explanations. */
+    label?: string;
     icon: string;
     destructive?: boolean;
     disabled?: boolean;

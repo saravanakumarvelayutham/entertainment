@@ -47,6 +47,7 @@ import {
     DashboardRecentlyAddedItem,
     DashboardRecommendationItem,
     DashboardRecommendationsService,
+    RecommendationFeedbackService,
     DashboardSourceExpiryService,
     DashboardTrendingItem,
     DashboardTrendingService,
@@ -58,6 +59,7 @@ import type { DashboardHeroTmdbExtras } from './dashboard-hero-tmdb.service';
 import { DashboardHeroTmdbService } from './dashboard-hero-tmdb.service';
 import { DashboardRailComponent } from './dashboard-rail.component';
 import type {
+    DashboardRailAction,
     DashboardRailCard,
     DashboardRailActionSelection,
 } from './dashboard-rail.component';
@@ -140,6 +142,9 @@ export class WorkspaceDashboardRailsComponent {
     readonly recommendationsService = inject(DashboardRecommendationsService);
     readonly genreRecommendationsService = inject(
         DashboardGenreRecommendationsService
+    );
+    private readonly recommendationFeedback = inject(
+        RecommendationFeedbackService
     );
 
     readonly hasPlaylists = computed(() => this.data.playlists().length > 0);
@@ -379,7 +384,8 @@ export class WorkspaceDashboardRailsComponent {
         }
         return this.recommendationsService
             .items()
-            .map((item) => this.toRecommendationCard(item));
+            .filter((item) => !this.recommendationFeedback.isDismissed(item))
+            .map((item) => this.toRecommendationCard(item, 'watched'));
     });
 
     readonly recommendationsRailLabel = computed<string>(() => {
@@ -404,7 +410,11 @@ export class WorkspaceDashboardRailsComponent {
                 'WORKSPACE.DASHBOARD.TMDB_YOUR_GENRE',
                 { genre: rail.genre }
             ),
-            cards: rail.items.map((item) => this.toRecommendationCard(item)),
+            cards: rail.items
+                .filter(
+                    (item) => !this.recommendationFeedback.isDismissed(item)
+                )
+                .map((item) => this.toRecommendationCard(item, 'genre')),
         }));
     });
 
@@ -626,6 +636,41 @@ export class WorkspaceDashboardRailsComponent {
         }
     }
 
+    onRecommendationActionSelected(
+        selection: DashboardRailActionSelection
+    ): void {
+        const item = this.findRecommendation(selection.card.id);
+        if (!item) return;
+
+        const choice =
+            selection.action.id === 'recommendation-more-like-this'
+                ? 'more-like-this'
+                : selection.action.id === 'recommendation-not-for-me'
+                  ? 'not-for-me'
+                  : null;
+        const shouldClear =
+            selection.action.id === 'recommendation-undo-more-like-this';
+        if (!choice && !shouldClear) return;
+
+        this.recommendationFeedback
+            .setFeedback(item, shouldClear ? null : choice)
+            .then(() => {
+                this.snackBar.open(
+                    this.t('WORKSPACE.DASHBOARD.RECOMMENDATION_SAVED'),
+                    undefined,
+                    { duration: 2500 }
+                );
+                void this.genreRecommendationsService.load();
+            })
+            .catch(() => {
+                this.snackBar.open(
+                    this.t('WORKSPACE.DASHBOARD.ACTION_FAILED'),
+                    undefined,
+                    { duration: 5000 }
+                );
+            });
+    }
+
     private resumeRecentItem(item: GlobalRecentItem): void {
         const navigation = this.data.getRecentItemResumeNavigation(item);
         if (!navigation) {
@@ -815,7 +860,8 @@ export class WorkspaceDashboardRailsComponent {
     }
 
     private toRecommendationCard(
-        item: DashboardRecommendationItem
+        item: DashboardRecommendationItem,
+        reason: 'watched' | 'genre'
     ): DashboardRailCard {
         const subtitle = [
             item.year !== null ? String(item.year) : null,
@@ -831,6 +877,7 @@ export class WorkspaceDashboardRailsComponent {
             imageUrl: item.posterUrl ?? undefined,
             icon: item.mediaType === 'movie' ? 'movie' : 'video_library',
             contentType: item.mediaType === 'movie' ? 'movie' : 'series',
+            actions: this.recommendationActions(item, reason),
             link: [
                 '/workspace/xtreams',
                 item.match.playlistId,
@@ -839,6 +886,61 @@ export class WorkspaceDashboardRailsComponent {
                 String(item.match.xtreamId),
             ],
         };
+    }
+
+    private recommendationActions(
+        item: DashboardRecommendationItem,
+        reason: 'watched' | 'genre'
+    ): DashboardRailAction[] {
+        const liked =
+            this.recommendationFeedback.choiceFor(item) === 'more-like-this';
+        const explanation =
+            reason === 'watched'
+                ? this.translate.instant(
+                      'WORKSPACE.DASHBOARD.TMDB_RECOMMENDED_BECAUSE',
+                      { title: item.seedTitle }
+                  )
+                : this.translate.instant(
+                      'WORKSPACE.DASHBOARD.TMDB_YOUR_GENRE',
+                      { genre: item.seedTitle }
+                  );
+        return [
+            {
+                id: 'recommendation-explanation',
+                label: explanation,
+                icon: 'info',
+                disabled: true,
+            },
+            {
+                id: liked
+                    ? 'recommendation-undo-more-like-this'
+                    : 'recommendation-more-like-this',
+                labelKey: liked
+                    ? 'WORKSPACE.DASHBOARD.RECOMMENDATION_UNDO_MORE_LIKE_THIS'
+                    : 'WORKSPACE.DASHBOARD.RECOMMENDATION_MORE_LIKE_THIS',
+                icon: 'thumb_up',
+                separatorBefore: true,
+            },
+            {
+                id: 'recommendation-not-for-me',
+                labelKey: 'WORKSPACE.DASHBOARD.RECOMMENDATION_NOT_FOR_ME',
+                icon: 'thumb_down',
+            },
+        ];
+    }
+
+    private findRecommendation(
+        cardId: string
+    ): DashboardRecommendationItem | null {
+        const candidates = [...this.recommendationsService.items()];
+        for (const rail of this.genreRecommendationsService.rails()) {
+            candidates.push(...rail.items);
+        }
+        return (
+            candidates.find(
+                (item) => `rec-${item.mediaType}-${item.tmdbId}` === cardId
+            ) ?? null
+        );
     }
 
     private buildSourceExpiryBadge(
