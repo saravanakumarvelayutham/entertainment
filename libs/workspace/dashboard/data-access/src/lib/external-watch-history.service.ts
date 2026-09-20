@@ -83,7 +83,7 @@ export class ExternalWatchHistoryService {
         const importedAt = new Date().toISOString();
         const saved = await this.database.setAppState(
             STORAGE_KEY,
-            JSON.stringify({ source: 'netflix', importedAt, entries: deduped })
+            JSON.stringify({ source: 'external', importedAt, entries: deduped })
         );
         if (!saved)
             throw new Error('SaravTV could not save the imported history.');

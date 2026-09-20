@@ -81,12 +81,13 @@ dashboard rail is clearly about movies or series.
 
 ## External watch history
 
-Settings → Dashboard can import a user-selected Netflix `ViewingActivity.csv`.
+Settings → Dashboard can import a user-selected Netflix `ViewingActivity.csv`
+or Prime Video `Viewing History.csv`.
 The settings row keeps the last successful import count and time visible,
 reports cancellation or failure explicitly, and recalculates Your Picks as soon
 as a new file is saved. The result names the genres produced, or explains when
 TMDB/library matching could not produce a new rail.
-SaravTV parses it locally and stores only title/date entries in its local app
+SaravTV parses it locally and stores only title/start-date entries in its local app
 database. These are preference seeds for the TMDB-backed **Your Genre Picks**
 rails; they never create playback positions or appear in **Continue Watching**.
 On startup, every dashboard caller awaits the same persisted-history read. The
@@ -97,4 +98,4 @@ Desktop TMDB settings are restored from an OS-encrypted, SQLite-backed mirror
 before recommendation work begins. The dashboard effects also track TMDB
 availability, so restoring or enabling metadata retriggers Trending and Your
 Picks without another restart.
-The importer does not access Netflix accounts, cookies, or a Downloads folder.
+The importer does not access provider accounts, cookies, or a Downloads folder.
