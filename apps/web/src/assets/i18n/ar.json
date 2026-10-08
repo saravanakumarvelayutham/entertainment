@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "التشغيل متوقف مؤقتًا. استأنف لإعادة الاتصال من الموضع المحفوظ.",
+        "RESUME_PLAYBACK": "استئناف التشغيل",
         "STAGE_LOADER": "تحميل البث",
         "STAGE_DEMUX": "تحليل الحاوية",
         "DETAIL_STAGE": "مرحلة الفشل",

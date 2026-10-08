@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "Oynatma duraklatıldı. Kaydedilen konumdan yeniden bağlanmak için devam edin.",
+        "RESUME_PLAYBACK": "Oynatmaya devam et",
         "STAGE_LOADER": "Akış yükleme",
         "STAGE_DEMUX": "Kapsayıcı ayrıştırma",
         "DETAIL_STAGE": "Hata aşaması",

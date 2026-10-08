@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "A lejátszás szünetel. Folytassa az újracsatlakozáshoz a mentett pozíciótól.",
+        "RESUME_PLAYBACK": "Lejátszás folytatása",
         "STAGE_LOADER": "Adatfolyam betöltése",
         "STAGE_DEMUX": "Konténer elemzése",
         "DETAIL_STAGE": "Hiba szakasza",

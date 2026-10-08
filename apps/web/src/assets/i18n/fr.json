@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "La lecture est en pause. Reprenez pour rétablir la connexion à la position enregistrée.",
+        "RESUME_PLAYBACK": "Reprendre la lecture",
         "STAGE_LOADER": "Chargement du flux",
         "STAGE_DEMUX": "Analyse du conteneur",
         "DETAIL_STAGE": "Étape de l’échec",

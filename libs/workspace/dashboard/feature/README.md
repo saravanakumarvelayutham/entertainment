@@ -1,7 +1,7 @@
 # Workspace Dashboard Feature
 
 This library owns the workspace dashboard rails UI. The dashboard is a
-read-only surface over existing playlist, recent, favorites, EPG, and Xtream
+presentation surface over existing playlist, recent, favorites, EPG, and Xtream
 catalog data; it should not introduce Electron IPC, SQLite schema, or route
 contracts on its own.
 
@@ -52,6 +52,12 @@ rails also require the underlying data slice to have at least one item.
   imported Xtream libraries. Unmatched titles stay off the dashboard, and a
   separate High Rated rail projects matched entries rated 7.5 or higher.
   Data: `DashboardTrendingService`.
+
+Recommendation and genre rails use landscape cards with the taste explanation
+beside the poster. `More like this` and `Not for me` are visible buttons, using
+the existing persisted feedback service. The like button shows its selected
+state and offers undo; dismissing a title removes it from all recommendation
+rails immediately. Other rails retain their cover or channel presentation.
 
 ## Settings
 

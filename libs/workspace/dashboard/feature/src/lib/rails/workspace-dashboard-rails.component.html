@@ -364,6 +364,7 @@
         ) {
             <lib-dashboard-rail
                 [label]="recommendationsRailLabel()"
+                [layout]="'recommendation'"
                 [items]="recommendationCards()"
                 [totalCount]="recommendationCards().length"
                 [testId]="'dashboard-tmdb-recommendations-rail'"
@@ -392,6 +393,7 @@
             @for (rail of genreRails(); track rail.genre) {
                 <lib-dashboard-rail
                     [label]="rail.label"
+                    [layout]="'recommendation'"
                     [items]="rail.cards"
                     [totalCount]="rail.cards.length"
                     [testId]="'dashboard-your-genre-' + rail.genre"

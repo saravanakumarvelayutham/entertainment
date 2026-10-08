@@ -499,6 +499,17 @@ report native media errors, hls.js errors, Video.js/VHS errors, Shaka errors,
 mpegts.js errors, and HLS manifest codec metadata into the DOM-free classifiers
 exported by `@iptvnator/playback/util`.
 
+For a built-in player that has already played a movie or episode, the shared
+wrapper captures native pause/playing events. A network failure while paused,
+offers an explicit Resume action. If failure arrives after the user presses
+Play but before the next `playing` event, that explicit attempt reconnects once.
+Both paths reconnect the same engine through the existing source application and
+restores the saved pause position. No background retry runs while paused.
+The pause record belongs to the playback application token, so changing source
+or player cannot resume a stale movie. Live streams, startup failures, HTTP
+401/403, codec and DRM failures use the ordinary diagnostic flow. A failed
+reconnection also returns to that flow.
+
 The canonical recovery flow is:
 
 ```text

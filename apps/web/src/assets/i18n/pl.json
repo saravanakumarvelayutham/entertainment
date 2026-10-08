@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "Odtwarzanie jest wstrzymane. Wznów, aby ponownie połączyć się od zapisanej pozycji.",
+        "RESUME_PLAYBACK": "Wznów odtwarzanie",
         "STAGE_LOADER": "Ładowanie strumienia",
         "STAGE_DEMUX": "Analiza kontenera",
         "DETAIL_STAGE": "Etap błędu",

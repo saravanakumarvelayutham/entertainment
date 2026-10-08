@@ -493,6 +493,99 @@ describe('WebPlayerViewComponent shared web controls metadata', () => {
         }
     );
 
+    it('resumes a paused VOD network failure through the same engine at the saved position', async () => {
+        await renderVjsPlayer({
+            streamUrl: 'https://example.com/movie.mp4',
+            isLive: false,
+        });
+        const video = document.createElement('video');
+        fixture.nativeElement.append(video);
+        Object.defineProperty(video, 'currentTime', { value: 126 });
+        Object.defineProperty(video, 'duration', { value: 300 });
+        video.dispatchEvent(new Event('playing'));
+        video.dispatchEvent(new Event('pause'));
+        const oldPlayer = vjs();
+        oldPlayer.playbackIssue.emit(createNetworkDiagnostic());
+        fixture.detectChanges();
+        expect(component.pausedRecoveryPending()).toBe(true);
+        expect(component.visiblePlaybackDiagnostic()).toBeNull();
+        expect(component.playbackInteractionEnabled()).toBe(false);
+        expect(component.reloadToken()).toBe(0);
+        (query('paused-playback-resume') as HTMLButtonElement).click();
+        await refreshPauseRecovery();
+        expect(vjs()).not.toBe(oldPlayer);
+        expect(vjs().startTime()).toBe(126);
+        expect(component.reloadToken()).toBe(1);
+        expect(component.pausedRecoveryPending()).toBe(false);
+        vjs().playbackIssue.emit(createNetworkDiagnostic());
+        fixture.detectChanges();
+        expect(component.visiblePlaybackDiagnostic()?.code).toBe(
+            PlaybackDiagnosticCode.NetworkError
+        );
+        expect(query('paused-playback-resume')).toBeNull();
+    });
+
+    it('reloads once when the paused connection fails after Play but before playing', async () => {
+        await renderVjsPlayer({
+            streamUrl: 'https://example.com/movie.mp4',
+            isLive: false,
+        });
+        const video = document.createElement('video');
+        fixture.nativeElement.append(video);
+        Object.defineProperty(video, 'currentTime', { value: 84 });
+        video.dispatchEvent(new Event('playing'));
+        video.dispatchEvent(new Event('pause'));
+        Object.defineProperty(video, 'paused', { value: false });
+        vjs().playbackIssue.emit(createNetworkDiagnostic());
+        await refreshPauseRecovery();
+        expect(component.reloadToken()).toBe(1);
+        expect(vjs().startTime()).toBe(84);
+        expect(query('paused-playback-resume')).toBeNull();
+        vjs().playbackIssue.emit(createNetworkDiagnostic());
+        fixture.detectChanges();
+        expect(component.reloadToken()).toBe(1);
+        expect(component.visiblePlaybackDiagnostic()?.code).toBe(
+            PlaybackDiagnosticCode.NetworkError
+        );
+    });
+
+    it('does not let a previous paused movie capture the replacement source failure', async () => {
+        await renderVjsPlayer({
+            streamUrl: 'https://example.com/movie.mp4',
+            isLive: false,
+        });
+        const video = document.createElement('video');
+        fixture.nativeElement.append(video);
+        video.dispatchEvent(new Event('playing'));
+        video.dispatchEvent(new Event('pause'));
+        vjs().playbackIssue.emit(createNetworkDiagnostic());
+        fixture.detectChanges();
+        expect(query('paused-playback-resume')).not.toBeNull();
+        setPlayback({ streamUrl: 'https://example.com/other.mp4' });
+        await refreshPauseRecovery();
+        vjs().playbackIssue.emit(createNetworkDiagnostic());
+        fixture.detectChanges();
+        expect(query('paused-playback-resume')).toBeNull();
+        expect(component.visiblePlaybackDiagnostic()?.code).toBe(
+            PlaybackDiagnosticCode.NetworkError
+        );
+    });
+
+    async function refreshPauseRecovery(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+    function vjs(): StubVjsPlayerComponent {
+        return fixture.debugElement.query(By.directive(StubVjsPlayerComponent))
+            .componentInstance;
+    }
+    function query(testId: string): HTMLElement | null {
+        return fixture.nativeElement.querySelector(
+            '[data-test-id="' + testId + '"]'
+        );
+    }
+
     function setPlayback(
         metadata: Partial<ResolvedPortalPlayback>,
         streamUrl = 'https://example.com/playback.ts'

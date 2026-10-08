@@ -134,4 +134,78 @@ describe('DashboardRailComponent', () => {
             ).toBe(true);
         });
     });
+    describe('recommendation cards', () => {
+        it('shows the taste reason and accessible feedback without opening a menu', async () => {
+            (
+                globalThis as unknown as { ResizeObserver: unknown }
+            ).ResizeObserver = class {
+                observe = jest.fn();
+                disconnect = jest.fn();
+            };
+            await TestBed.configureTestingModule({
+                imports: [DashboardRailComponent, TranslateModule.forRoot()],
+                providers: [
+                    provideRouter([]),
+                    {
+                        provide: SettingsStore,
+                        useValue: { stripCountryPrefix: signal(false) },
+                    },
+                ],
+            }).compileComponents();
+            const fixture = TestBed.createComponent(DashboardRailComponent);
+            const recommendation = card({
+                title: 'Arrival',
+                contentType: 'movie',
+                actions: [
+                    {
+                        id: 'recommendation-explanation',
+                        label: 'Because you watched Contact',
+                        icon: 'info',
+                        disabled: true,
+                    },
+                    {
+                        id: 'recommendation-undo-more-like-this',
+                        label: 'Undo more like this',
+                        icon: 'thumb_up',
+                        pressed: true,
+                    },
+                    {
+                        id: 'recommendation-not-for-me',
+                        label: 'Not for me',
+                        icon: 'thumb_down',
+                    },
+                ],
+            });
+            fixture.componentRef.setInput('label', 'Your picks');
+            fixture.componentRef.setInput('layout', 'recommendation');
+            fixture.componentRef.setInput('items', [recommendation]);
+            fixture.detectChanges();
+            const element = fixture.nativeElement as HTMLElement;
+            expect(
+                element.querySelector('.rail__reason')?.textContent
+            ).toContain('Because you watched Contact');
+            expect(element.querySelector('.rail__action-trigger')).toBeNull();
+            const buttons = element.querySelectorAll<HTMLButtonElement>(
+                '.rail__taste-action'
+            );
+            expect(buttons).toHaveLength(2);
+            expect(buttons[0].getAttribute('aria-pressed')).toBe('true');
+            expect(buttons[0].getAttribute('aria-label')).toContain('Arrival');
+            const selected = jest.fn();
+            fixture.componentInstance.actionSelected.subscribe(selected);
+            buttons[1].click();
+            expect(selected).toHaveBeenCalledWith({
+                card: recommendation,
+                action: recommendation.actions?.[2],
+            });
+
+            fixture.componentRef.setInput('layout', 'cover');
+            fixture.detectChanges();
+            expect(element.querySelector('.rail__taste-actions')).toBeNull();
+            expect(
+                element.querySelector('.rail__action-trigger')
+            ).not.toBeNull();
+            fixture.destroy();
+        });
+    });
 });

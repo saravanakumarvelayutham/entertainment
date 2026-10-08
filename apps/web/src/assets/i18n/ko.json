@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "재생이 일시 정지되었습니다. 저장된 위치에서 다시 연결하려면 재생을 재개하세요.",
+        "RESUME_PLAYBACK": "재생 재개",
         "STAGE_LOADER": "스트림 로드",
         "STAGE_DEMUX": "컨테이너 분석",
         "DETAIL_STAGE": "오류 발생 단계",

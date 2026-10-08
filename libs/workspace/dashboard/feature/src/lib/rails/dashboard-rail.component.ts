@@ -28,6 +28,7 @@ export interface DashboardRailAction {
     destructive?: boolean;
     disabled?: boolean;
     separatorBefore?: boolean;
+    pressed?: boolean;
 }
 
 export interface DashboardRailCard {
@@ -85,7 +86,7 @@ export interface DashboardRailCard {
  *    program + progress), used for live TV. TV station logos are small, so
  *    inflating them into 2:3 posters wastes space the cards never use.
  */
-export type DashboardRailLayout = 'cover' | 'channel';
+export type DashboardRailLayout = 'cover' | 'channel' | 'recommendation';
 
 export interface DashboardRailActionSelection {
     action: DashboardRailAction;

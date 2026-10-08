@@ -113,7 +113,19 @@
     [enabled]="channelPanelAvailable()"
 />
 
-@if (visiblePlaybackDiagnostic(); as issue) {
+@if (pausedRecoveryPending()) {
+    <div class="web-player-paused-recovery" role="status">
+        <p>{{ 'PLAYBACK_DIAGNOSTICS.PAUSED_CONNECTION' | translate }}</p>
+        <button
+            mat-flat-button
+            data-test-id="paused-playback-resume"
+            (click)="retryPlayback()"
+        >
+            <mat-icon>play_arrow</mat-icon>
+            {{ 'PLAYBACK_DIAGNOSTICS.RESUME_PLAYBACK' | translate }}
+        </button>
+    </div>
+} @else if (visiblePlaybackDiagnostic(); as issue) {
     <app-playback-diagnostic-panel
         [diagnostic]="issue"
         [recommendations]="recommendations()"

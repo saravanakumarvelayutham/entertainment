@@ -1633,6 +1633,21 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
 - TMDB attribution (logo + disclaimer) is required and shown in the settings TMDB section and About
 - See `docs/architecture/tmdb-metadata-enrichment.md`
 
+**Personalized Dashboard Cards**:
+
+- Dashboard recommendation and personalized genre rails use landscape cards
+  with visible taste explanations and inline, persistent `More like this` /
+  `Not for me` feedback. The like button exposes its saved state and undo.
+  Contract: `docs/architecture/workspace-dashboard.md`.
+
+**Paused Movie Recovery**:
+
+- The shared built-in player captures pauses after playback starts. Network
+  failures during a VOD pause offer Resume; failures during attempted resumption
+  reconnect once through the same engine and saved pause position. Playback
+  tokens invalidate old pauses; failed reconnects use the normal diagnostic.
+  Contract: `docs/architecture/embedded-inline-playback.md`.
+
 **Portal Account Info**:
 
 - Both portal types expose an account-info dialog through the same entry points: header playlist switcher (bottom section for the active playlist + per-row ⋮ menu), dashboard source card ⋮ menu, and the command palette. Gates use the shared predicates in `libs/shared/interfaces/src/lib/portal-account-playlist.utils.ts`; `WorkspaceShellHeaderService.openAccountInfoFor()` picks the dialog by playlist type.

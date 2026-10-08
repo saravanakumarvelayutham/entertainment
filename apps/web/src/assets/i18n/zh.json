@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "播放已暂停。继续播放以从保存的位置重新连接。",
+        "RESUME_PLAYBACK": "继续播放",
         "STAGE_LOADER": "加载流",
         "STAGE_DEMUX": "解析容器",
         "DETAIL_STAGE": "失败阶段",

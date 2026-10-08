@@ -15,6 +15,9 @@ import {
     viewChild,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 import {
     type PlaybackDiagnostic,
     type PlaybackDiagnosticCode,
@@ -66,6 +69,7 @@ import {
     toVideoPlayer,
 } from './web-player-recovery-policy';
 import { resolveWebPlayerSharedControls } from './web-player-shared-controls';
+import { WebPlayerPauseRecovery } from './web-player-pause-recovery';
 
 @Component({
     selector: 'app-web-player-view',
@@ -79,6 +83,9 @@ import { resolveWebPlayerSharedControls } from './web-player-shared-controls';
         HtmlVideoPlayerComponent,
         PlaybackDiagnosticPanelComponent,
         VjsPlayerComponent,
+        MatButtonModule,
+        MatIconModule,
+        TranslateModule,
     ],
     providers: [
         {
@@ -239,6 +246,16 @@ export class WebPlayerViewComponent implements OnDestroy {
             this.externalFallbackRequested.emit(request),
     });
     readonly playbackDiagnostic = this.recovery.playbackDiagnostic;
+    private readonly pauseRecovery = new WebPlayerPauseRecovery(
+        this.fullscreenSurface,
+        () => this.playbackApplicationToken(),
+        (video) =>
+            this.recoverySession.recordTimeUpdate(
+                { currentTime: video.currentTime, duration: video.duration },
+                this.resolvedIsLive()
+            )
+    );
+    readonly pausedRecoveryPending = this.pauseRecovery.pending;
     readonly visiblePlaybackDiagnostic =
         this.recovery.visiblePlaybackDiagnostic;
     readonly recommendations = this.recovery.recommendations;
@@ -249,7 +266,9 @@ export class WebPlayerViewComponent implements OnDestroy {
         )
     );
     readonly playbackInteractionEnabled = computed(
-        () => this.visiblePlaybackDiagnostic() === null
+        () =>
+            this.visiblePlaybackDiagnostic() === null &&
+            !this.pausedRecoveryPending()
     );
     readonly resolvedMediaTitle = computed(() =>
         resolveWebPlayerMediaTitle(this.mediaTitle(), this.resolvedPlayback())
@@ -306,6 +325,7 @@ export class WebPlayerViewComponent implements OnDestroy {
             this.channel.set(undefined);
             this.vjsOptions.set(undefined);
             this.recovery.clearDiagnostic();
+            this.pauseRecovery.clear();
             if (target === null) {
                 this.applicationHandoff.release();
                 this.recoverySession.clearPlaybackBinding();
@@ -330,6 +350,7 @@ export class WebPlayerViewComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.pauseRecovery.destroy();
         this.liveAutoFormat.destroy();
         this.externalRecovery.destroy();
         this.applicationHandoff.destroy();
@@ -339,6 +360,19 @@ export class WebPlayerViewComponent implements OnDestroy {
         issue: PlaybackDiagnostic | null,
         binding: PlaybackBinding
     ): void {
+        if (
+            issue &&
+            this.applicationHandoff.owns(
+                binding,
+                this.playbackApplicationToken()
+            )
+        ) {
+            if (this.pauseRecovery.defer(issue, this.resolvedIsLive())) {
+                if (this.pauseRecovery.resumeRequested()) this.retryPlayback();
+                return;
+            }
+            this.pauseRecovery.clear();
+        }
         this.recovery.handlePlaybackIssue(issue, binding);
     }
 
@@ -385,6 +419,7 @@ export class WebPlayerViewComponent implements OnDestroy {
     }
 
     retryPlayback(): void {
+        this.pauseRecovery.clear();
         this.recovery.retryPlayback();
     }
 }

@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "Het afspelen is gepauzeerd. Hervat om opnieuw te verbinden vanaf de opgeslagen positie.",
+        "RESUME_PLAYBACK": "Afspelen hervatten",
         "STAGE_LOADER": "Stream laden",
         "STAGE_DEMUX": "Container verwerken",
         "DETAIL_STAGE": "Foutfase",

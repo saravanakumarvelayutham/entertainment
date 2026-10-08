@@ -1,6 +1,13 @@
-<section class="rail" [attr.data-test-id]="testId()">
+<section
+    class="rail"
+    [class.rail--recommendation]="layout() === 'recommendation'"
+    [attr.data-test-id]="testId()"
+>
     <header class="rail__header">
         <h2 class="rail__title">
+            @if (layout() === 'recommendation') {
+                <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+            }
             <span class="rail__label">{{ label() }}</span>
             @if ((totalCount() ?? items().length) > 0) {
                 <span class="rail__count app-count-badge" aria-hidden="true">{{
@@ -192,6 +199,21 @@
                             </div>
 
                             <div class="rail__meta">
+                                @if (layout() === 'recommendation') {
+                                    @for (
+                                        action of card.actions ?? [];
+                                        track action.id
+                                    ) {
+                                        @if (
+                                            action.id ===
+                                            'recommendation-explanation'
+                                        ) {
+                                            <span class="rail__reason">{{
+                                                action.label
+                                            }}</span>
+                                        }
+                                    }
+                                }
                                 <span class="rail__card-title">{{
                                     cardTitle(card)
                                 }}</span>
@@ -224,7 +246,50 @@
                             </div>
                         </a>
 
-                        @if (card.actions && card.actions.length > 0) {
+                        @if (layout() === 'recommendation') {
+                            <div class="rail__taste-actions">
+                                @for (
+                                    action of card.actions ?? [];
+                                    track action.id
+                                ) {
+                                    @if (!action.disabled) {
+                                        <button
+                                            type="button"
+                                            class="rail__taste-action"
+                                            [class.rail__taste-action--selected]="
+                                                action.pressed
+                                            "
+                                            [attr.aria-pressed]="
+                                                action.pressed ?? null
+                                            "
+                                            [attr.aria-label]="
+                                                (action.label ??
+                                                    (action.labelKey ?? ''
+                                                        | translate)) +
+                                                ': ' +
+                                                cardTitle(card)
+                                            "
+                                            (click)="
+                                                selectAction(
+                                                    card,
+                                                    action,
+                                                    $event
+                                                )
+                                            "
+                                        >
+                                            <mat-icon aria-hidden="true">{{
+                                                action.icon
+                                            }}</mat-icon>
+                                            <span>{{
+                                                action.label ??
+                                                    (action.labelKey ?? ''
+                                                        | translate)
+                                            }}</span>
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        } @else if (card.actions && card.actions.length > 0) {
                             <button
                                 type="button"
                                 mat-icon-button

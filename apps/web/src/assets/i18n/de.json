@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "Die Wiedergabe ist pausiert. Fortsetzen verbindet den Stream ab der gespeicherten Position neu.",
+        "RESUME_PLAYBACK": "Wiedergabe fortsetzen",
         "STAGE_LOADER": "Stream laden",
         "STAGE_DEMUX": "Container verarbeiten",
         "DETAIL_STAGE": "Fehlerphase",

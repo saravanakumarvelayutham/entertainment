@@ -922,6 +922,7 @@ export class WorkspaceDashboardRailsComponent {
                     ? 'WORKSPACE.DASHBOARD.RECOMMENDATION_UNDO_MORE_LIKE_THIS'
                     : 'WORKSPACE.DASHBOARD.RECOMMENDATION_MORE_LIKE_THIS',
                 icon: 'thumb_up',
+                pressed: liked,
                 separatorBefore: true,
             },
             {

@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "Playback is paused. Resume to reconnect from your saved position.",
+        "RESUME_PLAYBACK": "Resume playback",
         "STAGE_LOADER": "Stream loading",
         "STAGE_DEMUX": "Container parsing",
         "DETAIL_STAGE": "Failure stage",

@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "التشغيل موقف مؤقتاً. كمّل باش تعاود تتّاصل من البلاصة المحفوظة.",
+        "RESUME_PLAYBACK": "كمّل التشغيل",
         "STAGE_LOADER": "تحميل البث",
         "STAGE_DEMUX": "تحليل الحاوية",
         "DETAIL_STAGE": "مرحلة الخطأ",

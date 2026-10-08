@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "A reprodução está em pausa. Retome para reconectar a partir da posição salva.",
+        "RESUME_PLAYBACK": "Retomar reprodução",
         "STAGE_LOADER": "Carregamento do fluxo",
         "STAGE_DEMUX": "Análise do contêiner",
         "DETAIL_STAGE": "Etapa da falha",

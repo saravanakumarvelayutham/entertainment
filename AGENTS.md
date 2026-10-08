@@ -1183,3 +1183,16 @@ cleanup in `docs/architecture/m3u-playlist-module.md`.
 Startup source auto-refresh uses `SourceActivityService` to protect busy IDs
 from cleanup. Late batch refreshes skip deleted rows instead of recreating them.
 Contract: `docs/architecture/m3u-playlist-module.md` (Desktop inactive-source cleanup).
+
+## Paused Movie Recovery And Recommendation Cards
+
+The shared built-in player captures pauses after playback starts. Network
+failures during a VOD pause offer Resume; failures during attempted resumption
+reconnect once through the same engine and saved pause position. Playback
+tokens invalidate old pauses; failed reconnects use the normal diagnostic.
+Contract: `docs/architecture/embedded-inline-playback.md`.
+
+Dashboard recommendation and personalized genre rails use landscape cards
+with visible taste explanations and inline, persistent More like this / Not
+for me feedback. The like button exposes its saved state and undo. Other rails
+retain cover/channel layouts. Contract: `docs/architecture/workspace-dashboard.md`.

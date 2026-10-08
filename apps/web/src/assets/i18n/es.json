@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "La reproducción está en pausa. Reanuda para volver a conectarte desde la posición guardada.",
+        "RESUME_PLAYBACK": "Reanudar reproducción",
         "STAGE_LOADER": "Carga del flujo",
         "STAGE_DEMUX": "Análisis del contenedor",
         "DETAIL_STAGE": "Etapa del fallo",

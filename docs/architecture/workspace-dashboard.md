@@ -154,8 +154,12 @@ Render rules:
        falls back to a prefilled global search for unmatched titles.
        Contracts: `docs/architecture/tmdb-metadata-enrichment.md`
        ("Dashboard Integration").
-       Recommendation cards also use the shared card action menu for a passive
-       explanation plus persistent `More like this` and `Not for me` feedback.
+       Recommendation and personalized genre rails use the shared rail's
+       `recommendation` layout: a landscape card pairs its poster with a visible
+       taste explanation and inline `More like this` and `Not for me` feedback.
+       The like button exposes its saved choice through `aria-pressed` and can
+       undo that choice. Other rails retain their existing cover/channel layouts
+       and action menus. Colors resolve app tokens in both themes.
        The dashboard hides dismissed identities immediately; the data-access
        service owns persistence and hybrid-ranking signals. Up to four
        personalized genre rails draw a bounded seed set round-robin from local

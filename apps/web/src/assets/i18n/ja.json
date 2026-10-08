@@ -649,6 +649,8 @@
         }
     },
     "PLAYBACK_DIAGNOSTICS": {
+        "PAUSED_CONNECTION": "再生は一時停止中です。保存した位置から再接続するには再開してください。",
+        "RESUME_PLAYBACK": "再生を再開",
         "STAGE_LOADER": "ストリームの読み込み",
         "STAGE_DEMUX": "コンテナの解析",
         "DETAIL_STAGE": "失敗した段階",
