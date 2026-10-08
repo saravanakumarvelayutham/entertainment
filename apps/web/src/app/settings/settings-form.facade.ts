@@ -10,6 +10,7 @@ import {
     CoverSize,
     EpgViewMode,
     Language,
+    normalizeAiRecommendationSettings,
     Theme,
 } from '@iptvnator/shared/interfaces';
 import { TranslateService } from '@ngx-translate/core';
@@ -73,7 +74,12 @@ export class SettingsFormFacade {
      */
     hydrateFromStore(): void {
         const currentSettings = this.settingsStore.getSettings();
-        this.form.patchValue(currentSettings);
+        this.form.patchValue({
+            ...currentSettings,
+            aiRecommendations: normalizeAiRecommendationSettings(
+                currentSettings.aiRecommendations
+            ),
+        });
         this.syncDashboardControlsEnabledState(
             currentSettings.showDashboard ?? true
         );

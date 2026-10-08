@@ -45,6 +45,8 @@ import {
 import {
     DashboardDataService,
     DashboardAiRecommendationsService,
+    buildDashboardAiTasteSignals,
+    hasDashboardAiTasteSignals,
     DashboardFavoriteItem,
     DashboardGenreRecommendationsService,
     DashboardRecentlyAddedItem,
@@ -213,6 +215,24 @@ export class WorkspaceDashboardRailsComponent {
                 this.toRecommendationCard(item, 'genre', reason)
             )
     );
+    readonly aiTasteSignals = computed(() =>
+        buildDashboardAiTasteSignals(
+            this.data.globalRecentVodItems(),
+            this.data.globalFavoriteItems(),
+            this.data.playbackPositions$(),
+            this.recommendationFeedback.entries()
+        )
+    );
+    readonly aiNeedsEvidence = computed(() => {
+        const settings = normalizeAiRecommendationSettings(
+            this.settingsStore.aiRecommendations?.()
+        );
+        return (
+            settings.learnFromHistory &&
+            !settings.preferences &&
+            !hasDashboardAiTasteSignals(this.aiTasteSignals())
+        );
+    });
     readonly aiCandidatesLoading = computed(
         () =>
             !this.ready() ||
@@ -225,7 +245,8 @@ export class WorkspaceDashboardRailsComponent {
         this.aiRecommendationsService.refresh(
             this.settingsStore.aiRecommendations?.(),
             this.aiCandidates(),
-            true
+            true,
+            this.aiTasteSignals()
         );
     }
 
@@ -646,19 +667,16 @@ export class WorkspaceDashboardRailsComponent {
             const settings = this.settingsStore.aiRecommendations?.();
             const enabled = this.aiEnabled();
             if (enabled && this.aiCandidatesLoading()) {
-                untracked(() =>
-                    this.aiRecommendationsService.refresh(
-                        { enabled: false },
-                        []
-                    )
-                );
                 return;
             }
             const candidates = enabled ? this.aiCandidates() : [];
+            const tasteSignals = enabled ? this.aiTasteSignals() : undefined;
             untracked(() =>
                 this.aiRecommendationsService.refresh(
                     enabled ? settings : { enabled: false },
-                    candidates
+                    candidates,
+                    false,
+                    tasteSignals
                 )
             );
         });

@@ -377,10 +377,14 @@ a terminal diagnostic also need manual TS. Contract and full support matrix:
 ## Optional AI Recommendations
 
 Desktop Settings → Dashboard exposes disabled-by-default
-`Settings.aiRecommendations` (model `security`, explicit preferences). Main alone
+`Settings.aiRecommendations` (model `security`, optional overrides and history learning). Main alone
 reads `process.env.MODELS_AUTH_TOKEN` and calls the fixed SaravLabs gateway;
-tokens never enter renderer/settings/IPC/debug logs. Only public candidate
-metadata and entered preferences are sent, without history or source identities.
+tokens never enter renderer/settings/IPC/debug logs. Learning opt-in sends bounded
+watched title/completion bands, favourite titles and votes alongside public
+candidates; explicit-only mode excludes those signals. Source identities,
+provider URLs and credentials never leave the app. Older enabled settings retain
+explicit-only mode until learning is enabled. AI returns a locally saved taste
+summary and ranking, refreshed on meaningful signals rather than playback ticks.
 Requests are bounded, redirects blocked, responses validated against known ids,
 and failures retain normal recommendation rails after a 20-second timeout.
 The dashboard caches eight session batches and retries only explicitly.

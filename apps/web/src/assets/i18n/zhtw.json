@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "自動學習我的喜好",
+        "AI_LEARNING_DISCLOSURE": "啟用後，會將部分已觀看作品的標題和完成度區間、收藏標題及您對推薦的評價，連同候選中繼資料傳送至 models.saravlabs.org，以學習您的喜好。憑證和來源網址保留在本機。關閉此選項可僅使用您填寫的偏好。",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "選填：補充氛圍、主題、語言或想避開的內容。這些說明會引導從您的活動中學習到的喜好。留空則以觀看紀錄和評價為主。請勿包含個人資訊。",
         "AI_RECOMMENDATIONS": "AI 電影與影集推薦",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "啟用後，您填寫的偏好及候選電影或影集的中繼資料將傳送至 models.saravlabs.org。觀看紀錄和播放清單憑證絕不會傳送。若 AI 無法使用，現有推薦仍然可用。",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "啟用後，您填寫的偏好及候選電影或影集的中繼資料將傳送至 models.saravlabs.org。只有啟用自動學習喜好時才會分享歷史紀錄。播放清單憑證和來源網址保留在您的裝置上。若 AI 無法使用，現有推薦仍然可用。",
         "AI_TOKEN_CHECKING": "正在檢查閘道存取權限…",
         "AI_TOKEN_CONFIGURED": "閘道權杖已設定。",
         "AI_TOKEN_MISSING": "閘道權杖無法使用。請在 Windows 使用者環境中設定 MODELS_AUTH_TOKEN，然後重新啟動 SaravTV。",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "伺服器排序",
         "CATEGORY_SORT_ARIA": "排序分類",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "觀看電影或影集、加入收藏，或評價一則推薦，即可開始學習您的喜好。",
+            "AI_TASTE_PROFILE": "AI 對您喜好的理解",
+            "AI_PROFILE_SAVE_FAILED": "您的喜好檔案在本次工作階段中可用，但無法儲存。請重試儲存。",
             "AI_PICKS": "依照您的喜好精選",
             "AI_LOADING": "正在尋找符合您偏好的推薦…",
             "AI_FAILED": "AI 推薦無法使用。一般推薦仍然可用。",

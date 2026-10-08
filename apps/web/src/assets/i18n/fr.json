@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Apprendre mes goûts automatiquement",
+        "AI_LEARNING_DISCLOSURE": "Lorsque cette option est activée, des titres vus sélectionnés avec leur progression approximative, des titres favoris et vos votes sur les recommandations sont envoyés à models.saravlabs.org avec les métadonnées des candidats pour apprendre vos goûts. Les identifiants et les URL des sources restent locaux. Désactivez cette option pour utiliser uniquement vos préférences écrites.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Facultatif : ajoutez des ambiances, thèmes, langues ou éléments à éviter. Ces instructions orientent les goûts appris à partir de votre activité. Laissez ce champ vide pour privilégier vos visionnages et avis. N’incluez aucune information personnelle.",
         "AI_RECOMMENDATIONS": "Sélections de films et séries par IA",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Lorsque cette option est activée, vos préférences écrites et les métadonnées des films ou séries candidats sont envoyées à models.saravlabs.org. Votre historique de lecture et les identifiants des listes ne sont jamais envoyés. Les recommandations existantes restent disponibles si l’IA est indisponible.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Lorsque cette option est activée, vos préférences écrites et les métadonnées des films ou séries candidats sont envoyées à models.saravlabs.org. L’historique est partagé uniquement si l’apprentissage automatique de vos goûts est activé. Les identifiants des listes et les URL des sources restent sur votre appareil. Les recommandations existantes restent disponibles si l’IA est indisponible.",
         "AI_TOKEN_CHECKING": "Vérification de l’accès à la passerelle…",
         "AI_TOKEN_CONFIGURED": "Jeton de la passerelle configuré.",
         "AI_TOKEN_MISSING": "Jeton de la passerelle indisponible. Définissez MODELS_AUTH_TOKEN dans votre environnement utilisateur Windows et redémarrez SaravTV.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Ordre du serveur",
         "CATEGORY_SORT_ARIA": "Trier les catégories",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Regardez un film ou une série, ajoutez un favori ou votez sur une recommandation pour commencer l’apprentissage de vos goûts.",
+            "AI_TASTE_PROFILE": "Ce que l’IA a appris sur vos goûts",
+            "AI_PROFILE_SAVE_FAILED": "Votre profil de goûts est disponible pour cette session, mais n’a pas pu être enregistré. Réessayez de l’enregistrer.",
             "AI_PICKS": "Sélectionnés selon vos goûts",
             "AI_LOADING": "Recherche de sélections adaptées à vos préférences…",
             "AI_FAILED": "Les sélections IA sont indisponibles. Vos recommandations habituelles restent disponibles.",

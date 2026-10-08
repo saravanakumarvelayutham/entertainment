@@ -207,15 +207,18 @@ Render rules:
 
 ## Optional AI Taste Ranking
 
-Desktop Settings → Dashboard exposes AI ranking, model and explicit taste
-preferences. It is disabled by default; the default model is `security`.
+Desktop Settings → Dashboard exposes AI ranking, model, history learning and
+optional explicit taste overrides. AI is disabled by default; the default model
+is `security`. New opt-ins offer history learning by default. Already-enabled
+settings without a learning flag retain their original explicit-only mode until
+the user enables learning, preserving the original sharing consent.
 Enabling it reranks recommendation candidates already matched to available
 library titles and supplies short reasons. Existing local/TMDB ranking still
 builds the candidate set and remains the fallback when the gateway is unavailable.
 The web/PWA does not expose the desktop gateway bridge.
 
 `DashboardAiRecommendationsService` owns asynchronous reranking and a bounded
-eight-batch session cache. Settings and candidate changes invalidate the displayed
+eight-batch session cache. Settings, viewing signals and candidate changes invalidate the displayed
 ranking; late completions cannot restore stale results. Failed batches retain
 the normal rails without automatic retries; the user can explicitly retry.
 
@@ -228,17 +231,28 @@ requires a fresh application process launched from an environment that has
 inherited it. A running app or terminal does not acquire later environment
 changes. Never paste tokens into preferences or save them in repository files.
 
-The request contains only explicit preferences and public candidate metadata
-(public TMDB identity, title, year, media type and numeric genre ids). It does not
-send watch history, favorite/dislike records, source identities, provider URLs
-or credentials. Candidate selection may reflect local taste signals, but those
-records are never serialized to the endpoint.
+With learning enabled, one model request builds a taste summary and ranks the
+available candidates. It includes at most 50 recently watched movie/series titles
+with completion bands, 50 favourite titles, and 100 recommendation votes with
+public TMDB identity, optional title and genre ids. Completion is weak evidence;
+starting or abandoning a title is not treated as a dislike. Favourites and
+explicit votes carry stronger evidence. Written overrides take precedence.
+For series, completion describes the latest saved episode, not the entire series.
+Only meaningful signal changes invalidate ranking; per-second playback updates
+within a completion band do not cause new model requests.
+
+With learning disabled, only entered preferences and public candidate metadata
+(TMDB identity, title, year, media type and numeric genre ids) are sent. Source
+identities, provider URLs, credentials and exact viewing timestamps are never
+serialized in either mode. The learned summary is shown on the dashboard and
+kept locally through the existing application-state persistence boundary.
 
 Only the current main window's main frame may invoke the bridge. Main validates
 at most 40 candidates, 2,000 preference characters, 100 model characters and
 300 title characters. The request has a 20-second timeout, blocks redirects and
 reads at most 128 KiB of response data. Returned JSON must contain a nonempty
-ranking with unique known ids and reasons of at most 240 characters; malformed
+ranking with unique known ids and reasons of at most 240 characters, plus a taste
+summary of at most 1,000 characters when learning is requested; malformed
 or invented identities reject the entire response. Provider errors become
 generic safe errors. No automatic network retry occurs.
 

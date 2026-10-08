@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "好みを自動的に学習する",
+        "AI_LEARNING_DISCLOSURE": "有効にすると、選択された視聴作品のタイトルと大まかな視聴進度、お気に入りのタイトル、おすすめへの評価が、候補のメタデータとともに models.saravlabs.org に送信され、好みの学習に使われます。認証情報やソースURLは端末内に保持されます。無効にすると入力した好みのみを使用します。",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "任意：雰囲気、テーマ、言語、避けたい内容を追加してください。これらの指示は活動から学習した好みを調整します。空欄にすると視聴や評価を重視します。個人情報は含めないでください。",
         "AI_RECOMMENDATIONS": "AIによる映画・シリーズのおすすめ",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "有効にすると、入力した好みと候補の映画やシリーズのメタデータが models.saravlabs.org に送信されます。視聴履歴やプレイリストの認証情報は送信されません。AIが利用できない場合も、既存のおすすめは引き続き表示されます。",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "有効にすると、入力した好みと候補の映画やシリーズのメタデータが models.saravlabs.org に送信されます。履歴は好みの自動学習が有効な場合のみ共有されます。プレイリストの認証情報やソースURLは端末内に保持されます。AIが利用できない場合も既存のおすすめは引き続き表示されます。",
         "AI_TOKEN_CHECKING": "ゲートウェイへのアクセスを確認中…",
         "AI_TOKEN_CONFIGURED": "ゲートウェイトークンを設定済みです。",
         "AI_TOKEN_MISSING": "ゲートウェイトークンを利用できません。Windowsのユーザー環境に MODELS_AUTH_TOKEN を設定し、SaravTVを再起動してください。",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "サーバー順",
         "CATEGORY_SORT_ARIA": "カテゴリを並び替え",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "映画やシリーズを視聴する、お気に入りを追加する、またはおすすめを評価すると、好みの学習が始まります。",
+            "AI_TASTE_PROFILE": "AIが学習したあなたの好み",
+            "AI_PROFILE_SAVE_FAILED": "好みのプロフィールはこのセッションでは利用できますが、保存できませんでした。保存を再試行してください。",
             "AI_PICKS": "あなたの好みに合わせて選択",
             "AI_LOADING": "好みに合う作品を検索中…",
             "AI_FAILED": "AIのおすすめを利用できません。通常のおすすめは引き続き表示されます。",

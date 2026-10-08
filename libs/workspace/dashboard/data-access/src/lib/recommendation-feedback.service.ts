@@ -4,6 +4,7 @@ import { DatabaseService } from '@iptvnator/services';
 export type RecommendationFeedbackChoice = 'more-like-this' | 'not-for-me';
 
 export interface RecommendationFeedbackTarget {
+    readonly title?: string;
     readonly mediaType: 'movie' | 'tv';
     readonly tmdbId: number;
     readonly genreIds: readonly number[];
@@ -141,6 +142,7 @@ export class RecommendationFeedbackService {
         if (!value || typeof value !== 'object') return false;
         const entry = value as RecommendationFeedbackEntry;
         return (
+            (entry.title === undefined || typeof entry.title === 'string') &&
             (entry.mediaType === 'movie' || entry.mediaType === 'tv') &&
             Number.isInteger(entry.tmdbId) &&
             entry.tmdbId > 0 &&

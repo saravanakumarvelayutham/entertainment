@@ -358,6 +358,35 @@
         }
 
         @if (aiEnabled()) {
+            @if (aiRecommendationsService.tasteSummary(); as tasteSummary) {
+                <section
+                    data-test-id="dashboard-ai-taste-profile"
+                    aria-live="polite"
+                >
+                    <h2>
+                        {{ 'WORKSPACE.DASHBOARD.AI_TASTE_PROFILE' | translate }}
+                    </h2>
+                    <p>{{ tasteSummary }}</p>
+                    @if (aiRecommendationsService.profilePersistenceFailed()) {
+                        <p role="status">
+                            {{
+                                'WORKSPACE.DASHBOARD.AI_PROFILE_SAVE_FAILED'
+                                    | translate
+                            }}
+                        </p>
+                        <button
+                            mat-stroked-button
+                            type="button"
+                            data-test-id="dashboard-ai-profile-save-retry"
+                            (click)="
+                                aiRecommendationsService.retrySaveTasteProfile()
+                            "
+                        >
+                            {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                        </button>
+                    }
+                </section>
+            }
             @if (aiCards().length > 0) {
                 <lib-dashboard-rail
                     [label]="'WORKSPACE.DASHBOARD.AI_PICKS' | translate"
@@ -377,7 +406,9 @@
                                 ? 'WORKSPACE.DASHBOARD.AI_LOADING'
                                 : aiRecommendationsService.failed()
                                   ? 'WORKSPACE.DASHBOARD.AI_FAILED'
-                                  : 'WORKSPACE.DASHBOARD.AI_EMPTY'
+                                  : aiNeedsEvidence()
+                                    ? 'WORKSPACE.DASHBOARD.AI_NEEDS_EVIDENCE'
+                                    : 'WORKSPACE.DASHBOARD.AI_EMPTY'
                             ) | translate
                         }}
                     </p>

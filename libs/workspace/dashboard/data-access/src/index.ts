@@ -9,3 +9,4 @@ export * from './lib/dashboard-source-expiry.util';
 export * from './lib/dashboard-tmdb-lookup.util';
 export * from './lib/dashboard-trending.service';
 export * from './lib/dashboard-ai-recommendations.service';
+export * from './lib/dashboard-ai-taste-signals.util';

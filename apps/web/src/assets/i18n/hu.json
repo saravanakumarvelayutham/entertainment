@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Az ízlésem automatikus tanulása",
+        "AI_LEARNING_DISCLOSURE": "Bekapcsoláskor kiválasztott megtekintett címek és hozzávetőleges haladási szintek, kedvenc címek és az ajánlásokra adott szavazataid a jelöltek metaadataival együtt a models.saravlabs.org címre kerülnek az ízlésed tanulásához. A hitelesítő adatok és forrás-URL-ek helyben maradnak. Kikapcsolva csak az írásos preferenciáidat használjuk.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Opcionális: adj meg hangulatokat, témákat, nyelveket vagy kerülendő dolgokat. Ezek az utasítások irányítják az aktivitásodból tanult ízlést. Hagyd üresen, hogy a megtekintések és értékelések vezessenek. Ne adj meg személyes adatokat.",
         "AI_RECOMMENDATIONS": "MI-alapú film- és sorozatajánlók",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Bekapcsoláskor az írásos preferenciáid és a lehetséges filmek vagy sorozatok metaadatai a models.saravlabs.org címre kerülnek. A megtekintési előzmények és a lejátszási listák hitelesítő adatai soha nem kerülnek elküldésre. A meglévő ajánlások akkor is elérhetők, ha az MI nem érhető el.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Bekapcsoláskor az írásos preferenciáid és a lehetséges filmek vagy sorozatok metaadatai a models.saravlabs.org címre kerülnek. Az előzmények csak az automatikus ízléstanulás bekapcsolásakor lesznek megosztva. A listák hitelesítő adatai és a források URL-jei az eszközödön maradnak. A meglévő ajánlások akkor is elérhetők, ha az MI nem érhető el.",
         "AI_TOKEN_CHECKING": "Átjáró-hozzáférés ellenőrzése…",
         "AI_TOKEN_CONFIGURED": "Az átjáró tokenje beállítva.",
         "AI_TOKEN_MISSING": "Az átjáró tokenje nem érhető el. Állítsd be a MODELS_AUTH_TOKEN változót a Windows felhasználói környezetedben, és indítsd újra a SaravTV-t.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Kiszolgálóoldali rendezés",
         "CATEGORY_SORT_ARIA": "Kategóriák rendezése",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Nézz meg egy filmet vagy sorozatot, adj hozzá egy kedvencet, vagy szavazz egy ajánlásra az ízlésed tanulásának megkezdéséhez.",
+            "AI_TASTE_PROFILE": "Mit tanult az MI az ízlésedről",
+            "AI_PROFILE_SAVE_FAILED": "Az ízlésprofilod elérhető ebben a munkamenetben, de nem sikerült menteni. Próbáld újra elmenteni.",
             "AI_PICKS": "Az ízlésedre válogatva",
             "AI_LOADING": "A preferenciáidhoz illő ajánlások keresése…",
             "AI_FAILED": "Az MI-ajánlások nem érhetők el. A szokásos ajánlásaid továbbra is itt vannak.",

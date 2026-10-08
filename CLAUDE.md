@@ -1642,10 +1642,14 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
 
 - Desktop Settings → Dashboard optionally reranks available recommendation
   candidates through the fixed SaravLabs gateway (default model `security`).
-  `Settings.aiRecommendations` stores enabled/model/explicit preferences;
+  `Settings.aiRecommendations` stores enabled/model/optional overrides and
+  `learnFromHistory`; older enabled settings preserve explicit-only consent.
   authentication stays exclusively in main-process `MODELS_AUTH_TOKEN`.
-  Only public candidate metadata and entered preferences leave the app, never
-  history/source identities/credentials. Main bounds requests, blocks redirects,
+  Learning opt-in sends bounded watched title/completion bands, favourite titles
+  and votes; explicit-only mode sends public candidates and written preferences.
+  Source identities, URLs and credentials stay local. AI returns a locally saved
+  taste summary and ranking, refreshed on meaningful signals instead of playback
+  ticks. Main bounds requests, blocks redirects,
   validates known unique response ids and times out after 20 seconds; failures
   retain normal rails. The dashboard keeps eight session batches and retries
   only explicitly. Contract: `docs/architecture/workspace-dashboard.md`.

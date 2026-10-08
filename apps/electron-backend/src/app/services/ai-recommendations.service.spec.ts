@@ -18,6 +18,26 @@ const request = {
     ],
 };
 
+const tasteSignals = {
+    watched: [
+        {
+            title: 'Arrival',
+            mediaType: 'movie' as const,
+            completion: 'completed' as const,
+        },
+    ],
+    favorites: [{ title: 'Dark', mediaType: 'tv' as const }],
+    votes: [
+        {
+            tmdbId: 329865,
+            mediaType: 'movie' as const,
+            genreIds: [878],
+            choice: 'more-like-this' as const,
+        },
+    ],
+};
+const learnedRequest = { ...request, preferences: '', tasteSignals };
+
 describe('AI recommendation gateway', () => {
     const originalToken = process.env.MODELS_AUTH_TOKEN;
     const originalFetch = global.fetch;
@@ -38,6 +58,192 @@ describe('AI recommendation gateway', () => {
             validateAiRecommendationRequest({ ...request, history: ['secret'] })
         ).toEqual(request);
     });
+    it('accepts automatic learning without entered preferences and strips private signal fields', () => {
+        expect(
+            validateAiRecommendationRequest({
+                ...learnedRequest,
+                tasteSignals: {
+                    watched: [
+                        {
+                            ...tasteSignals.watched[0],
+                            playlistId: 'private',
+                            url: 'secret',
+                            date: 'today',
+                        },
+                    ],
+                    favorites: [
+                        { ...tasteSignals.favorites[0], sourceId: 'private' },
+                    ],
+                    votes: [{ ...tasteSignals.votes[0], timestamp: 42 }],
+                },
+            })
+        ).toEqual(learnedRequest);
+    });
+    it.each([
+        { watched: [], favorites: [], votes: [] },
+        { ...tasteSignals, watched: Array(51).fill(tasteSignals.watched[0]) },
+        {
+            ...tasteSignals,
+            favorites: Array(51).fill(tasteSignals.favorites[0]),
+        },
+        { ...tasteSignals, votes: Array(101).fill(tasteSignals.votes[0]) },
+        {
+            ...tasteSignals,
+            watched: [{ ...tasteSignals.watched[0], completion: 'disliked' }],
+        },
+        {
+            ...tasteSignals,
+            favorites: [
+                { ...tasteSignals.favorites[0], title: 'x'.repeat(301) },
+            ],
+        },
+        {
+            ...tasteSignals,
+            votes: [{ ...tasteSignals.votes[0], choice: 'invalid' }],
+        },
+        { ...tasteSignals, votes: [{ ...tasteSignals.votes[0], tmdbId: NaN }] },
+        {
+            ...tasteSignals,
+            votes: [
+                { ...tasteSignals.votes[0], genreIds: Array(31).fill(878) },
+            ],
+        },
+        {
+            ...tasteSignals,
+            votes: [{ ...tasteSignals.votes[0], genreIds: [NaN] }],
+        },
+        {
+            ...tasteSignals,
+            votes: [{ ...tasteSignals.votes[0], title: 'x'.repeat(301) }],
+        },
+    ])(
+        'rejects malformed or oversized signals before networking',
+        async (invalidSignals) => {
+            await expect(
+                rankAiRecommendations({
+                    ...learnedRequest,
+                    tasteSignals: invalidSignals,
+                })
+            ).rejects.toThrow('unavailable');
+            expect(fetchMock).not.toHaveBeenCalled();
+        }
+    );
+    it('rejects blank explicit preferences without learning evidence', () => {
+        expect(() =>
+            validateAiRecommendationRequest({ ...request, preferences: ' ' })
+        ).toThrow('unavailable');
+    });
+    it('preserves optional vote titles while older id-only votes remain valid', () => {
+        expect(
+            validateAiRecommendationRequest({
+                ...learnedRequest,
+                tasteSignals: {
+                    ...tasteSignals,
+                    votes: [
+                        {
+                            ...tasteSignals.votes[0],
+                            title: 'Arrival',
+                            sourceId: 'private',
+                        },
+                    ],
+                },
+            }).tasteSignals?.votes
+        ).toEqual([{ ...tasteSignals.votes[0], title: 'Arrival' }]);
+    });
+    it('learns and ranks with a single model call', async () => {
+        fetchMock.mockResolvedValue(
+            new Response(
+                JSON.stringify({
+                    choices: [
+                        {
+                            message: {
+                                content: JSON.stringify({
+                                    tasteSummary:
+                                        'Thoughtful science fiction and mystery.',
+                                    ranked: [
+                                        {
+                                            id: 'movie:1',
+                                            reason: 'Matches your favorite genres.',
+                                        },
+                                    ],
+                                }),
+                            },
+                        },
+                    ],
+                })
+            )
+        );
+        await expect(
+            rankAiRecommendations(learnedRequest)
+        ).resolves.toMatchObject({
+            tasteSummary: 'Thoughtful science fiction and mystery.',
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+        expect(JSON.parse(body.messages[1].content)).toEqual({
+            preferences: '',
+            candidates: request.candidates,
+            tasteSignals,
+        });
+        expect(body.messages[0].content).toContain(
+            'Never assume an abandoned title was disliked'
+        );
+    });
+    it('learns a profile without an available candidate pool', async () => {
+        const profileRequest = { ...learnedRequest, candidates: [] };
+        fetchMock.mockResolvedValue(
+            new Response(
+                JSON.stringify({
+                    choices: [
+                        {
+                            message: {
+                                content: JSON.stringify({
+                                    tasteSummary: 'Thoughtful science fiction.',
+                                    ranked: [],
+                                }),
+                            },
+                        },
+                    ],
+                })
+            )
+        );
+        await expect(rankAiRecommendations(profileRequest)).resolves.toEqual({
+            tasteSummary: 'Thoughtful science fiction.',
+            ranked: [],
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+    it('requires evidence for a profile-only request and a profile for its response', () => {
+        expect(() =>
+            validateAiRecommendationRequest({ ...request, candidates: [] })
+        ).toThrow('unavailable');
+        expect(() =>
+            parseAiRecommendationResponse('{"ranked":[]}', {
+                ...learnedRequest,
+                candidates: [],
+            })
+        ).toThrow('unavailable');
+        expect(() =>
+            parseAiRecommendationResponse(
+                '{"ranked":[],"tasteSummary":"Valid profile"}',
+                learnedRequest
+            )
+        ).toThrow('unavailable');
+    });
+    it.each([undefined, '', ' ', 42, 'x'.repeat(1001)])(
+        'requires a valid learned profile for signals: %s',
+        (tasteSummary) => {
+            expect(() =>
+                parseAiRecommendationResponse(
+                    JSON.stringify({
+                        tasteSummary,
+                        ranked: [{ id: 'movie:1', reason: 'Matches.' }],
+                    }),
+                    learnedRequest
+                )
+            ).toThrow('unavailable');
+        }
+    );
     it.each([
         { ...request, model: 'x'.repeat(101) },
         { ...request, preferences: 'x'.repeat(2001) },

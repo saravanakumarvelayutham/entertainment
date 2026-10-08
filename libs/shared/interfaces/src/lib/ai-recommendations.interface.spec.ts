@@ -23,8 +23,31 @@ describe('AI recommendation settings', () => {
             })
         ).toEqual({
             enabled: true,
+            learnFromHistory: false,
             model: 'security',
             preferences: 'Science fiction',
         });
+    });
+    it('preserves previous explicit-only consent for already enabled profiles', () => {
+        expect(
+            normalizeAiRecommendationSettings({ enabled: true })
+                .learnFromHistory
+        ).toBe(false);
+        expect(
+            normalizeAiRecommendationSettings({ enabled: false })
+                .learnFromHistory
+        ).toBe(true);
+        expect(
+            normalizeAiRecommendationSettings({
+                enabled: true,
+                learnFromHistory: true,
+            }).learnFromHistory
+        ).toBe(true);
+        expect(
+            normalizeAiRecommendationSettings({
+                enabled: false,
+                learnFromHistory: false,
+            }).learnFromHistory
+        ).toBe(false);
     });
 });

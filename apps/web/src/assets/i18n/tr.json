@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Zevkimi otomatik öğren",
+        "AI_LEARNING_DISCLOSURE": "Etkinleştirildiğinde seçilen izlenmiş başlıklar ve tamamlanma aralıkları, favori başlıklar ve öneri oylarınız aday meta verileriyle birlikte zevkinizi öğrenmek için models.saravlabs.org adresine gönderilir. Kimlik bilgileri ve kaynak URL’leri yerel kalır. Yalnızca yazılı tercihlerinizi kullanmak için bunu kapatın.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "İsteğe bağlı: atmosfer, tema, dil veya kaçınılacak şeyler ekleyin. Bu talimatlar etkinliğinizden öğrenilen zevke yön verir. İzleme ve değerlendirmelerinizin yön vermesi için boş bırakın. Kişisel bilgi eklemeyin.",
         "AI_RECOMMENDATIONS": "Yapay zekâ film ve dizi önerileri",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Etkinleştirildiğinde yazılı tercihleriniz ve aday film veya dizi meta verileri models.saravlabs.org adresine gönderilir. İzleme geçmişi ve oynatma listesi kimlik bilgileri asla gönderilmez. Yapay zekâ kullanılamadığında mevcut öneriler kullanılabilir kalır.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Etkinleştirildiğinde yazılı tercihleriniz ve aday film veya dizi meta verileri models.saravlabs.org adresine gönderilir. Geçmiş yalnızca otomatik zevk öğrenimi etkin olduğunda paylaşılır. Liste kimlik bilgileri ve kaynak URL’leri cihazınızda kalır. Yapay zekâ kullanılamadığında mevcut öneriler kullanılabilir kalır.",
         "AI_TOKEN_CHECKING": "Ağ geçidi erişimi denetleniyor…",
         "AI_TOKEN_CONFIGURED": "Ağ geçidi belirteci yapılandırıldı.",
         "AI_TOKEN_MISSING": "Ağ geçidi belirteci kullanılamıyor. Windows kullanıcı ortamınızda MODELS_AUTH_TOKEN değişkenini ayarlayın ve SaravTV’yi yeniden başlatın.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Sunucu sıralaması",
         "CATEGORY_SORT_ARIA": "Kategorileri sırala",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Zevkinizi öğrenmeye başlamak için bir film veya dizi izleyin, favori ekleyin ya da bir öneriye oy verin.",
+            "AI_TASTE_PROFILE": "Yapay zekânın zevkiniz hakkında öğrendikleri",
+            "AI_PROFILE_SAVE_FAILED": "Zevk profiliniz bu oturumda kullanılabilir, ancak kaydedilemedi. Kaydetmek için yeniden deneyin.",
             "AI_PICKS": "Zevkinize göre seçildi",
             "AI_LOADING": "Tercihlerinize uyan öneriler bulunuyor…",
             "AI_FAILED": "Yapay zekâ önerileri kullanılamıyor. Normal önerileriniz hâlâ burada.",

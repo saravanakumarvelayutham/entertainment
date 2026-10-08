@@ -1,4 +1,6 @@
 import { DashboardAiRecommendationsService } from './dashboard-ai-recommendations.service';
+import { TestBed } from '@angular/core/testing';
+import { DatabaseService } from '@iptvnator/services';
 import type { DashboardRecommendationItem } from './dashboard-recommendations.util';
 import type { AiRecommendationRankResponse } from '@iptvnator/shared/interfaces';
 
@@ -45,6 +47,8 @@ function deferred() {
 describe('DashboardAiRecommendationsService', () => {
     let service: DashboardAiRecommendationsService;
     let rank: jest.Mock;
+    let getAppStateOrThrow: jest.Mock;
+    let setAppState: jest.Mock;
     const original = window.electron;
     beforeEach(() => {
         rank = jest.fn().mockResolvedValue(response());
@@ -52,7 +56,17 @@ describe('DashboardAiRecommendationsService', () => {
             configurable: true,
             value: { rankAiRecommendations: rank },
         });
-        service = new DashboardAiRecommendationsService();
+        getAppStateOrThrow = jest.fn().mockResolvedValue(null);
+        setAppState = jest.fn().mockResolvedValue(true);
+        TestBed.configureTestingModule({
+            providers: [
+                {
+                    provide: DatabaseService,
+                    useValue: { getAppStateOrThrow, setAppState },
+                },
+            ],
+        });
+        service = TestBed.inject(DashboardAiRecommendationsService);
     });
     afterEach(() =>
         Object.defineProperty(window, 'electron', {
@@ -179,5 +193,182 @@ describe('DashboardAiRecommendationsService', () => {
         await settle();
         expect(service.failed()).toBe(true);
         expect(service.items()).toEqual([]);
+    });
+
+    const tasteSignals = {
+        watched: [
+            {
+                title: 'Arrival',
+                mediaType: 'movie' as const,
+                completion: 'completed' as const,
+            },
+        ],
+        favorites: [],
+        votes: [],
+    };
+    const learnedSettings = {
+        ...settings,
+        preferences: '',
+        learnFromHistory: true,
+    };
+    const learnedResponse = {
+        ...response(),
+        tasteSummary: 'You enjoy thoughtful science fiction.',
+    };
+    const finishProfile = async () => {
+        for (let i = 0; i < 12; i++) await Promise.resolve();
+    };
+
+    it('learns from selected signals without written preferences and saves a local profile', async () => {
+        rank.mockResolvedValue(learnedResponse);
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        expect(rank.mock.calls[0][0].tasteSignals).toEqual(tasteSignals);
+        expect(service.tasteSummary()).toBe(learnedResponse.tasteSummary);
+        expect(setAppState).toHaveBeenCalledWith(
+            'recommendations:ai-taste-profile:v1',
+            expect.stringContaining(learnedResponse.tasteSummary)
+        );
+    });
+
+    it('does not transmit history when learning is disabled', async () => {
+        service.refresh(
+            { ...settings, learnFromHistory: false },
+            [candidate()],
+            false,
+            tasteSignals
+        );
+        await finishProfile();
+        expect(rank.mock.calls[0][0]).not.toHaveProperty('tasteSignals');
+    });
+
+    it('learns and persists a profile even when no catalog candidates are available', async () => {
+        rank.mockResolvedValue({
+            ranked: [],
+            tasteSummary: learnedResponse.tasteSummary,
+        });
+        service.refresh(learnedSettings, [], false, tasteSignals);
+        await finishProfile();
+        expect(rank.mock.calls[0][0].candidates).toEqual([]);
+        expect(service.tasteSummary()).toBe(learnedResponse.tasteSummary);
+        expect(service.failed()).toBe(false);
+        expect(setAppState).toHaveBeenCalled();
+    });
+
+    it('requests a new ranking and profile when only watch completion changes', async () => {
+        rank.mockResolvedValue(learnedResponse);
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        service.refresh(learnedSettings, [candidate()], false, {
+            ...tasteSignals,
+            watched: [
+                { ...tasteSignals.watched[0], completion: 'in-progress' },
+            ],
+        });
+        await finishProfile();
+        expect(rank).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not restore or persist a late profile after opting out', async () => {
+        const pending = deferred();
+        rank.mockReturnValueOnce(pending.promise);
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        service.refresh(
+            { ...learnedSettings, enabled: false },
+            [candidate()],
+            false,
+            tasteSignals
+        );
+        pending.resolve(learnedResponse);
+        await finishProfile();
+        expect(service.tasteSummary()).toBeNull();
+        expect(setAppState).not.toHaveBeenCalled();
+    });
+
+    it('restores cached rankings and profile together after taste A to B to A', async () => {
+        rank.mockResolvedValueOnce(learnedResponse).mockResolvedValueOnce({
+            ...response(),
+            tasteSummary: 'You enjoy comedy.',
+        });
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        service.refresh(
+            { ...learnedSettings, preferences: 'Comedy' },
+            [candidate()],
+            false,
+            tasteSignals
+        );
+        await finishProfile();
+        expect(service.tasteSummary()).toBe('You enjoy comedy.');
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        expect(rank).toHaveBeenCalledTimes(2);
+        expect(service.tasteSummary()).toBe(learnedResponse.tasteSummary);
+        expect(JSON.parse(setAppState.mock.calls.at(-1)?.[1]).summary).toBe(
+            learnedResponse.tasteSummary
+        );
+    });
+
+    it('reports profile read failures but can repair persistence with a fresh successful response', async () => {
+        getAppStateOrThrow.mockRejectedValueOnce(
+            new Error('Storage unavailable')
+        );
+        const pending = deferred();
+        rank.mockReturnValueOnce(pending.promise);
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        expect(service.profilePersistenceFailed()).toBe(true);
+        expect(service.tasteSummary()).toBeNull();
+        pending.resolve(learnedResponse);
+        await finishProfile();
+        expect(service.profilePersistenceFailed()).toBe(false);
+        expect(service.tasteSummary()).toBe(learnedResponse.tasteSummary);
+        expect(setAppState).toHaveBeenCalled();
+    });
+
+    it('restores a persisted profile only for matching settings and evidence', async () => {
+        rank.mockResolvedValue(learnedResponse);
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        const saved = setAppState.mock.calls[0][1];
+        getAppStateOrThrow.mockResolvedValue(saved);
+        const restored = TestBed.runInInjectionContext(
+            () => new DashboardAiRecommendationsService()
+        );
+        const pending = deferred();
+        rank.mockReturnValueOnce(pending.promise).mockReturnValueOnce(
+            new Promise(() => undefined)
+        );
+        restored.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        expect(restored.tasteSummary()).toBe(learnedResponse.tasteSummary);
+        restored.refresh(
+            { ...learnedSettings, preferences: 'Comedies' },
+            [],
+            false,
+            tasteSignals
+        );
+        await finishProfile();
+        expect(restored.tasteSummary()).toBeNull();
+        pending.resolve(learnedResponse);
+        await finishProfile();
+        expect(restored.tasteSummary()).toBeNull();
+    });
+
+    it('keeps regular recommendations on invalid/missing learned profiles and flags failed persistence', async () => {
+        rank.mockResolvedValueOnce(response());
+        service.refresh(learnedSettings, [candidate()], false, tasteSignals);
+        await finishProfile();
+        expect(service.failed()).toBe(true);
+        expect(service.tasteSummary()).toBeNull();
+        rank.mockResolvedValueOnce(learnedResponse);
+        setAppState.mockResolvedValueOnce(false);
+        service.refresh(learnedSettings, [candidate()], true, tasteSignals);
+        await finishProfile();
+        expect(service.failed()).toBe(false);
+        expect(service.profilePersistenceFailed()).toBe(true);
+        await service.retrySaveTasteProfile();
+        expect(service.profilePersistenceFailed()).toBe(false);
+        expect(rank).toHaveBeenCalledTimes(2);
     });
 });

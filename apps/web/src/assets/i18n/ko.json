@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "내 취향 자동 학습",
+        "AI_LEARNING_DISCLOSURE": "활성화하면 선택된 시청 작품 제목과 대략적인 시청 진행도, 즐겨찾기 제목, 추천에 대한 평가가 후보 메타데이터와 함께 models.saravlabs.org로 전송되어 취향을 학습합니다. 인증 정보와 소스 URL은 기기에 남습니다. 작성한 취향만 사용하려면 끄세요.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "선택 사항: 분위기, 주제, 언어, 피하고 싶은 내용을 추가하세요. 이 지침은 활동에서 학습한 취향을 조정합니다. 비워 두면 시청과 평가를 중심으로 추천합니다. 개인정보는 포함하지 마세요.",
         "AI_RECOMMENDATIONS": "AI 영화 및 시리즈 추천",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "활성화하면 작성한 취향과 후보 영화 또는 시리즈의 메타데이터가 models.saravlabs.org로 전송됩니다. 시청 기록과 재생목록 인증 정보는 절대 전송되지 않습니다. AI를 사용할 수 없어도 기존 추천은 계속 제공됩니다.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "활성화하면 작성한 취향과 후보 영화 또는 시리즈의 메타데이터가 models.saravlabs.org로 전송됩니다. 기록은 자동 취향 학습이 활성화된 경우에만 공유됩니다. 재생목록 인증 정보와 소스 URL은 기기에 남습니다. AI를 사용할 수 없어도 기존 추천은 계속 제공됩니다.",
         "AI_TOKEN_CHECKING": "게이트웨이 접근 확인 중…",
         "AI_TOKEN_CONFIGURED": "게이트웨이 토큰이 설정되었습니다.",
         "AI_TOKEN_MISSING": "게이트웨이 토큰을 사용할 수 없습니다. Windows 사용자 환경에 MODELS_AUTH_TOKEN을 설정하고 SaravTV를 다시 시작하세요.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "서버 순서",
         "CATEGORY_SORT_ARIA": "카테고리 정렬",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "영화나 시리즈를 시청하거나, 즐겨찾기를 추가하거나, 추천을 평가하면 취향 학습이 시작됩니다.",
+            "AI_TASTE_PROFILE": "AI가 학습한 나의 취향",
+            "AI_PROFILE_SAVE_FAILED": "취향 프로필은 이번 세션에서 사용할 수 있지만 저장하지 못했습니다. 저장을 다시 시도하세요.",
             "AI_PICKS": "취향에 맞춰 선정",
             "AI_LOADING": "취향에 맞는 추천을 찾는 중…",
             "AI_FAILED": "AI 추천을 사용할 수 없습니다. 일반 추천은 계속 제공됩니다.",

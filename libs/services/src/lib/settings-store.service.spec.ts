@@ -43,12 +43,14 @@ describe('SettingsStore dashboard rail settings', () => {
         await store.loadSettings();
         expect(store.getSettings().aiRecommendations).toEqual({
             enabled: false,
+            learnFromHistory: true,
             model: 'security',
             preferences: '',
         });
         await store.updateSettings({
             aiRecommendations: {
                 enabled: true,
+                learnFromHistory: true,
                 model: 'security',
                 preferences: 'Slow mysteries',
             },
@@ -61,6 +63,7 @@ describe('SettingsStore dashboard rail settings', () => {
         });
         expect(store.getSettings().aiRecommendations).toEqual({
             enabled: false,
+            learnFromHistory: true,
             model: 'security',
             preferences: 'Slow mysteries',
         });
@@ -69,6 +72,7 @@ describe('SettingsStore dashboard rail settings', () => {
             expect.objectContaining({
                 aiRecommendations: {
                     enabled: false,
+                    learnFromHistory: true,
                     model: 'security',
                     preferences: 'Slow mysteries',
                 },
@@ -86,9 +90,37 @@ describe('SettingsStore dashboard rail settings', () => {
         await store.loadSettings();
         expect(store.getSettings().aiRecommendations).toEqual({
             enabled: false,
+            learnFromHistory: true,
             model: 'security',
             preferences: 'Comedy',
         });
+    });
+
+    it('retains explicit-only consent for previously enabled AI settings', async () => {
+        storedSettings = {
+            aiRecommendations: {
+                enabled: true,
+                model: 'security',
+                preferences: 'Comedy',
+            } as Settings['aiRecommendations'],
+        };
+        const store = injector.get(SettingsStore);
+        await store.loadSettings();
+        expect(store.getSettings().aiRecommendations?.learnFromHistory).toBe(
+            false
+        );
+        await store.updateSettings({ theme: Theme.DarkTheme });
+        expect(store.getSettings().aiRecommendations?.learnFromHistory).toBe(
+            false
+        );
+        await store.updateSettings({
+            aiRecommendations: {
+                learnFromHistory: true,
+            } as Settings['aiRecommendations'],
+        });
+        expect(store.getSettings().aiRecommendations?.learnFromHistory).toBe(
+            true
+        );
     });
 
     beforeEach(() => {

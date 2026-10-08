@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Impara automaticamente i miei gusti",
+        "AI_LEARNING_DISCLOSURE": "Quando attivo, titoli visti selezionati con fasce di avanzamento, titoli preferiti e i tuoi voti sulle raccomandazioni vengono inviati a models.saravlabs.org insieme ai metadati dei candidati per imparare i tuoi gusti. Credenziali e URL delle fonti restano locali. Disattiva questa opzione per usare solo le tue preferenze scritte.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Facoltativo: aggiungi atmosfere, temi, lingue o cose da evitare. Queste istruzioni orientano i gusti appresi dalla tua attività. Lascia vuoto per dare priorità alle tue visioni e valutazioni. Non includere informazioni personali.",
         "AI_RECOMMENDATIONS": "Scelte di film e serie con IA",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Quando attiva, le tue preferenze scritte e i metadati dei film o delle serie candidati vengono inviati a models.saravlabs.org. La cronologia di visione e le credenziali delle playlist non vengono mai inviate. Le raccomandazioni esistenti restano disponibili se l’IA non è disponibile.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Quando attiva, le tue preferenze scritte e i metadati dei film o delle serie candidati vengono inviati a models.saravlabs.org. La cronologia viene condivisa solo se è attivo l’apprendimento automatico dei gusti. Credenziali delle playlist e URL delle fonti restano sul dispositivo. Le raccomandazioni esistenti restano disponibili se l’IA non è disponibile.",
         "AI_TOKEN_CHECKING": "Verifica dell’accesso al gateway…",
         "AI_TOKEN_CONFIGURED": "Token del gateway configurato.",
         "AI_TOKEN_MISSING": "Token del gateway non disponibile. Imposta MODELS_AUTH_TOKEN nell’ambiente del tuo utente Windows e riavvia SaravTV.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Ordine del server",
         "CATEGORY_SORT_ARIA": "Ordina categorie",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Guarda un film o una serie, aggiungi un preferito o vota una raccomandazione per iniziare a imparare i tuoi gusti.",
+            "AI_TASTE_PROFILE": "Cosa l’IA ha imparato sui tuoi gusti",
+            "AI_PROFILE_SAVE_FAILED": "Il tuo profilo dei gusti è disponibile per questa sessione, ma non è stato possibile salvarlo. Riprova a salvarlo.",
             "AI_PICKS": "Selezionati per i tuoi gusti",
             "AI_LOADING": "Ricerca di scelte adatte alle tue preferenze…",
             "AI_FAILED": "Le scelte IA non sono disponibili. Le tue raccomandazioni abituali sono ancora qui.",

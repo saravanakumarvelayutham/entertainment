@@ -23,6 +23,7 @@ describe('SettingsDashboardSectionComponent', () => {
             showDashboard: new FormControl(true),
             aiRecommendations: new FormGroup({
                 enabled: new FormControl(false),
+                learnFromHistory: new FormControl(true),
                 model: new FormControl('security'),
                 preferences: new FormControl(''),
             }),
@@ -128,6 +129,25 @@ describe('SettingsDashboardSectionComponent', () => {
         const textarea = fixture.nativeElement.querySelector(
             '[data-test-id="ai-preferences"]'
         ) as HTMLTextAreaElement;
+        expect(
+            fixture.nativeElement.querySelector(
+                '[data-test-id="ai-learn-from-history"]'
+            )
+        ).not.toBeNull();
+        expect(fixture.nativeElement.textContent).toContain(
+            'SETTINGS.AI_PREFERENCES_OPTIONAL_DESCRIPTION'
+        );
+        fixture.componentInstance
+            .form()
+            .get('aiRecommendations.learnFromHistory')
+            ?.setValue(false);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toContain(
+            'SETTINGS.AI_PREFERENCES_DESCRIPTION'
+        );
+        expect(fixture.nativeElement.textContent).not.toContain(
+            'SETTINGS.AI_PREFERENCES_OPTIONAL_DESCRIPTION'
+        );
         textarea.value = 'Slow mysteries';
         textarea.dispatchEvent(new Event('input'));
         expect(

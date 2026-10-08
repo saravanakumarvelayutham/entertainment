@@ -74,7 +74,7 @@ export function aiRecommendationSettingsValidator(
     }
     if (
         typeof value.preferences !== 'string' ||
-        !value.preferences.trim() ||
+        (value.learnFromHistory !== true && !value.preferences.trim()) ||
         value.preferences.length > MAX_AI_PREFERENCES_LENGTH
     ) {
         return { aiPreferences: true };

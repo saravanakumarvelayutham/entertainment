@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Aprender mis gustos automáticamente",
+        "AI_LEARNING_DISCLOSURE": "Al activarlo, se envían a models.saravlabs.org títulos vistos seleccionados y rangos de progreso, títulos favoritos y tus votos sobre recomendaciones, junto con los metadatos de candidatos, para aprender tus gustos. Las credenciales y las URL de las fuentes permanecen locales. Desactívalo para usar solo tus preferencias escritas.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Opcional: añade ambientes, temas, idiomas o cosas que prefieres evitar. Estas instrucciones orientan los gustos aprendidos de tu actividad. Déjalo en blanco para que tu visualización y tus votos guíen las recomendaciones. No incluyas información personal.",
         "AI_RECOMMENDATIONS": "Recomendaciones de películas y series con IA",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Al activarlo, tus preferencias escritas y los metadatos de las películas o series candidatas se envían a models.saravlabs.org. Nunca se envían el historial de reproducción ni las credenciales de las listas. Las recomendaciones existentes siguen disponibles si la IA no está disponible.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Al activarlo, tus preferencias escritas y los metadatos de las películas o series candidatas se envían a models.saravlabs.org. El historial solo se comparte si está activado el aprendizaje automático de tus gustos. Las credenciales de las listas y las URL de las fuentes permanecen en tu dispositivo. Las recomendaciones existentes siguen disponibles si la IA no está disponible.",
         "AI_TOKEN_CHECKING": "Comprobando el acceso a la pasarela…",
         "AI_TOKEN_CONFIGURED": "Token de la pasarela configurado.",
         "AI_TOKEN_MISSING": "Token de la pasarela no disponible. Configura MODELS_AUTH_TOKEN en el entorno de tu usuario de Windows y reinicia SaravTV.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Orden del servidor",
         "CATEGORY_SORT_ARIA": "Ordenar categorías",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Mira una película o serie, añade un favorito o vota una recomendación para empezar a aprender tus gustos.",
+            "AI_TASTE_PROFILE": "Lo que la IA ha aprendido sobre tus gustos",
+            "AI_PROFILE_SAVE_FAILED": "Tu perfil de gustos está disponible en esta sesión, pero no se pudo guardar. Inténtalo de nuevo para guardarlo.",
             "AI_PICKS": "Seleccionados según tus gustos",
             "AI_LOADING": "Buscando recomendaciones que se ajusten a tus preferencias…",
             "AI_FAILED": "Las recomendaciones de IA no están disponibles. Tus recomendaciones habituales siguen aquí.",

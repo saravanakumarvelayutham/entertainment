@@ -69,6 +69,24 @@ describe('RecommendationFeedbackService', () => {
         );
     });
 
+    it('rejects corrupt optional titles while preserving historical votes without titles', async () => {
+        const entry = {
+            mediaType: 'movie',
+            tmdbId: 1,
+            genreIds: [18],
+            choice: 'more-like-this',
+            updatedAt: '2026-10-07',
+        };
+        getAppStateOrThrow.mockResolvedValue(
+            JSON.stringify({
+                entries: [entry, { ...entry, tmdbId: 2, title: 42 }],
+            })
+        );
+        const service = createService();
+        await service.load();
+        expect(service.entries()).toEqual([entry]);
+    });
+
     it('keeps the previous choice when persistence fails', async () => {
         setAppState.mockResolvedValue(false);
         const service = createService();

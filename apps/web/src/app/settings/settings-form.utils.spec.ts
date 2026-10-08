@@ -262,6 +262,7 @@ describe('AI recommendation preferences', () => {
         const form = createSettingsForm(new FormBuilder(), true);
         expect(form.getRawValue().aiRecommendations).toEqual({
             enabled: false,
+            learnFromHistory: true,
             model: 'security',
             preferences: '',
         });
@@ -276,15 +277,39 @@ describe('AI recommendation preferences', () => {
             createSettingsFromFormValue(form, {} as Settings).aiRecommendations
         ).toEqual({
             enabled: true,
+            learnFromHistory: true,
             model: 'security',
             preferences: 'Slow mysteries',
         });
     });
 
+    it('permits automatic learning without written preferences and validates after opt-out', () => {
+        const form = createSettingsForm(new FormBuilder(), true);
+        const group = form.get('aiRecommendations');
+        group?.patchValue({
+            enabled: true,
+            learnFromHistory: true,
+            preferences: '',
+        });
+        expect(group?.valid).toBe(true);
+        group?.patchValue({ learnFromHistory: false });
+        expect(group?.hasError('aiPreferences')).toBe(true);
+        group?.patchValue({
+            learnFromHistory: true,
+            preferences: 'x'.repeat(2001),
+        });
+        expect(group?.hasError('aiPreferences')).toBe(true);
+    });
+
     it('validates enabled fields and permits opting out with unfinished fields', () => {
         const form = createSettingsForm(new FormBuilder(), true);
         const group = form.get('aiRecommendations');
-        group?.patchValue({ enabled: true, model: ' ', preferences: '' });
+        group?.patchValue({
+            enabled: true,
+            learnFromHistory: false,
+            model: ' ',
+            preferences: '',
+        });
         expect(group?.hasError('aiModel')).toBe(true);
         group?.patchValue({ model: 'security' });
         expect(group?.hasError('aiPreferences')).toBe(true);

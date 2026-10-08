@@ -32,6 +32,21 @@
         @if (form().get('aiRecommendations.enabled')?.value === true) {
             <div class="setting-item">
                 <div class="setting-item__meta">
+                    <h4>{{ 'SETTINGS.AI_LEARN_FROM_HISTORY' | translate }}</h4>
+                    <p>{{ 'SETTINGS.AI_LEARNING_DISCLOSURE' | translate }}</p>
+                </div>
+                <div class="setting-item__control setting-item__toggle">
+                    <mat-checkbox
+                        formControlName="learnFromHistory"
+                        data-test-id="ai-learn-from-history"
+                        [aria-label]="
+                            'SETTINGS.AI_LEARN_FROM_HISTORY' | translate
+                        "
+                    ></mat-checkbox>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item__meta">
                     <h4>{{ 'SETTINGS.AI_MODEL' | translate }}</h4>
                 </div>
                 <div class="setting-item__control">
@@ -60,7 +75,13 @@
                 <div class="setting-item__meta">
                     <h4>{{ 'SETTINGS.AI_PREFERENCES' | translate }}</h4>
                     <p>
-                        {{ 'SETTINGS.AI_PREFERENCES_DESCRIPTION' | translate }}
+                        {{
+                            (form().get('aiRecommendations.learnFromHistory')
+                                ?.value === true
+                                ? 'SETTINGS.AI_PREFERENCES_OPTIONAL_DESCRIPTION'
+                                : 'SETTINGS.AI_PREFERENCES_DESCRIPTION'
+                            ) | translate
+                        }}
                     </p>
                 </div>
                 <div class="setting-item__control">

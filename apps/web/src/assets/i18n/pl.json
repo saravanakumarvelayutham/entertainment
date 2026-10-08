@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Automatycznie poznawaj mój gust",
+        "AI_LEARNING_DISCLOSURE": "Po włączeniu wybrane oglądane tytuły i przybliżone stopnie obejrzenia, ulubione tytuły i Twoje głosy na rekomendacje są wysyłane do models.saravlabs.org wraz z metadanymi kandydatów, aby poznać Twój gust. Dane logowania i adresy URL źródeł pozostają lokalnie. Wyłącz, aby używać tylko pisemnych preferencji.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Opcjonalnie: dodaj nastroje, tematy, języki lub rzeczy, których unikasz. Te instrukcje ukierunkowują gust poznany z Twojej aktywności. Pozostaw puste, aby opierać się na oglądaniu i ocenach. Nie podawaj danych osobowych.",
         "AI_RECOMMENDATIONS": "Wybór filmów i seriali z AI",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Po włączeniu Twoje pisemne preferencje i metadane wybranych kandydatów na filmy lub seriale są wysyłane do models.saravlabs.org. Historia oglądania i dane logowania do list odtwarzania nigdy nie są wysyłane. Dotychczasowe rekomendacje pozostają dostępne, gdy AI jest niedostępne.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Po włączeniu Twoje pisemne preferencje i metadane kandydatów na filmy lub seriale są wysyłane do models.saravlabs.org. Historia jest udostępniana tylko przy włączonym automatycznym uczeniu gustu. Dane logowania do list i adresy URL źródeł pozostają na urządzeniu. Dotychczasowe rekomendacje pozostają dostępne, gdy AI jest niedostępne.",
         "AI_TOKEN_CHECKING": "Sprawdzanie dostępu do bramy…",
         "AI_TOKEN_CONFIGURED": "Token bramy został skonfigurowany.",
         "AI_TOKEN_MISSING": "Token bramy jest niedostępny. Ustaw MODELS_AUTH_TOKEN w środowisku użytkownika Windows i uruchom ponownie SaravTV.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Kolejność serwera",
         "CATEGORY_SORT_ARIA": "Sortuj kategorie",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Obejrzyj film lub serial, dodaj ulubiony tytuł albo zagłosuj na rekomendację, aby rozpocząć poznawanie Twojego gustu.",
+            "AI_TASTE_PROFILE": "Czego AI dowiedziało się o Twoim guście",
+            "AI_PROFILE_SAVE_FAILED": "Twój profil gustu jest dostępny w tej sesji, ale nie udało się go zapisać. Spróbuj zapisać go ponownie.",
             "AI_PICKS": "Wybrane według Twojego gustu",
             "AI_LOADING": "Szukanie propozycji pasujących do Twoich preferencji…",
             "AI_FAILED": "Propozycje AI są niedostępne. Twoje zwykłe rekomendacje nadal tu są.",

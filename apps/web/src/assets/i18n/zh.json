@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "自动学习我的喜好",
+        "AI_LEARNING_DISCLOSURE": "启用后，会将部分已观看作品的标题和完成度区间、收藏标题及您对推荐的评价，与候选元数据一起发送到 models.saravlabs.org，以学习您的喜好。凭据和来源网址保留在本地。关闭此选项可仅使用您填写的偏好。",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "可选：补充氛围、主题、语言或想避开的内容。这些说明会引导从您的活动中学习到的喜好。留空则以观看记录和评价为主。请勿包含个人信息。",
         "AI_RECOMMENDATIONS": "AI 电影和剧集推荐",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "启用后，您填写的偏好以及候选电影或剧集的元数据将发送到 models.saravlabs.org。观看记录和播放列表凭据绝不会发送。如果 AI 不可用，现有推荐仍然可用。",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "启用后，您填写的偏好及候选电影或剧集的元数据将发送到 models.saravlabs.org。只有启用自动学习喜好时才会共享历史记录。播放列表凭据和来源网址保留在您的设备上。如果 AI 不可用，现有推荐仍然可用。",
         "AI_TOKEN_CHECKING": "正在检查网关访问权限…",
         "AI_TOKEN_CONFIGURED": "网关令牌已配置。",
         "AI_TOKEN_MISSING": "网关令牌不可用。请在 Windows 用户环境中设置 MODELS_AUTH_TOKEN，然后重启 SaravTV。",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "服务器排序",
         "CATEGORY_SORT_ARIA": "排序分类",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "观看电影或剧集、添加收藏，或评价一条推荐，即可开始学习您的喜好。",
+            "AI_TASTE_PROFILE": "AI 对您喜好的理解",
+            "AI_PROFILE_SAVE_FAILED": "您的喜好档案在本次会话中可用，但无法保存。请重试保存。",
             "AI_PICKS": "根据您的喜好精选",
             "AI_LOADING": "正在寻找符合您偏好的推荐…",
             "AI_FAILED": "AI 推荐不可用。常规推荐仍然可用。",

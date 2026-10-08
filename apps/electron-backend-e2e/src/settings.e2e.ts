@@ -67,6 +67,10 @@ test.describe('Electron Settings', () => {
             await expect(enabled).not.toBeChecked();
             await expect(page.getByTestId('ai-model')).toHaveCount(0);
             await enabled.check();
+            await page
+                .getByTestId('ai-learn-from-history')
+                .locator('input[type="checkbox"]')
+                .uncheck();
             await expect(page.getByTestId('ai-model')).toHaveValue('security');
             await expect(page.getByTestId('save-settings')).toBeDisabled();
             await page
@@ -85,12 +89,33 @@ test.describe('Electron Settings', () => {
                 .getByTestId('ai-enabled')
                 .locator('input[type="checkbox"]');
             await expect(enabled).toBeChecked();
-            await expect(page.getByTestId('ai-model')).toHaveValue('security-test-model');
+            await expect(page.getByTestId('ai-model')).toHaveValue(
+                'security-test-model'
+            );
             await expect(page.getByTestId('ai-preferences')).toHaveValue(
                 'Thoughtful science fiction without horror'
             );
             await page.getByTestId('ai-preferences').fill('  ');
             await expect(page.getByTestId('save-settings')).toBeDisabled();
+            await page
+                .getByTestId('ai-learn-from-history')
+                .locator('input[type="checkbox"]')
+                .check();
+            await expect(page.getByTestId('save-settings')).toBeEnabled();
+            await saveSettings(page);
+            app = await restartElectronApp(app, dataDir, launchOptions);
+            page = app.mainWindow;
+            await openSettings(page);
+            await openSettingsSection(page, 'dashboard');
+            await expect(
+                page
+                    .getByTestId('ai-learn-from-history')
+                    .locator('input[type="checkbox"]')
+            ).toBeChecked();
+            await expect(page.getByTestId('ai-preferences')).toHaveValue('');
+            enabled = page
+                .getByTestId('ai-enabled')
+                .locator('input[type="checkbox"]');
             await enabled.uncheck();
             await saveSettings(page);
 
@@ -120,8 +145,12 @@ test.describe('Electron Settings', () => {
             await openSettings(app.mainWindow);
             await openSettingsSection(app.mainWindow, 'about');
 
-            await expect(app.mainWindow.getByTestId('app-update-status')).toBeVisible();
-            await expect(app.mainWindow.getByTestId('app-update-check')).toBeVisible();
+            await expect(
+                app.mainWindow.getByTestId('app-update-status')
+            ).toBeVisible();
+            await expect(
+                app.mainWindow.getByTestId('app-update-check')
+            ).toBeVisible();
             await expect(
                 app.mainWindow.getByTestId('app-update-open-release')
             ).toBeVisible();
@@ -367,7 +396,10 @@ test.describe('Electron Settings', () => {
                     'mat-checkbox[formcontrolname="showExternalPlaybackBar"] input[type="checkbox"]'
                 )
             ).not.toBeChecked();
-            await openSettingsSection(secondLaunch.mainWindow, 'remote-control');
+            await openSettingsSection(
+                secondLaunch.mainWindow,
+                'remote-control'
+            );
             await expect(
                 secondLaunch.mainWindow.locator(
                     'mat-checkbox[formcontrolname="remoteControl"] input[type="checkbox"]'
@@ -424,9 +456,7 @@ test.describe('Electron Settings', () => {
 
             await expect(firstChannel).toBeVisible({ timeout: 20000 });
             await firstChannel.click();
-            const video = app.mainWindow.locator(
-                'app-html-video-player video'
-            );
+            const video = app.mainWindow.locator('app-html-video-player video');
             await expect(video).toBeAttached();
             await video.evaluate<void, HTMLVideoElement>((video) => {
                 const ownerDocument = video.ownerDocument;
@@ -682,7 +712,9 @@ test.describe('Electron Settings', () => {
         }
     });
 
-    test('@settings @electron starts on sources when dashboard is disabled', async ({ dataDir }) => {
+    test('@settings @electron starts on sources when dashboard is disabled', async ({
+        dataDir,
+    }) => {
         const firstLaunch = await launchElectronApp(dataDir);
 
         try {
@@ -725,10 +757,9 @@ test.describe('Electron Settings', () => {
                     exact: true,
                 })
             ).toHaveCount(0);
-            await expect(secondLaunch.mainWindow.locator('a.brand')).toHaveAttribute(
-                'href',
-                /\/workspace\/sources$/
-            );
+            await expect(
+                secondLaunch.mainWindow.locator('a.brand')
+            ).toHaveAttribute('href', /\/workspace\/sources$/);
         } finally {
             await closeElectronApp(secondLaunch);
         }
@@ -882,7 +913,9 @@ test.describe('Electron Settings', () => {
         }
 
         try {
-            await app.mainWindow.waitForURL(/\/workspace\/xtreams\/[^/]+\/vod$/);
+            await app.mainWindow.waitForURL(
+                /\/workspace\/xtreams\/[^/]+\/vod$/
+            );
         } finally {
             await closeElectronApp(app);
         }
@@ -917,8 +950,7 @@ test.describe('Electron Settings', () => {
                 app.mainWindow.getByTestId('tmdb-cache-size')
             ).toHaveText(/\b1 entries/);
 
-            const clearButton =
-                app.mainWindow.getByTestId('tmdb-clear-cache');
+            const clearButton = app.mainWindow.getByTestId('tmdb-clear-cache');
             await expect(clearButton).toBeEnabled();
             await clearButton.click();
 
@@ -1042,7 +1074,9 @@ test.describe('Electron Settings', () => {
                     () =>
                         app.electronApp.evaluate(({ BrowserWindow }) => {
                             const mainWindow = BrowserWindow.getAllWindows()[0];
-                            return mainWindow ? mainWindow.isMaximized() : false;
+                            return mainWindow
+                                ? mainWindow.isMaximized()
+                                : false;
                         }),
                     { timeout: 10_000 }
                 )
@@ -1076,8 +1110,7 @@ type CapturedExternalPlayerLaunch = {
     url: string;
 };
 
-const externalPlayerLaunchCaptureKey =
-    '__iptvnatorE2eExternalPlayerLaunches';
+const externalPlayerLaunchCaptureKey = '__iptvnatorE2eExternalPlayerLaunches';
 
 async function installExternalPlayerLaunchCapture(
     app: LaunchedElectronApp

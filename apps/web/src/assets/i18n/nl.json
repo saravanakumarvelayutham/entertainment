@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Mijn smaak automatisch leren",
+        "AI_LEARNING_DISCLOSURE": "Als dit is ingeschakeld, worden geselecteerde bekeken titels met globale voortgang, favoriete titels en je stemmen op aanbevelingen met metadata van kandidaten naar models.saravlabs.org gestuurd om je smaak te leren. Inloggegevens en bron-URL’s blijven lokaal. Schakel dit uit om alleen je geschreven voorkeuren te gebruiken.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Optioneel: voeg sferen, thema’s, talen of dingen om te vermijden toe. Deze instructies sturen de smaak die van je activiteit wordt geleerd. Laat dit leeg om je kijkgedrag en beoordelingen te laten leiden. Vermeld geen persoonlijke informatie.",
         "AI_RECOMMENDATIONS": "AI-selecties voor films en series",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Als dit is ingeschakeld, worden je geschreven voorkeuren en metadata van mogelijke films of series naar models.saravlabs.org gestuurd. Kijkgeschiedenis en inloggegevens van afspeellijsten worden nooit verstuurd. Bestaande aanbevelingen blijven beschikbaar als AI niet beschikbaar is.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Als dit is ingeschakeld, worden je geschreven voorkeuren en metadata van mogelijke films of series naar models.saravlabs.org gestuurd. Geschiedenis wordt alleen gedeeld als automatisch leren van je smaak is ingeschakeld. Inloggegevens van afspeellijsten en bron-URL’s blijven op je apparaat. Bestaande aanbevelingen blijven beschikbaar als AI niet beschikbaar is.",
         "AI_TOKEN_CHECKING": "Gatewaytoegang controleren…",
         "AI_TOKEN_CONFIGURED": "Gatewaytoken ingesteld.",
         "AI_TOKEN_MISSING": "Gatewaytoken niet beschikbaar. Stel MODELS_AUTH_TOKEN in je Windows-gebruikersomgeving in en start SaravTV opnieuw.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Servervolgorde",
         "CATEGORY_SORT_ARIA": "Categorieën sorteren",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Bekijk een film of serie, voeg een favoriet toe of stem op een aanbeveling om je smaak te laten leren.",
+            "AI_TASTE_PROFILE": "Wat AI over je smaak heeft geleerd",
+            "AI_PROFILE_SAVE_FAILED": "Je smaakprofiel is beschikbaar voor deze sessie, maar kon niet worden opgeslagen. Probeer het opnieuw op te slaan.",
             "AI_PICKS": "Geselecteerd voor jouw smaak",
             "AI_LOADING": "Selecties zoeken die bij je voorkeuren passen…",
             "AI_FAILED": "AI-selecties zijn niet beschikbaar. Je gewone aanbevelingen zijn er nog steeds.",

@@ -259,8 +259,11 @@
         }
     },
     "SETTINGS": {
+        "AI_LEARN_FROM_HISTORY": "Meinen Geschmack automatisch lernen",
+        "AI_LEARNING_DISCLOSURE": "Wenn aktiviert, werden ausgewählte angesehene Titel mit grobem Wiedergabefortschritt, Favoritentitel und Ihre Empfehlungsbewertungen zusammen mit Metadaten möglicher Titel an models.saravlabs.org gesendet, um Ihren Geschmack zu lernen. Zugangsdaten und Quell-URLs bleiben lokal. Deaktivieren Sie dies, um nur Ihre schriftlichen Vorlieben zu verwenden.",
+        "AI_PREFERENCES_OPTIONAL_DESCRIPTION": "Optional: Ergänzen Sie Stimmungen, Themen, Sprachen oder Dinge, die Sie vermeiden möchten. Diese Angaben lenken den aus Ihrer Aktivität gelernten Geschmack. Lassen Sie das Feld leer, damit Wiedergabe und Bewertungen entscheiden. Geben Sie keine persönlichen Informationen an.",
         "AI_RECOMMENDATIONS": "KI-Empfehlungen für Filme und Serien",
-        "AI_RECOMMENDATIONS_DISCLOSURE": "Wenn aktiviert, werden Ihre schriftlichen Vorlieben und Metadaten möglicher Filme oder Serien an models.saravlabs.org gesendet. Wiedergabeverlauf und Playlist-Zugangsdaten werden nie gesendet. Bestehende Empfehlungen bleiben verfügbar, wenn die KI nicht verfügbar ist.",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Wenn aktiviert, werden Ihre schriftlichen Vorlieben und Metadaten möglicher Filme oder Serien an models.saravlabs.org gesendet. Der Verlauf wird nur beim automatischen Lernen Ihres Geschmacks geteilt. Playlist-Zugangsdaten und Quell-URLs bleiben auf Ihrem Gerät. Bestehende Empfehlungen bleiben verfügbar, wenn die KI nicht verfügbar ist.",
         "AI_TOKEN_CHECKING": "Gateway-Zugriff wird geprüft…",
         "AI_TOKEN_CONFIGURED": "Gateway-Token eingerichtet.",
         "AI_TOKEN_MISSING": "Gateway-Token nicht verfügbar. Legen Sie MODELS_AUTH_TOKEN in Ihrer Windows-Benutzerumgebung fest und starten Sie SaravTV neu.",
@@ -1509,6 +1512,9 @@
         "SORT_SERVER": "Serverreihenfolge",
         "CATEGORY_SORT_ARIA": "Kategorien sortieren",
         "DASHBOARD": {
+            "AI_NEEDS_EVIDENCE": "Sehen Sie einen Film oder eine Serie, fügen Sie einen Favoriten hinzu oder bewerten Sie eine Empfehlung, damit Ihr Geschmack gelernt werden kann.",
+            "AI_TASTE_PROFILE": "Was die KI über Ihren Geschmack gelernt hat",
+            "AI_PROFILE_SAVE_FAILED": "Ihr Geschmacksprofil ist für diese Sitzung verfügbar, konnte aber nicht gespeichert werden. Versuchen Sie erneut, es zu speichern.",
             "AI_PICKS": "Für Ihren Geschmack ausgewählt",
             "AI_LOADING": "Passende Empfehlungen werden gesucht…",
             "AI_FAILED": "KI-Empfehlungen sind nicht verfügbar. Ihre üblichen Empfehlungen sind weiterhin vorhanden.",
