@@ -25,7 +25,8 @@
 
     .rail__card {
         overflow: hidden;
-        border: 1px solid var(--app-widget-border);
+        border: 1px solid var(--app-widget-header-border);
+        box-shadow: var(--app-widget-shadow);
         background:
             linear-gradient(
                 135deg,
@@ -126,9 +127,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 0 2px;
-    // Tighter height cap — keeps rail chapter markers compact
-    min-height: 24px;
+    padding: 0 2px 12px;
+    border-bottom: 1px solid var(--app-widget-header-border);
+    min-height: 28px;
 }
 
 .rail__title {
@@ -136,11 +137,16 @@
     display: inline-flex;
     align-items: baseline;
     gap: 8px;
-    font-size: 1.125rem; // 18px — matches Netflix rail-title scale
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.012em;
     color: var(--app-heading-color, #1a1d23);
+    min-width: 0;
+
+    .rail__label {
+        overflow-wrap: anywhere;
+    }
 }
 
 .rail__see-all {
@@ -153,7 +159,11 @@
     font-weight: 500;
     line-height: 1;
     letter-spacing: 0.005em;
-    color: var(--app-muted-color, #8891a4);
+    color: var(--app-selection-color);
+    background: var(--app-selection-surface);
+    flex-shrink: 0;
+    min-height: 28px;
+    app-region: no-drag;
     text-decoration: none;
     transition:
         color 0.15s ease,
@@ -274,7 +284,8 @@
         transform 0.2s ease,
         filter 0.2s ease;
 
-    &:hover {
+    &:hover,
+    &:focus-within {
         transform: translateY(-2px);
 
         .rail__art {
@@ -310,7 +321,7 @@
     border-radius: var(--rail-radius);
     background: var(--app-widget-bg, #1e2330);
     border: 1px solid var(--app-widget-header-border, rgba(255, 255, 255, 0.05));
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--app-widget-shadow);
     transition: box-shadow 0.2s ease;
 
     img {
@@ -641,7 +652,8 @@
         border-color 0.2s ease,
         box-shadow 0.2s ease;
 
-    &:hover {
+    &:hover,
+    &:focus-within {
         transform: translateY(-1px);
         border-color: var(--app-selection-border, rgba(47, 123, 255, 0.4));
         box-shadow:
@@ -804,4 +816,25 @@
 .rail__channel-time {
     flex: 0 0 auto;
     font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rail__card,
+    .rail__art,
+    .rail__card-title,
+    .rail__see-all,
+    .rail__see-all mat-icon,
+    .rail__chev,
+    .rail__viewport::before,
+    .rail__viewport::after,
+    .rail__action-trigger,
+    .rail__art-progress i,
+    .rail__channel-progress i {
+        transition: none;
+    }
+
+    .rail__card:hover,
+    .rail__card:focus-within {
+        transform: none;
+    }
 }

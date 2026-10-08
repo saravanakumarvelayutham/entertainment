@@ -5,6 +5,15 @@ presentation surface over existing playlist, recent, favorites, EPG, and Xtream
 catalog data; it should not introduce Electron IPC, SQLite schema, or route
 contracts on its own.
 
+The hero uses a spacious artwork banner with a contained portrait poster and
+larger title. Image-backed heroes use a dark text scrim in both themes; missing
+or failed artwork uses a theme-colored scrim over the generated backdrop.
+Rail headings use a subtle separator and accented See all links. Cards retain
+the configured cover sizes, with surface shadows and matching hover/keyboard
+emphasis. The hero and its skeleton share responsive geometry, including an
+80px poster on narrow phones. Reduced-motion preferences suppress decorative
+movement and skeleton shimmer.
+
 ## Dashboard Surfaces
 
 The dashboard renders a surface only when the matching setting is enabled. Data

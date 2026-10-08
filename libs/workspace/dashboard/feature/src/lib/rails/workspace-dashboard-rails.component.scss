@@ -18,7 +18,7 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 36px;
     min-width: 0;
 }
 
@@ -33,18 +33,19 @@
 }
 
 // ── Hero ────────────────────────────────────────────────────────────────────
-// Netflix/Apple TV-style hero: blurred poster backdrop + vignette + sharp 2:3
-// poster card + text block. Mirrors content-hero fallback (no dedicated
-// backdrop asset available, so we reuse the poster blurred + scaled).
+// A larger feature banner lets artwork carry the dashboard's visual identity.
+// The poster remains visible when the provider has no landscape artwork.
 .hero {
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, var(--hero-poster-width)) minmax(0, 1fr);
-    gap: 20px;
-    padding: 16px;
+    gap: 28px;
+    padding: 32px;
+    min-height: 310px;
+    box-sizing: border-box;
     text-decoration: none;
     color: inherit;
-    border-radius: 18px;
+    border-radius: 24px;
     overflow: hidden;
     isolation: isolate;
     background: var(--app-widget-header-bg, #232840);
@@ -56,10 +57,13 @@
         transform 0.2s ease,
         box-shadow 0.2s ease;
 
-    // Tighter than v0.21 (was 160px). Matches the v0.22 mockup's 150px
-    // poster intent, freeing space for the progress + remaining label
-    // without growing total hero height.
-    --hero-poster-width: 140px;
+    --hero-poster-width: 156px;
+    app-region: no-drag;
+
+    &:focus-visible {
+        outline: 3px solid var(--app-selection-color);
+        outline-offset: 4px;
+    }
 
     &:hover {
         transform: translateY(-2px);
@@ -92,7 +96,7 @@
     position: absolute;
     inset: 0;
     background-size: cover;
-    background-position: center 25%;
+    background-position: 70% 30%;
     background-repeat: no-repeat;
     z-index: 0;
     pointer-events: none;
@@ -124,10 +128,8 @@
     pointer-events: none;
 }
 
-// Layer 1: vignette. Scrim behind the poster card (contrast) and on the
-// right edge (text legibility). Middle stays mostly transparent so the
-// backdrop colours show through. Darkens further when a sharp backdrop is
-// present, since real photography has more focal variation than a blur wash.
+// Layer 1: theme scrim for generated artwork, with a dark photographic
+// override below. Artwork can remain visible toward the right edge.
 .hero__vignette {
     position: absolute;
     inset: 0;
@@ -167,19 +169,30 @@
         );
 }
 
-.hero--has-backdrop .hero__vignette {
+// White image-overlay text needs a dark scrim for both landscape artwork and
+// blurred posters, in both application themes.
+.hero--with-image .hero__vignette {
     background:
         linear-gradient(
             90deg,
-            rgba(0, 0, 0, 0.55) 0%,
-            rgba(0, 0, 0, 0.2) 35%,
-            rgba(0, 0, 0, 0.78) 100%
+            rgba(0, 0, 0, 0.8) 0%,
+            rgba(0, 0, 0, 0.68) 45%,
+            rgba(0, 0, 0, 0.12) 100%
         ),
         linear-gradient(
             to bottom,
             rgba(0, 0, 0, 0) 40%,
             rgba(0, 0, 0, 0.45) 100%
         );
+}
+
+.hero--has-default-backdrop .hero__vignette {
+    background: linear-gradient(
+        90deg,
+        var(--app-widget-header-bg) 0%,
+        color-mix(in srgb, var(--app-widget-header-bg) 94%, transparent) 65%,
+        color-mix(in srgb, var(--app-widget-header-bg) 35%, transparent) 100%
+    );
 }
 
 // Layer 2: sharp poster in native 2:3 aspect (no more 16:9 crop).
@@ -253,18 +266,17 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     min-width: 0;
+    max-width: 620px;
 }
 
 .hero__title {
     margin: 6px 0 4px;
-    font-size: 1.75rem;
-    font-weight: 600;
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    font-weight: 750;
     line-height: 1.15;
-    // Display-weight tracking: looser than -0.02em which crushes glyphs at
-    // this size (~28px). Matches Apple TV+ "Up Next" card scale.
-    letter-spacing: -0.015em;
+    letter-spacing: -0.025em;
     color: var(--app-heading-color, #d8dce8);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -509,7 +521,7 @@
     align-items: center;
     gap: 6px;
     padding: 10px 20px 10px 14px;
-    border-radius: 999px;
+    border-radius: 12px;
     background: var(--app-selection-color, #78adff);
     color: var(--app-selection-on-color, #071225);
     font-size: 0.875rem;
@@ -517,7 +529,7 @@
     line-height: 1;
     letter-spacing: 0.005em;
     // Explicit min-height anchors the text baseline regardless of font-smoothing
-    min-height: 36px;
+    min-height: 44px;
     box-sizing: border-box;
     box-shadow: 0 4px 12px -4px
         var(--app-selection-glow, rgba(120, 173, 255, 0.5));
@@ -559,17 +571,19 @@
 .rails-page__skeleton-hero {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
-    gap: 24px;
-    padding: 20px;
-    border-radius: 18px;
+    grid-template-columns: minmax(0, 156px) minmax(0, 1fr);
+    gap: 28px;
+    padding: 32px;
+    min-height: 310px;
+    box-sizing: border-box;
+    border-radius: 24px;
     background: var(--app-widget-header-bg, #232840);
     border: 1px solid var(--app-widget-header-border, rgba(255, 255, 255, 0.08));
 }
 
 .rails-page__skeleton-hero-poster {
     @extend %skeleton-shimmer;
-    width: 160px;
+    width: 156px;
     aspect-ratio: 2 / 3;
     border-radius: 12px;
     align-self: center;
@@ -605,8 +619,8 @@
 .rails-page__skeleton-hero-cta {
     @extend %skeleton-shimmer;
     width: 160px;
-    height: 36px;
-    border-radius: 999px;
+    height: 44px;
+    border-radius: 12px;
     margin-top: 14px;
 }
 
@@ -643,6 +657,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .hero,
+    .hero__progress-bar,
+    .hero__live-epg-progress i {
+        transition: none;
+    }
+
+    .hero:hover {
+        transform: none;
+    }
+
     .rails-page__skeleton-hero-poster,
     .rails-page__skeleton-hero-title,
     .rails-page__skeleton-hero-subtitle,
@@ -669,6 +693,8 @@
         grid-template-columns: var(--hero-poster-width) minmax(0, 1fr);
         gap: 14px;
         padding: 14px;
+        min-height: 240px;
+        border-radius: 18px;
     }
 
     // Skeleton hero mirrors real hero at this breakpoint.
@@ -676,6 +702,8 @@
         grid-template-columns: 120px minmax(0, 1fr);
         gap: 14px;
         padding: 14px;
+        min-height: 240px;
+        border-radius: 18px;
     }
 
     .rails-page__skeleton-hero-poster {
@@ -689,5 +717,26 @@
 
     .hero__title {
         font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero,
+    .rails-page__skeleton-hero {
+        grid-template-columns: 80px minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .hero {
+        --hero-poster-width: 80px;
+    }
+
+    .rails-page__skeleton-hero-poster {
+        width: 80px;
+    }
+
+    .hero__cta {
+        padding: 10px 12px;
+        line-height: 1.3;
     }
 }
