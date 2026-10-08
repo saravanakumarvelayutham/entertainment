@@ -212,14 +212,27 @@ optional explicit taste overrides. AI is disabled by default; the default model
 is `security`. New opt-ins offer history learning by default. Already-enabled
 settings without a learning flag retain their original explicit-only mode until
 the user enables learning, preserving the original sharing consent.
-Enabling it reranks recommendation candidates already matched to available
-library titles and supplies short reasons. Existing local/TMDB ranking still
-builds the candidate set and remains the fallback when the gateway is unavailable.
+Enabling it ranks verified playable library titles and supplies short reasons.
+The first response can suggest up to 12 titles and four movie/TV genre facets.
+`DashboardAiDiscoveryService` matches suggested titles locally before enrichment,
+discovers at most 100 public TMDB titles per facet, and retains up to 160 verified
+playable matches. Watched, favourite, dismissed and removed-source titles are
+excluded. Source pools are interleaved before the 40-candidate ranking budget.
+The first nonempty discovery plan owns an evidence generation; expanded reranking
+cannot recursively launch another discovery plan. AI picks, further discoveries,
+watched recommendations and genre rows give each recommendation identity one row.
+Existing local/TMDB ranking remains the fallback when the gateway is unavailable.
 The web/PWA does not expose the desktop gateway bridge.
 
 `DashboardAiRecommendationsService` owns asynchronous reranking and a bounded
-eight-batch session cache. Settings, viewing signals and candidate changes invalidate the displayed
-ranking; late completions cannot restore stale results. Failed batches retain
+eight-batch persistent cache in `app_state` at `recommendations:ai-results:v1`.
+Entries expire after 24 hours and store public ranked identities/reasons, discovery
+hints and summaries. Playback matches are reconstructed from the current verified
+pool. Keys compare canonical public request metadata and meaningful taste signals;
+provider object changes, card ordering and dashboard navigation do not cause scans.
+Expiry is checked on the next refresh, without a background polling timer. Explicit
+Refresh bypasses the cache. Settings, viewing signals and public candidate changes
+invalidate the displayed ranking; late completions cannot restore stale results. Failed batches retain
 the normal rails without automatic retries; the user can explicitly retry.
 
 The main-process service calls only
@@ -245,16 +258,23 @@ With learning disabled, only entered preferences and public candidate metadata
 (TMDB identity, title, year, media type and numeric genre ids) are sent. Source
 identities, provider URLs, credentials and exact viewing timestamps are never
 serialized in either mode. The learned summary is shown on the dashboard and
-kept locally through the existing application-state persistence boundary.
+kept locally in `app_state` at `recommendations:ai-taste-profile:v1` through the
+existing application-state persistence boundary. With learning enabled, the latest
+saved summary is context for subsequent inference, including after restart; current
+votes and written preferences override it. It never crosses the gateway in
+explicit-only mode. This is cumulative inference from saved context, not model
+weight training. Prior context does not itself invalidate the result cache.
 
 Only the current main window's main frame may invoke the bridge. Main validates
 at most 40 candidates, 2,000 preference characters, 100 model characters and
 300 title characters. The request has a 20-second timeout, blocks redirects and
 reads at most 128 KiB of response data. Returned JSON must contain a nonempty
-ranking with unique known ids and reasons of at most 240 characters, plus a taste
+ranking of at most 20 unique known ids and reasons of at most 240 characters, plus a taste
 summary of at most 1,000 characters when learning is requested; malformed
 or invented identities reject the entire response. Provider errors become
-generic safe errors. No automatic network retry occurs.
+allowlisted safe error codes (authentication, rate limit, timeout, network,
+unavailable, invalid request/response or oversized response). No raw gateway
+response is logged or exposed. No automatic network retry occurs.
 
 ## Empty State
 

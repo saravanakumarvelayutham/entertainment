@@ -387,7 +387,11 @@ explicit-only mode until learning is enabled. AI returns a locally saved taste
 summary and ranking, refreshed on meaningful signals rather than playback ticks.
 Requests are bounded, redirects blocked, responses validated against known ids,
 and failures retain normal recommendation rails after a 20-second timeout.
-The dashboard caches eight session batches and retries only explicitly.
+Saved summaries guide later learning. AI hints expand discovery to verified playable
+titles; one plan per evidence generation prevents recursive scans. The dashboard
+caches eight public result batches locally for 24 hours across restarts; navigation
+reuses them, and explicit Refresh bypasses the cache. Recommendation rows deduplicate
+titles. Failures retry only explicitly.
 Contract and Windows environment launch guidance:
 `docs/architecture/workspace-dashboard.md` (Optional AI Taste Ranking).
 

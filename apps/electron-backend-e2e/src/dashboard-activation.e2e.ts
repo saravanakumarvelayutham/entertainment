@@ -13,6 +13,9 @@ import {
     goToDashboard,
     launchElectronApp,
     openWorkspaceSection,
+    openSettings,
+    openSettingsSection,
+    saveSettings,
     resetMockServers,
     test,
     waitForXtreamWorkspaceReady,
@@ -26,6 +29,149 @@ import {
 } from './portal-mock-fixtures';
 
 test.describe('Dashboard Activation', () => {
+    test('@electron reuses learned AI recommendations on dashboard revisits and refreshes explicitly', async ({
+        dataDir,
+        request,
+    }) => {
+        test.setTimeout(120_000);
+        await resetMockServers(request, ['xtream']);
+        const vodFixture = await fetchXtreamVodFixture(
+            request,
+            xtreamCredentials
+        );
+        let app = await launchElectronApp(dataDir, {
+            env: { MODELS_AUTH_TOKEN: 'synthetic-e2e-token' },
+        });
+        try {
+            // Stub only the gateway transport; settings, signals, IPC and cache
+            // still follow the product lifecycle in an isolated synthetic profile.
+            await app.electronApp.evaluate(() => {
+                const state = globalThis as unknown as {
+                    __aiGatewayCalls: number;
+                };
+                state.__aiGatewayCalls = 0;
+                const originalFetch = globalThis.fetch;
+                globalThis.fetch = async (input, init) => {
+                    if (
+                        String(input) !==
+                        'https://models.saravlabs.org/v1/chat/completions'
+                    ) {
+                        return originalFetch(input, init);
+                    }
+                    state.__aiGatewayCalls++;
+                    const body = JSON.parse(String(init?.body));
+                    const payload = JSON.parse(body.messages[1].content) as {
+                        candidates: { id: string }[];
+                    };
+                    return new Response(
+                        JSON.stringify({
+                            choices: [
+                                {
+                                    message: {
+                                        content: JSON.stringify({
+                                            tasteSummary:
+                                                'Synthetic favorites suggest thoughtful movies and adjacent stories.',
+                                            ranked: payload.candidates
+                                                .slice(0, 20)
+                                                .map((candidate) => ({
+                                                    id: candidate.id,
+                                                    reason: 'Fits the synthetic favorites.',
+                                                })),
+                                            suggestedTitles: [],
+                                            discoveryGenres: [],
+                                        }),
+                                    },
+                                },
+                            ],
+                        }),
+                        { headers: { 'Content-Type': 'application/json' } }
+                    );
+                };
+            });
+            await addXtreamPortal(app.mainWindow, {
+                name: 'Synthetic AI Discovery Source',
+            });
+            await waitForXtreamWorkspaceReady(app.mainWindow);
+            await app.mainWindow
+                .getByRole('link', { name: 'Movies', exact: true })
+                .click();
+            await clickCategoryByNameExact(
+                app.mainWindow,
+                vodFixture.categoryName
+            );
+            await clickFirstGridListCard(app.mainWindow);
+            await addCurrentDetailToFavorites(app.mainWindow);
+            await openSettings(app.mainWindow);
+            await openSettingsSection(app.mainWindow, 'dashboard');
+            await app.mainWindow
+                .getByTestId('ai-enabled')
+                .locator('input[type="checkbox"]')
+                .check();
+            await expect(
+                app.mainWindow
+                    .getByTestId('ai-learn-from-history')
+                    .locator('input[type="checkbox"]')
+            ).toBeChecked();
+            await saveSettings(app.mainWindow);
+            await goToDashboard(app.mainWindow);
+            const profile = app.mainWindow.getByTestId(
+                'dashboard-ai-taste-profile'
+            );
+            await expect(profile).toContainText(
+                'Synthetic favorites suggest thoughtful movies',
+                { timeout: 20000 }
+            );
+            const gatewayCalls = () =>
+                app.electronApp.evaluate(
+                    () =>
+                        (globalThis as unknown as { __aiGatewayCalls: number })
+                            .__aiGatewayCalls
+                );
+            await expect.poll(gatewayCalls).toBe(1);
+            for (let index = 0; index < 2; index++) {
+                await openSettings(app.mainWindow);
+                await goToDashboard(app.mainWindow);
+                await expect(profile).toContainText(
+                    'Synthetic favorites suggest thoughtful movies'
+                );
+                await expect(
+                    app.mainWindow.getByTestId('dashboard-ai-refresh')
+                ).toBeEnabled();
+                expect(await gatewayCalls()).toBe(1);
+            }
+            await app.mainWindow.getByTestId('dashboard-ai-refresh').click();
+            await expect.poll(gatewayCalls).toBe(2);
+            await expect(profile).toContainText(
+                'Synthetic favorites suggest thoughtful movies'
+            );
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-refresh')
+            ).toBeEnabled();
+            await closeElectronApp(app);
+            // Persisted results must also work offline in a new process. An
+            // empty token prevents any accidental live gateway request.
+            app = await launchElectronApp(dataDir, {
+                env: { MODELS_AUTH_TOKEN: '' },
+            });
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-taste-profile')
+            ).toContainText('Synthetic favorites suggest thoughtful movies', {
+                timeout: 20000,
+            });
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-refresh')
+            ).toBeEnabled();
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-status')
+            ).toContainText('No available titles to rank yet');
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-retry')
+            ).toHaveCount(0);
+        } finally {
+            await closeElectronApp(app);
+        }
+    });
+
     test('opens live favorites in the collection route and movies/series in global collection detail views from the dashboard', async ({
         dataDir,
         request,

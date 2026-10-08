@@ -328,6 +328,162 @@ describe('AI recommendation gateway', () => {
         );
     });
     it.each([
+        [401, 'auth'],
+        [403, 'auth'],
+        [429, 'rate-limit'],
+        [500, 'unavailable'],
+    ])(
+        'classifies HTTP %s without exposing provider text',
+        async (status, code) => {
+            fetchMock.mockResolvedValue(
+                new Response('secret-provider-body', {
+                    status: status as number,
+                })
+            );
+            await expect(rankAiRecommendations(request)).rejects.toThrow(
+                `[ai-recommendations:${code}]`
+            );
+        }
+    );
+    it('classifies missing tokens, invalid inputs, network and invalid output', async () => {
+        delete process.env.MODELS_AUTH_TOKEN;
+        await expect(rankAiRecommendations(request)).rejects.toThrow(
+            '[ai-recommendations:missing-token]'
+        );
+        process.env.MODELS_AUTH_TOKEN = 'test-secret';
+        await expect(rankAiRecommendations({})).rejects.toThrow(
+            '[ai-recommendations:invalid-request]'
+        );
+        fetchMock.mockRejectedValueOnce(new Error('test-secret'));
+        await expect(rankAiRecommendations(request)).rejects.toThrow(
+            '[ai-recommendations:network]'
+        );
+        fetchMock.mockResolvedValueOnce(new Response('not-json'));
+        await expect(rankAiRecommendations(request)).rejects.toThrow(
+            '[ai-recommendations:invalid-response]'
+        );
+        fetchMock.mockResolvedValueOnce(
+            new Response('x'.repeat(128 * 1024 + 1))
+        );
+        await expect(rankAiRecommendations(request)).rejects.toThrow(
+            '[ai-recommendations:response-too-large]'
+        );
+    });
+    it('classifies the bounded request timeout', async () => {
+        jest.useFakeTimers();
+        try {
+            fetchMock.mockImplementation(
+                (_url, options) =>
+                    new Promise((_resolve, reject) => {
+                        options.signal.addEventListener('abort', () =>
+                            reject(new Error('raw token'))
+                        );
+                    })
+            );
+            const result = expect(
+                rankAiRecommendations(request)
+            ).rejects.toThrow('[ai-recommendations:timeout]');
+            await jest.advanceTimersByTimeAsync(20_000);
+            await result;
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+    it('whitelists previous profile context and rejects oversized memory', () => {
+        expect(
+            validateAiRecommendationRequest({
+                ...request,
+                priorTasteSummary: ' Prior tastes ',
+            }).priorTasteSummary
+        ).toBe('Prior tastes');
+        expect(() =>
+            validateAiRecommendationRequest({
+                ...request,
+                priorTasteSummary: 'x'.repeat(1001),
+            })
+        ).toThrow('unavailable');
+    });
+    it('accepts bounded discovery hints while removing unrelated fields', () => {
+        expect(
+            parseAiRecommendationResponse(
+                JSON.stringify({
+                    ranked: [{ id: 'movie:1', reason: 'Fits.' }],
+                    suggestedTitles: [
+                        {
+                            title: 'Moon',
+                            mediaType: 'movie',
+                            sourceUrl: 'secret',
+                        },
+                    ],
+                    discoveryGenres: [
+                        { genreId: 878, mediaType: 'movie', other: 'private' },
+                    ],
+                }),
+                request
+            )
+        ).toEqual({
+            ranked: [{ id: 'movie:1', reason: 'Fits.' }],
+            suggestedTitles: [{ title: 'Moon', mediaType: 'movie' }],
+            discoveryGenres: [{ genreId: 878, mediaType: 'movie' }],
+        });
+    });
+    it.each([
+        {
+            suggestedTitles: Array(13).fill({
+                title: 'Moon',
+                mediaType: 'movie',
+            }),
+        },
+        {
+            suggestedTitles: [
+                { title: 'Moon', mediaType: 'movie' },
+                { title: ' moon ', mediaType: 'movie' },
+            ],
+        },
+        { suggestedTitles: [{ title: 'x'.repeat(301), mediaType: 'movie' }] },
+        { suggestedTitles: [{ title: 'Moon', mediaType: 'invalid' }] },
+        { suggestedTitles: {} },
+        { discoveryGenres: [{ genreId: 0, mediaType: 'movie' }] },
+        { discoveryGenres: [{ genreId: 878, mediaType: 'tv' }] },
+        {
+            discoveryGenres: Array(5).fill({
+                genreId: 878,
+                mediaType: 'movie',
+            }),
+        },
+        {
+            discoveryGenres: [
+                { genreId: 878, mediaType: 'movie' },
+                { genreId: 878, mediaType: 'movie' },
+            ],
+        },
+    ])('rejects any malformed discovery hints', (hints) => {
+        expect(() =>
+            parseAiRecommendationResponse(
+                JSON.stringify({
+                    ranked: [{ id: 'movie:1', reason: 'Fits.' }],
+                    ...hints,
+                }),
+                request
+            )
+        ).toThrow('unavailable');
+    });
+    it('caps generated ranks at twenty even when forty candidates are supplied', () => {
+        const candidates = Array.from({ length: 40 }, (_, index) => ({
+            ...request.candidates[0],
+            id: `movie:${index}`,
+        }));
+        const ranked = candidates
+            .slice(0, 21)
+            .map((candidate) => ({ id: candidate.id, reason: 'Fits.' }));
+        expect(() =>
+            parseAiRecommendationResponse(JSON.stringify({ ranked }), {
+                ...request,
+                candidates,
+            })
+        ).toThrow('unavailable');
+    });
+    it.each([
         { ranked: [] },
         { ranked: [{ id: 'unknown', reason: 'invented' }] },
         { ranked: [{ id: 'movie:1', reason: 'x'.repeat(241) }] },

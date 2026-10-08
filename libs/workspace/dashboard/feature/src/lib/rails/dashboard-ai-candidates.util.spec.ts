@@ -3,7 +3,11 @@ import type {
     DashboardTrendingItem,
     DashboardTmdbLookupItem,
 } from '@iptvnator/workspace/dashboard/data-access';
-import { buildDashboardAiCandidates } from './dashboard-ai-candidates.util';
+import {
+    balanceDashboardAiPools,
+    buildDashboardAiCandidates,
+    distinctDashboardCards,
+} from './dashboard-ai-candidates.util';
 
 const candidate = (
     title: string,
@@ -31,6 +35,32 @@ const candidate = (
 });
 
 describe('AI candidate library filtering', () => {
+    it('gives discovery and smaller source pools room within the model budget', () => {
+        const large = Array.from({ length: 60 }, (_, index) =>
+            candidate('Large', index)
+        );
+        const discovery = [
+            candidate('Discovery', 100),
+            candidate('Adjacent', 101),
+        ];
+        expect(
+            balanceDashboardAiPools([large, discovery])
+                .slice(0, 4)
+                .map((item) => item.tmdbId)
+        ).toEqual([0, 100, 1, 101]);
+        expect(balanceDashboardAiPools([large, [large[0]]])).toHaveLength(60);
+    });
+
+    it('gives each title one row while preserving cards and stable ordering', () => {
+        const used = new Set(['ai']);
+        const retained = { id: 'new', title: 'Keep me' };
+        expect(
+            distinctDashboardCards([{ id: 'ai' }, retained, retained], used)
+        ).toEqual([retained]);
+        expect(
+            distinctDashboardCards([retained, { id: 'next' }], used)
+        ).toEqual([{ id: 'next' }]);
+    });
     it('excludes watched, favorited, dismissed, deleted and unmatched titles', () => {
         const items = [
             candidate('Seen', 1),

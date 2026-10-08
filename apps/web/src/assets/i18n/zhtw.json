@@ -1561,7 +1561,10 @@
             "RECENTLY_WATCHED_LIVE_TV": "最近觀看的直播電視",
             "FAVORITE_MOVIES_AND_SERIES": "收藏的電影和影集",
             "SOURCE_EXPIRES_IN_DAYS": "{{days}} 天後到期",
-            "SOURCE_EXPIRED": "已過期"
+            "SOURCE_EXPIRED": "已過期",
+            "AI_REFRESH": "???? AI ??",
+            "AI_DISCOVERIES": "????????????",
+            "AI_CACHE_SAVE_FAILED": "???? AI ???????????????"
         },
         "SHELL": {
             "BRAND_ALT": "SaravTV",

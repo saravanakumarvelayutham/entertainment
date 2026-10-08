@@ -1651,8 +1651,11 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
   taste summary and ranking, refreshed on meaningful signals instead of playback
   ticks. Main bounds requests, blocks redirects,
   validates known unique response ids and times out after 20 seconds; failures
-  retain normal rails. The dashboard keeps eight session batches and retries
-  only explicitly. Contract: `docs/architecture/workspace-dashboard.md`.
+  retain normal rails. Saved summaries guide later learning; AI hints expand
+  discovery to verified playable titles with one plan per evidence generation.
+  Eight public result batches persist locally for 24 hours across restarts;
+  navigation reuses them and explicit Refresh bypasses the cache. Recommendation
+  rows deduplicate titles. Failures retry only explicitly. Contract: `docs/architecture/workspace-dashboard.md`.
 
 **Paused Movie Recovery**:
 

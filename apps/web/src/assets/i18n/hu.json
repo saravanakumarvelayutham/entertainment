@@ -1561,7 +1561,10 @@
             "RECENTLY_WATCHED_LIVE_TV": "Legutóbb nézett élő TV",
             "FAVORITE_MOVIES_AND_SERIES": "Kedvenc filmek és sorozatok",
             "SOURCE_EXPIRES_IN_DAYS": "{{days}} nap múlva lejár",
-            "SOURCE_EXPIRED": "Lejárt"
+            "SOURCE_EXPIRED": "Lejárt",
+            "AI_REFRESH": "AI-aj?nl?sok friss?t?se",
+            "AI_DISCOVERIES": "Fedezz fel t?bbet az ?zl?sed szerint",
+            "AI_CACHE_SAVE_FAILED": "Az AI-aj?nl?sok ment?se nem siker?lt. Pr?b?ld meg ?jra elmenteni ?ket."
         },
         "SHELL": {
             "BRAND_ALT": "SaravTV",

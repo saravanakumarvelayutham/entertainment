@@ -53,6 +53,7 @@ export interface AiRecommendationRankRequest {
     preferences: string;
     candidates: readonly AiRecommendationCandidate[];
     tasteSignals?: AiRecommendationTasteSignals;
+    priorTasteSummary?: string;
 }
 
 export interface AiRecommendationTasteSignals {
@@ -74,7 +75,20 @@ export interface AiRecommendationTasteSignals {
 export interface AiRecommendationRankResponse {
     ranked: readonly { id: string; reason: string }[];
     tasteSummary?: string;
+    suggestedTitles?: readonly { title: string; mediaType: 'movie' | 'tv' }[];
+    discoveryGenres?: readonly { genreId: number; mediaType: 'movie' | 'tv' }[];
 }
+
+export type AiRecommendationErrorCode =
+    | 'missing-token'
+    | 'invalid-request'
+    | 'timeout'
+    | 'network'
+    | 'auth'
+    | 'rate-limit'
+    | 'unavailable'
+    | 'invalid-response'
+    | 'response-too-large';
 
 export const AI_RECOMMENDATIONS_STATUS = 'ai-recommendations-status';
 export const AI_RECOMMENDATIONS_RANK = 'ai-recommendations-rank';

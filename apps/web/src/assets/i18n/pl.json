@@ -1561,7 +1561,10 @@
             "RECENTLY_WATCHED_LIVE_TV": "Ostatnio oglądana telewizja na żywo",
             "FAVORITE_MOVIES_AND_SERIES": "Ulubione filmy i seriale",
             "SOURCE_EXPIRES_IN_DAYS": "Wygasa za {{days}} dn.",
-            "SOURCE_EXPIRED": "Wygasło"
+            "SOURCE_EXPIRED": "Wygasło",
+            "AI_REFRESH": "Od?wie? propozycje AI",
+            "AI_DISCOVERIES": "Odkryj wi?cej w swoim gu?cie",
+            "AI_CACHE_SAVE_FAILED": "Nie uda?o si? zapisa? propozycji AI do ponownego u?ycia. Spr?buj zapisa? je ponownie."
         },
         "SHELL": {
             "BRAND_ALT": "SaravTV",

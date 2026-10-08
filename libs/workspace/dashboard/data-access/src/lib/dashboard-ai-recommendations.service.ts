@@ -6,10 +6,23 @@ import {
     MAX_AI_TASTE_SUMMARY_LENGTH,
     type AiRecommendationSettings,
     type AiRecommendationTasteSignals,
+    type AiRecommendationErrorCode,
 } from '@iptvnator/shared/interfaces';
 import type { DashboardRecommendationItem } from './dashboard-recommendations.util';
 import { hasDashboardAiTasteSignals } from './dashboard-ai-taste-signals.util';
+import {
+    DashboardAiResultCache,
+    dashboardAiResultKey,
+} from './dashboard-ai-result-cache';
 import { DashboardAiTasteProfile } from './dashboard-ai-taste-profile';
+import {
+    dashboardAiEvidenceKey,
+    dashboardAiErrorCode,
+    emptyDashboardAiDiscoveryHints,
+    type DashboardAiDiscoveryHints,
+} from './dashboard-ai-response.util';
+export type { DashboardAiDiscoveryHints } from './dashboard-ai-response.util';
+export { dashboardAiEvidenceKey } from './dashboard-ai-response.util';
 
 export interface DashboardAiRecommendation {
     item: DashboardRecommendationItem;
@@ -22,6 +35,7 @@ interface AiLoad {
     candidates: readonly DashboardRecommendationItem[];
     tasteSignals?: AiRecommendationTasteSignals;
     fingerprint: string;
+    retry: boolean;
 }
 
 const candidateId = (item: DashboardRecommendationItem): string =>
@@ -34,6 +48,11 @@ export class DashboardAiRecommendationsService {
     readonly items = signal<readonly DashboardAiRecommendation[]>([]);
     readonly loading = signal(false);
     readonly failed = signal(false);
+    readonly errorCode = signal<AiRecommendationErrorCode | null>(null);
+    readonly discoveryHints = signal<DashboardAiDiscoveryHints>(
+        emptyDashboardAiDiscoveryHints()
+    );
+    readonly discoveryEvidenceKey = signal<string | null>(null);
     readonly tasteSummary = signal<string | null>(null);
     readonly profilePersistenceFailed = signal(false);
     private readonly profile = new DashboardAiTasteProfile(
@@ -43,10 +62,10 @@ export class DashboardAiRecommendationsService {
     private desired: AiLoad | null = null;
     private active = false;
     private attemptedKey: string | null = null;
-    private readonly cache = new Map<
-        string,
-        { items: readonly DashboardAiRecommendation[]; summary: string | null }
-    >();
+    readonly resultCachePersistenceFailed = signal(false);
+    private readonly cache = new DashboardAiResultCache(
+        inject(DatabaseService)
+    );
 
     refresh(
         settings: unknown,
@@ -59,7 +78,7 @@ export class DashboardAiRecommendationsService {
             config.learnFromHistory && hasDashboardAiTasteSignals(signals)
                 ? signals
                 : undefined;
-        const fingerprint = JSON.stringify({ config, tasteSignals });
+        const fingerprint = dashboardAiEvidenceKey(config, tasteSignals);
         if (this.profileFingerprint !== fingerprint) {
             this.profileFingerprint = fingerprint;
             this.tasteSummary.set(null);
@@ -101,33 +120,86 @@ export class DashboardAiRecommendationsService {
             this.items.set([]);
             this.loading.set(false);
             this.failed.set(false);
+            this.errorCode.set(null);
+            this.discoveryHints.set(emptyDashboardAiDiscoveryHints());
+            this.discoveryEvidenceKey.set(null);
             if (!config.enabled) this.tasteSummary.set(null);
             return;
         }
-        const key = JSON.stringify({ config, candidates, tasteSignals });
-        if (!retry && this.desired?.key === key && this.attemptedKey === key)
+        const key = dashboardAiResultKey(config, candidates, tasteSignals);
+        if (
+            !retry &&
+            this.desired?.key === key &&
+            this.attemptedKey === key &&
+            (this.active || this.failed() || this.cache.peek(key))
+        ) {
+            this.desired = { ...this.desired, candidates };
+            const byId = new Map(
+                candidates.map((item) => [candidateId(item), item])
+            );
+            const current = this.items();
+            if (
+                current.some(
+                    ({ item }) =>
+                        JSON.stringify(item.match) !==
+                        JSON.stringify(byId.get(candidateId(item))?.match)
+                )
+            ) {
+                this.items.set(
+                    current.map(({ item, reason }) => ({
+                        item: byId.get(candidateId(item)) ?? item,
+                        reason,
+                    }))
+                );
+            }
             return;
+        }
         this.desired = {
             key,
             settings: config,
             candidates,
             tasteSignals,
             fingerprint,
+            retry,
         };
         this.items.set([]);
         this.failed.set(false);
-        if (!retry && this.cache.has(key)) {
+        this.errorCode.set(null);
+        this.discoveryHints.set(emptyDashboardAiDiscoveryHints());
+        this.discoveryEvidenceKey.set(null);
+        const cached = !retry ? this.cache.peek(key) : null;
+        const byId = new Map(
+            candidates.map((item) => [candidateId(item), item])
+        );
+        if (
+            cached &&
+            cached.ranked.every(({ id }) => byId.has(id)) &&
+            (!candidates.length || cached.ranked.length) &&
+            (!tasteSignals || cached.tasteSummary)
+        ) {
             this.attemptedKey = key;
-            const cached = this.cache.get(key);
-            this.items.set(cached?.items ?? []);
-            this.tasteSummary.set(cached?.summary ?? null);
-            if (cached?.summary)
-                void this.persistProfile(this.desired, cached.summary);
+            this.items.set(
+                cached.ranked.map(({ id, reason }) => ({
+                    item: byId.get(id) as DashboardRecommendationItem,
+                    reason,
+                }))
+            );
+            this.discoveryEvidenceKey.set(fingerprint);
+            this.tasteSummary.set(cached.tasteSummary ?? null);
+            this.discoveryHints.set({
+                suggestedTitles: cached.suggestedTitles ?? [],
+                discoveryGenres: cached.discoveryGenres ?? [],
+            });
+            if (cached.tasteSummary)
+                void this.restoreProfileIfMissing(
+                    this.desired,
+                    cached.tasteSummary
+                );
             this.loading.set(false);
             return;
         }
         this.loading.set(true);
-        if (retry) this.attemptedKey = null;
+        this.attemptedKey = null;
         if (!this.active) void this.run();
     }
 
@@ -138,24 +210,52 @@ export class DashboardAiRecommendationsService {
                 const load = this.desired;
                 this.attemptedKey = load.key;
                 try {
-                    const response =
-                        await window.electron.rankAiRecommendations({
-                            model: load.settings.model,
-                            preferences: load.settings.preferences,
-                            ...(load.tasteSignals
-                                ? { tasteSignals: load.tasteSignals }
-                                : {}),
-                            candidates: load.candidates.map((item) => ({
-                                id: candidateId(item),
-                                title: item.title,
-                                year: item.year,
-                                mediaType: item.mediaType,
-                                genreIds: item.genreIds,
-                            })),
-                        });
+                    const cached = !load.retry
+                        ? await this.cache.read(load.key).catch(() => {
+                              if (this.desired?.key === load.key)
+                                  this.resultCachePersistenceFailed.set(true);
+                              return null;
+                          })
+                        : null;
+                    const ids = new Set(load.candidates.map(candidateId));
+                    const usableCache =
+                        cached &&
+                        cached.ranked.every((item) => ids.has(item.id)) &&
+                        (!load.candidates.length || cached.ranked.length > 0) &&
+                        (!load.tasteSignals || cached.tasteSummary);
+                    const priorTasteSummary =
+                        load.settings.learnFromHistory && !usableCache
+                            ? await this.profile.readLatest().catch(() => {
+                                  if (this.desired?.key === load.key)
+                                      this.profilePersistenceFailed.set(true);
+                                  return null;
+                              })
+                            : null;
+                    if (this.desired?.key !== load.key) continue;
+                    const response = usableCache
+                        ? cached
+                        : await window.electron.rankAiRecommendations({
+                              model: load.settings.model,
+                              preferences: load.settings.preferences,
+                              ...(priorTasteSummary
+                                  ? { priorTasteSummary }
+                                  : {}),
+                              ...(load.tasteSignals
+                                  ? { tasteSignals: load.tasteSignals }
+                                  : {}),
+                              candidates: load.candidates.map((item) => ({
+                                  id: candidateId(item),
+                                  title: item.title,
+                                  year: item.year,
+                                  mediaType: item.mediaType,
+                                  genreIds: item.genreIds,
+                              })),
+                          });
                     if (this.desired?.key !== load.key) continue;
                     const byId = new Map(
-                        load.candidates.map((item) => [candidateId(item), item])
+                        (this.desired?.candidates ?? load.candidates).map(
+                            (item) => [candidateId(item), item]
+                        )
                     );
                     const seen = new Set<string>();
                     const ranked: DashboardAiRecommendation[] = [];
@@ -167,7 +267,9 @@ export class DashboardAiRecommendationsService {
                         ranked.push({ item, reason });
                     }
                     if (ranked.length === 0 && load.candidates.length > 0)
-                        throw new Error('No valid AI picks');
+                        throw new Error(
+                            '[ai-recommendations:invalid-response]'
+                        );
                     const summary = response.tasteSummary;
                     if (
                         summary !== undefined &&
@@ -175,27 +277,64 @@ export class DashboardAiRecommendationsService {
                             !summary.trim() ||
                             summary.length > MAX_AI_TASTE_SUMMARY_LENGTH)
                     )
-                        throw new Error('Invalid AI taste profile');
-                    if (load.tasteSignals && !summary)
-                        throw new Error('Missing AI taste profile');
-                    this.items.set(ranked.slice(0, 20));
-                    this.cache.set(load.key, {
-                        items: this.items(),
-                        summary: summary?.trim() ?? null,
-                    });
-                    if (this.cache.size > 8)
-                        this.cache.delete(
-                            this.cache.keys().next().value as string
+                        throw new Error(
+                            '[ai-recommendations:invalid-response]'
                         );
+                    if (load.tasteSignals && !summary)
+                        throw new Error(
+                            '[ai-recommendations:invalid-response]'
+                        );
+                    const hints: DashboardAiDiscoveryHints = {
+                        suggestedTitles: response.suggestedTitles ?? [],
+                        discoveryGenres: response.discoveryGenres ?? [],
+                    };
+                    this.discoveryEvidenceKey.set(load.fingerprint);
+                    this.discoveryHints.set(hints);
+                    this.items.set(ranked.slice(0, 20));
                     this.failed.set(false);
                     if (summary) {
                         this.tasteSummary.set(summary.trim());
-                        await this.persistProfile(load, summary.trim());
+                        if (usableCache)
+                            await this.restoreProfileIfMissing(
+                                load,
+                                summary.trim()
+                            );
+                        else await this.persistProfile(load, summary.trim());
                     }
-                } catch {
+                    if (!usableCache) {
+                        await this.cache
+                            .save(load.key, {
+                                ranked: ranked
+                                    .slice(0, 20)
+                                    .map(({ item, reason }) => ({
+                                        id: candidateId(item),
+                                        reason,
+                                    })),
+                                ...(summary
+                                    ? { tasteSummary: summary.trim() }
+                                    : {}),
+                                ...hints,
+                            })
+                            .then(() => {
+                                if (this.desired?.key === load.key)
+                                    this.resultCachePersistenceFailed.set(
+                                        false
+                                    );
+                            })
+                            .catch(() => {
+                                if (this.desired?.key === load.key)
+                                    this.resultCachePersistenceFailed.set(true);
+                            });
+                    }
+                } catch (error: unknown) {
                     if (this.desired?.key === load.key) {
                         this.items.set([]);
                         this.failed.set(true);
+                        this.errorCode.set(dashboardAiErrorCode(error));
+                        this.discoveryHints.set(
+                            emptyDashboardAiDiscoveryHints()
+                        );
+                        this.discoveryEvidenceKey.set(null);
                     }
                 }
             }
@@ -203,6 +342,14 @@ export class DashboardAiRecommendationsService {
             this.active = false;
             this.loading.set(false);
         }
+    }
+
+    private async restoreProfileIfMissing(
+        load: AiLoad,
+        summary: string
+    ): Promise<void> {
+        const latest = await this.profile.readLatest().catch(() => null);
+        if (!latest) await this.persistProfile(load, summary);
     }
 
     private async persistProfile(load: AiLoad, summary: string): Promise<void> {
@@ -233,6 +380,20 @@ export class DashboardAiRecommendationsService {
         } catch {
             if (this.profileFingerprint === fingerprint)
                 this.profilePersistenceFailed.set(true);
+        }
+    }
+    async retrySaveResults(): Promise<void> {
+        const key = this.desired?.key;
+        if (!key) return;
+        const response = this.cache.peek(key);
+        if (!response) return;
+        try {
+            await this.cache.save(key, response);
+            if (this.desired?.key === key)
+                this.resultCachePersistenceFailed.set(false);
+        } catch {
+            if (this.desired?.key === key)
+                this.resultCachePersistenceFailed.set(true);
         }
     }
 }

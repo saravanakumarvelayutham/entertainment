@@ -1561,7 +1561,10 @@
             "RECENTLY_WATCHED_LIVE_TV": "Son izlenen canlı TV",
             "FAVORITE_MOVIES_AND_SERIES": "Favori filmler ve diziler",
             "SOURCE_EXPIRES_IN_DAYS": "{{days}} gün içinde sona erer",
-            "SOURCE_EXPIRED": "Süresi doldu"
+            "SOURCE_EXPIRED": "Süresi doldu",
+            "AI_REFRESH": "Yapay zek? ?nerilerini yenile",
+            "AI_DISCOVERIES": "Zevkine uygun daha fazla i?erik ke?fet",
+            "AI_CACHE_SAVE_FAILED": "Yapay zek? ?nerileri yeniden kullan?m i?in kaydedilemedi. Tekrar kaydetmeyi dene."
         },
         "SHELL": {
             "BRAND_ALT": "SaravTV",

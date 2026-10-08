@@ -1561,7 +1561,10 @@
             "RECENTLY_WATCHED_LIVE_TV": "Recent bekeken live-tv",
             "FAVORITE_MOVIES_AND_SERIES": "Favoriete films en reeksen",
             "SOURCE_EXPIRES_IN_DAYS": "Verloopt over {{days}} d",
-            "SOURCE_EXPIRED": "Verlopen"
+            "SOURCE_EXPIRED": "Verlopen",
+            "AI_REFRESH": "AI-keuzes vernieuwen",
+            "AI_DISCOVERIES": "Ontdek meer naar jouw smaak",
+            "AI_CACHE_SAVE_FAILED": "AI-keuzes konden niet worden opgeslagen voor hergebruik. Probeer opnieuw op te slaan."
         },
         "SHELL": {
             "BRAND_ALT": "SaravTV",

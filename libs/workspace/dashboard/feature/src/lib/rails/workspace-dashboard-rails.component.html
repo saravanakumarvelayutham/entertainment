@@ -358,6 +358,19 @@
         }
 
         @if (aiEnabled()) {
+            @if (aiRecommendationsService.resultCachePersistenceFailed()) {
+                <p role="status">
+                    {{ 'WORKSPACE.DASHBOARD.AI_CACHE_SAVE_FAILED' | translate }}
+                </p>
+                <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="aiRecommendationsService.retrySaveResults()"
+                    data-test-id="dashboard-ai-cache-save-retry"
+                >
+                    {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                </button>
+            }
             @if (aiRecommendationsService.tasteSummary(); as tasteSummary) {
                 <section
                     data-test-id="dashboard-ai-taste-profile"
@@ -386,6 +399,22 @@
                         </button>
                     }
                 </section>
+            }
+            @if (
+                aiCards().length > 0 || aiRecommendationsService.tasteSummary()
+            ) {
+                <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="retryAiRecommendations()"
+                    [disabled]="
+                        aiCandidatesLoading() ||
+                        aiRecommendationsService.loading()
+                    "
+                    data-test-id="dashboard-ai-refresh"
+                >
+                    {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
+                </button>
             }
             @if (aiCards().length > 0) {
                 <lib-dashboard-rail
@@ -426,6 +455,16 @@
                         </button>
                     }
                 </section>
+            }
+            @if (aiDiscoveryCards().length > 0) {
+                <lib-dashboard-rail
+                    [label]="'WORKSPACE.DASHBOARD.AI_DISCOVERIES' | translate"
+                    layout="recommendation"
+                    [items]="aiDiscoveryCards()"
+                    [totalCount]="aiDiscoveryCards().length"
+                    testId="dashboard-ai-discoveries-rail"
+                    (actionSelected)="onRecommendationActionSelected($event)"
+                />
             }
         }
 

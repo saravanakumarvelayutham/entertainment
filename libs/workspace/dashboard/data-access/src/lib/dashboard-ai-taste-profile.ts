@@ -31,6 +31,13 @@ export class DashboardAiTasteProfile {
         return profile?.fingerprint === fingerprint ? profile.summary : null;
     }
 
+    async readLatest(): Promise<string | null> {
+        if (this.profile) return this.profile.summary;
+        this.loadPromise ??= this.load();
+        await this.loadPromise;
+        return this.currentProfile()?.summary ?? null;
+    }
+
     private currentProfile(): TasteProfile | null {
         return this.profile;
     }
@@ -38,6 +45,11 @@ export class DashboardAiTasteProfile {
     async save(fingerprint: string, summary: string): Promise<void> {
         const profile = { fingerprint, summary };
         const write = this.mutationQueue.then(async () => {
+            if (
+                this.profile?.fingerprint === fingerprint &&
+                this.profile.summary === summary
+            )
+                return;
             if (
                 !(await this.database.setAppState(
                     STORAGE_KEY,

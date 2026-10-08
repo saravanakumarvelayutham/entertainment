@@ -1561,7 +1561,10 @@
             "RECENTLY_WATCHED_LIVE_TV": "TV ao vivo assistida recentemente",
             "FAVORITE_MOVIES_AND_SERIES": "Filmes e séries favoritos",
             "SOURCE_EXPIRES_IN_DAYS": "Expira em {{days}} d",
-            "SOURCE_EXPIRED": "Expirada"
+            "SOURCE_EXPIRED": "Expirada",
+            "AI_REFRESH": "Atualizar sugest?es da IA",
+            "AI_DISCOVERIES": "Descobre mais para o teu gosto",
+            "AI_CACHE_SAVE_FAILED": "N?o foi poss?vel guardar as sugest?es da IA para reutiliza??o. Tenta guard?-las novamente."
         },
         "SHELL": {
             "BRAND_ALT": "SaravTV",
