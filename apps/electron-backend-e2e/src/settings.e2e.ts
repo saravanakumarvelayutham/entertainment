@@ -43,6 +43,74 @@ const epgFixtureXml = `<?xml version="1.0" encoding="UTF-8"?>
 `;
 
 test.describe('Electron Settings', () => {
+    test('@settings @electron persists explicit AI tastes and validates opt-in without a token', async ({
+        dataDir,
+    }) => {
+        test.setTimeout(120_000);
+        const launchOptions = { env: { MODELS_AUTH_TOKEN: '' } };
+        let app = await launchElectronApp(dataDir, launchOptions);
+        try {
+            let page = app.mainWindow;
+            await openSettings(page);
+            await openSettingsSection(page, 'dashboard');
+            await expect(page.getByTestId('ai-token-status')).toContainText(
+                'Gateway token unavailable'
+            );
+            expect(
+                await page.evaluate(() =>
+                    window.electron.getAiRecommendationsStatus()
+                )
+            ).toEqual({ available: false });
+            let enabled = page
+                .getByTestId('ai-enabled')
+                .locator('input[type="checkbox"]');
+            await expect(enabled).not.toBeChecked();
+            await expect(page.getByTestId('ai-model')).toHaveCount(0);
+            await enabled.check();
+            await expect(page.getByTestId('ai-model')).toHaveValue('security');
+            await expect(page.getByTestId('save-settings')).toBeDisabled();
+            await page
+                .getByTestId('ai-preferences')
+                .fill('Thoughtful science fiction without horror');
+            await page.getByTestId('ai-model').fill('   ');
+            await expect(page.getByTestId('save-settings')).toBeDisabled();
+            await page.getByTestId('ai-model').fill('security-test-model');
+            await saveSettings(page);
+
+            app = await restartElectronApp(app, dataDir, launchOptions);
+            page = app.mainWindow;
+            await openSettings(page);
+            await openSettingsSection(page, 'dashboard');
+            enabled = page
+                .getByTestId('ai-enabled')
+                .locator('input[type="checkbox"]');
+            await expect(enabled).toBeChecked();
+            await expect(page.getByTestId('ai-model')).toHaveValue('security-test-model');
+            await expect(page.getByTestId('ai-preferences')).toHaveValue(
+                'Thoughtful science fiction without horror'
+            );
+            await page.getByTestId('ai-preferences').fill('  ');
+            await expect(page.getByTestId('save-settings')).toBeDisabled();
+            await enabled.uncheck();
+            await saveSettings(page);
+
+            app = await restartElectronApp(app, dataDir, launchOptions);
+            await openSettings(app.mainWindow);
+            await openSettingsSection(app.mainWindow, 'dashboard');
+            await expect(
+                app.mainWindow
+                    .getByTestId('ai-enabled')
+                    .locator('input[type="checkbox"]')
+            ).not.toBeChecked();
+            await expect(app.mainWindow.getByTestId('ai-model')).toHaveCount(0);
+            await expect(
+                app.mainWindow.getByTestId('ai-token-status')
+            ).toContainText('Gateway token unavailable');
+        } finally {
+            await closeElectronApp(app);
+        }
+    });
+
     test('@settings @electron shows manual app update fallback when self-update is unavailable', async ({
         dataDir,
     }) => {

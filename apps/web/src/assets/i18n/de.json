@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "KI-Empfehlungen für Filme und Serien",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Wenn aktiviert, werden Ihre schriftlichen Vorlieben und Metadaten möglicher Filme oder Serien an models.saravlabs.org gesendet. Wiedergabeverlauf und Playlist-Zugangsdaten werden nie gesendet. Bestehende Empfehlungen bleiben verfügbar, wenn die KI nicht verfügbar ist.",
+        "AI_TOKEN_CHECKING": "Gateway-Zugriff wird geprüft…",
+        "AI_TOKEN_CONFIGURED": "Gateway-Token eingerichtet.",
+        "AI_TOKEN_MISSING": "Gateway-Token nicht verfügbar. Legen Sie MODELS_AUTH_TOKEN in Ihrer Windows-Benutzerumgebung fest und starten Sie SaravTV neu.",
+        "AI_MODEL": "Modell",
+        "AI_MODEL_REQUIRED": "Geben Sie einen Modellnamen ein (bis zu 100 Zeichen).",
+        "AI_PREFERENCES": "Ihr Geschmack in Ihren Worten",
+        "AI_PREFERENCES_DESCRIPTION": "Beschreiben Sie Stimmungen, Themen, Erzähltempo, Sprachen und Dinge, die Sie vermeiden möchten. Zum Beispiel: anspruchsvolle Science-Fiction, langsam aufgebaute Krimis und wenig Gewalt. Geben Sie keine persönlichen Informationen an.",
+        "AI_PREFERENCES_REQUIRED": "Beschreiben Sie Ihre Vorlieben (bis zu 2000 Zeichen).",
         "PORTAL_CONNECTIONS": "Portalverbindungen",
         "PORTAL_CONNECTIVITY_GUARD": "Anfragen an nicht erreichbare Portale pausieren",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "Nach wiederholten Verbindungsfehlern neue Xtream- und Stalker-Anfragen 30 Sekunden pausieren. Bei zeitweise nicht erreichbaren Portalen versuchsweise deaktivieren. Gilt nach dem Speichern ohne Neustart.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Serverreihenfolge",
         "CATEGORY_SORT_ARIA": "Kategorien sortieren",
         "DASHBOARD": {
+            "AI_PICKS": "Für Ihren Geschmack ausgewählt",
+            "AI_LOADING": "Passende Empfehlungen werden gesucht…",
+            "AI_FAILED": "KI-Empfehlungen sind nicht verfügbar. Ihre üblichen Empfehlungen sind weiterhin vorhanden.",
+            "AI_EMPTY": "Noch keine verfügbaren Titel zum Bewerten. Aktivieren Sie TMDB-Metadaten und importieren Sie eine Film- oder Serienbibliothek, um Empfehlungen zu erhalten.",
+            "AI_RETRY": "Erneut versuchen",
             "ACTION_FAILED": "Die Aktion konnte nicht abgeschlossen werden. Bitte erneut versuchen.",
             "CONTINUE_WATCHING": "Weiter schauen",
             "LIVE_FAVORITES": "Jetzt live auf Ihren Favoriten",

@@ -38,6 +38,59 @@ describe('SettingsStore dashboard rail settings', () => {
         set: jest.Mock;
     };
 
+    it('defaults AI off and retains all fields through unrelated and partial updates', async () => {
+        const store = injector.get(SettingsStore);
+        await store.loadSettings();
+        expect(store.getSettings().aiRecommendations).toEqual({
+            enabled: false,
+            model: 'security',
+            preferences: '',
+        });
+        await store.updateSettings({
+            aiRecommendations: {
+                enabled: true,
+                model: 'security',
+                preferences: 'Slow mysteries',
+            },
+        });
+        await store.updateSettings({ theme: Theme.DarkTheme });
+        await store.updateSettings({
+            aiRecommendations: {
+                enabled: false,
+            } as Settings['aiRecommendations'],
+        });
+        expect(store.getSettings().aiRecommendations).toEqual({
+            enabled: false,
+            model: 'security',
+            preferences: 'Slow mysteries',
+        });
+        expect(storage.set).toHaveBeenLastCalledWith(
+            STORE_KEY.Settings,
+            expect.objectContaining({
+                aiRecommendations: {
+                    enabled: false,
+                    model: 'security',
+                    preferences: 'Slow mysteries',
+                },
+            })
+        );
+    });
+
+    it('fills defaults for historical partial AI settings without losing preferences', async () => {
+        storedSettings = {
+            aiRecommendations: {
+                preferences: 'Comedy',
+            } as Settings['aiRecommendations'],
+        };
+        const store = injector.get(SettingsStore);
+        await store.loadSettings();
+        expect(store.getSettings().aiRecommendations).toEqual({
+            enabled: false,
+            model: 'security',
+            preferences: 'Comedy',
+        });
+    });
+
     beforeEach(() => {
         originalElectron = window.electron;
         storedSettings = null;

@@ -1,3 +1,4 @@
+import { SettingsAiRecommendationsComponent } from './settings-ai-recommendations.component';
 import { CommonModule } from '@angular/common';
 import {
     Component,
@@ -29,6 +30,7 @@ interface NetflixImportStatus {
     selector: 'app-settings-dashboard-section',
     imports: [
         CommonModule,
+        SettingsAiRecommendationsComponent,
         MatCheckboxModule,
         MatButtonModule,
         MatIconModule,
@@ -47,6 +49,7 @@ export class SettingsDashboardSectionComponent {
         DashboardGenreRecommendationsService
     );
     readonly form = input.required<FormGroup>();
+    readonly isDesktop = input(false);
     readonly importBusy = signal(false);
     private readonly importOutcome = signal<NetflixImportStatus | null>(null);
     readonly importStatus = computed<NetflixImportStatus | null>(() => {

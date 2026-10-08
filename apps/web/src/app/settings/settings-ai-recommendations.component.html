@@ -1,0 +1,101 @@
+<div [formGroup]="form()">
+    <div formGroupName="aiRecommendations">
+        <div class="setting-item">
+            <div class="setting-item__meta">
+                <h4>{{ 'SETTINGS.AI_RECOMMENDATIONS' | translate }}</h4>
+                <p>
+                    {{ 'SETTINGS.AI_RECOMMENDATIONS_DISCLOSURE' | translate }}
+                </p>
+                <p
+                    role="status"
+                    aria-live="polite"
+                    data-test-id="ai-token-status"
+                >
+                    {{
+                        (tokenAvailable() === null
+                            ? 'SETTINGS.AI_TOKEN_CHECKING'
+                            : tokenAvailable()
+                              ? 'SETTINGS.AI_TOKEN_CONFIGURED'
+                              : 'SETTINGS.AI_TOKEN_MISSING'
+                        ) | translate
+                    }}
+                </p>
+            </div>
+            <div class="setting-item__control setting-item__toggle">
+                <mat-checkbox
+                    formControlName="enabled"
+                    data-test-id="ai-enabled"
+                    [aria-label]="'SETTINGS.AI_RECOMMENDATIONS' | translate"
+                ></mat-checkbox>
+            </div>
+        </div>
+        @if (form().get('aiRecommendations.enabled')?.value === true) {
+            <div class="setting-item">
+                <div class="setting-item__meta">
+                    <h4>{{ 'SETTINGS.AI_MODEL' | translate }}</h4>
+                </div>
+                <div class="setting-item__control">
+                    <mat-form-field
+                        appearance="outline"
+                        subscriptSizing="dynamic"
+                    >
+                        <mat-label>{{
+                            'SETTINGS.AI_MODEL' | translate
+                        }}</mat-label>
+                        <input
+                            matInput
+                            formControlName="model"
+                            maxlength="100"
+                            data-test-id="ai-model"
+                        />
+                    </mat-form-field>
+                    @if (form().get('aiRecommendations')?.hasError('aiModel')) {
+                        <p role="alert">
+                            {{ 'SETTINGS.AI_MODEL_REQUIRED' | translate }}
+                        </p>
+                    }
+                </div>
+            </div>
+            <div class="setting-item setting-item--stacked">
+                <div class="setting-item__meta">
+                    <h4>{{ 'SETTINGS.AI_PREFERENCES' | translate }}</h4>
+                    <p>
+                        {{ 'SETTINGS.AI_PREFERENCES_DESCRIPTION' | translate }}
+                    </p>
+                </div>
+                <div class="setting-item__control">
+                    <mat-form-field
+                        appearance="outline"
+                        subscriptSizing="dynamic"
+                    >
+                        <mat-label>{{
+                            'SETTINGS.AI_PREFERENCES' | translate
+                        }}</mat-label>
+                        <textarea
+                            matInput
+                            rows="4"
+                            formControlName="preferences"
+                            maxlength="2000"
+                            data-test-id="ai-preferences"
+                        ></textarea>
+                        <mat-hint align="end"
+                            >{{
+                                form().get('aiRecommendations.preferences')
+                                    ?.value?.length ?? 0
+                            }}/2000</mat-hint
+                        >
+                    </mat-form-field>
+                    @if (
+                        form()
+                            .get('aiRecommendations')
+                            ?.hasError('aiPreferences')
+                    ) {
+                        <p role="alert">
+                            {{ 'SETTINGS.AI_PREFERENCES_REQUIRED' | translate }}
+                        </p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

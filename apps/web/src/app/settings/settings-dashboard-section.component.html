@@ -1,8 +1,4 @@
-<section
-    class="settings-group"
-    id="dashboard"
-    [formGroup]="form()"
->
+<section class="settings-group" id="dashboard" [formGroup]="form()">
     <header class="settings-group__header">
         <div class="settings-group__header-icon">
             <mat-icon>dashboard</mat-icon>
@@ -28,6 +24,10 @@
         </div>
     </div>
 
+    @if (isDesktop()) {
+        <app-settings-ai-recommendations [form]="form()" />
+    }
+
     <div formGroupName="dashboardRails">
         <div class="setting-item setting-item--stacked">
             <div class="setting-item__meta">
@@ -36,9 +36,15 @@
                 @if (importStatus(); as status) {
                     <div
                         class="settings-import-status"
-                        [class.settings-import-status--success]="status.tone === 'success'"
-                        [class.settings-import-status--error]="status.tone === 'error'"
-                        [attr.role]="status.tone === 'error' ? 'alert' : 'status'"
+                        [class.settings-import-status--success]="
+                            status.tone === 'success'
+                        "
+                        [class.settings-import-status--error]="
+                            status.tone === 'error'
+                        "
+                        [attr.role]="
+                            status.tone === 'error' ? 'alert' : 'status'
+                        "
                         aria-live="polite"
                         data-test-id="netflix-history-status"
                     >
@@ -97,9 +103,9 @@
 
         <div class="setting-item">
             <div class="setting-item__meta">
-                <h4>{{
-                    'SETTINGS.DASHBOARD_RAIL_LIVE_FAVORITES' | translate
-                }}</h4>
+                <h4>
+                    {{ 'SETTINGS.DASHBOARD_RAIL_LIVE_FAVORITES' | translate }}
+                </h4>
                 <p>
                     {{
                         'SETTINGS.DASHBOARD_RAIL_LIVE_FAVORITES_DESCRIPTION'
@@ -117,9 +123,7 @@
 
         <div class="setting-item">
             <div class="setting-item__meta">
-                <h4>{{
-                    'SETTINGS.DASHBOARD_RAIL_RECENT_LIVE' | translate
-                }}</h4>
+                <h4>{{ 'SETTINGS.DASHBOARD_RAIL_RECENT_LIVE' | translate }}</h4>
                 <p>
                     {{
                         'SETTINGS.DASHBOARD_RAIL_RECENT_LIVE_DESCRIPTION'
@@ -137,9 +141,9 @@
 
         <div class="setting-item">
             <div class="setting-item__meta">
-                <h4>{{
-                    'SETTINGS.DASHBOARD_RAIL_FAVORITE_VOD' | translate
-                }}</h4>
+                <h4>
+                    {{ 'SETTINGS.DASHBOARD_RAIL_FAVORITE_VOD' | translate }}
+                </h4>
                 <p>
                     {{
                         'SETTINGS.DASHBOARD_RAIL_FAVORITE_VOD_DESCRIPTION'
@@ -175,9 +179,9 @@
 
         <div class="setting-item">
             <div class="setting-item__meta">
-                <h4>{{
-                    'SETTINGS.DASHBOARD_RAIL_XTREAM_ADDED' | translate
-                }}</h4>
+                <h4>
+                    {{ 'SETTINGS.DASHBOARD_RAIL_XTREAM_ADDED' | translate }}
+                </h4>
                 <p>
                     {{
                         'SETTINGS.DASHBOARD_RAIL_XTREAM_ADDED_DESCRIPTION'
@@ -195,7 +199,9 @@
 
         <div class="setting-item">
             <div class="setting-item__meta">
-                <h4>{{ 'SETTINGS.DASHBOARD_RAIL_TMDB_TRENDING' | translate }}</h4>
+                <h4>
+                    {{ 'SETTINGS.DASHBOARD_RAIL_TMDB_TRENDING' | translate }}
+                </h4>
                 <p>
                     {{
                         'SETTINGS.DASHBOARD_RAIL_TMDB_TRENDING_DESCRIPTION'

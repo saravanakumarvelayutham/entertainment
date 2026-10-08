@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "AI-selecties voor films en series",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Als dit is ingeschakeld, worden je geschreven voorkeuren en metadata van mogelijke films of series naar models.saravlabs.org gestuurd. Kijkgeschiedenis en inloggegevens van afspeellijsten worden nooit verstuurd. Bestaande aanbevelingen blijven beschikbaar als AI niet beschikbaar is.",
+        "AI_TOKEN_CHECKING": "Gatewaytoegang controleren…",
+        "AI_TOKEN_CONFIGURED": "Gatewaytoken ingesteld.",
+        "AI_TOKEN_MISSING": "Gatewaytoken niet beschikbaar. Stel MODELS_AUTH_TOKEN in je Windows-gebruikersomgeving in en start SaravTV opnieuw.",
+        "AI_MODEL": "Model",
+        "AI_MODEL_REQUIRED": "Voer een modelnaam in (maximaal 100 tekens).",
+        "AI_PREFERENCES": "Je smaak, in je eigen woorden",
+        "AI_PREFERENCES_DESCRIPTION": "Beschrijf sferen, thema’s, tempo, talen en dingen die je wilt vermijden. Bijvoorbeeld: doordachte sciencefiction, langzaam opgebouwde mysteries en weinig geweld. Vermeld geen persoonlijke informatie.",
+        "AI_PREFERENCES_REQUIRED": "Beschrijf je voorkeuren (maximaal 2000 tekens).",
         "PORTAL_CONNECTIONS": "Portalverbindingen",
         "PORTAL_CONNECTIVITY_GUARD": "Verzoeken aan onbereikbare portals pauzeren",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "Pauzeer nieuwe Xtream- en Stalker-verzoeken 30 seconden na herhaalde verbindingsfouten. Probeer dit uit te schakelen als een portal af en toe onbereikbaar is. Geldt na opslaan, zonder herstart.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Servervolgorde",
         "CATEGORY_SORT_ARIA": "Categorieën sorteren",
         "DASHBOARD": {
+            "AI_PICKS": "Geselecteerd voor jouw smaak",
+            "AI_LOADING": "Selecties zoeken die bij je voorkeuren passen…",
+            "AI_FAILED": "AI-selecties zijn niet beschikbaar. Je gewone aanbevelingen zijn er nog steeds.",
+            "AI_EMPTY": "Er zijn nog geen titels beschikbaar om te rangschikken. Schakel TMDB-metadata in en importeer een film- of seriesbibliotheek om selecties te vinden.",
+            "AI_RETRY": "Opnieuw proberen",
             "ACTION_FAILED": "De actie kon niet worden voltooid. Probeer het opnieuw.",
             "CONTINUE_WATCHING": "Verder kijken",
             "LIVE_FAVORITES": "Nu live op je favorieten",

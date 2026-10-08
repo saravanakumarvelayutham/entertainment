@@ -256,3 +256,43 @@ describe('settings form utils — EPG source control', () => {
         }
     );
 });
+
+describe('AI recommendation preferences', () => {
+    it('defaults to opt-out and serializes only explicit preferences', () => {
+        const form = createSettingsForm(new FormBuilder(), true);
+        expect(form.getRawValue().aiRecommendations).toEqual({
+            enabled: false,
+            model: 'security',
+            preferences: '',
+        });
+        form.patchValue({
+            aiRecommendations: {
+                enabled: true,
+                model: ' security ',
+                preferences: ' Slow mysteries ',
+            },
+        });
+        expect(
+            createSettingsFromFormValue(form, {} as Settings).aiRecommendations
+        ).toEqual({
+            enabled: true,
+            model: 'security',
+            preferences: 'Slow mysteries',
+        });
+    });
+
+    it('validates enabled fields and permits opting out with unfinished fields', () => {
+        const form = createSettingsForm(new FormBuilder(), true);
+        const group = form.get('aiRecommendations');
+        group?.patchValue({ enabled: true, model: ' ', preferences: '' });
+        expect(group?.hasError('aiModel')).toBe(true);
+        group?.patchValue({ model: 'security' });
+        expect(group?.hasError('aiPreferences')).toBe(true);
+        group?.patchValue({ preferences: 'x'.repeat(2001) });
+        expect(group?.invalid).toBe(true);
+        group?.patchValue({ preferences: 'Mysteries', model: 'x'.repeat(101) });
+        expect(group?.invalid).toBe(true);
+        group?.patchValue({ enabled: false });
+        expect(group?.valid).toBe(true);
+    });
+});

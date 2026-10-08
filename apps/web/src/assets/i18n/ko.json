@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "AI 영화 및 시리즈 추천",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "활성화하면 작성한 취향과 후보 영화 또는 시리즈의 메타데이터가 models.saravlabs.org로 전송됩니다. 시청 기록과 재생목록 인증 정보는 절대 전송되지 않습니다. AI를 사용할 수 없어도 기존 추천은 계속 제공됩니다.",
+        "AI_TOKEN_CHECKING": "게이트웨이 접근 확인 중…",
+        "AI_TOKEN_CONFIGURED": "게이트웨이 토큰이 설정되었습니다.",
+        "AI_TOKEN_MISSING": "게이트웨이 토큰을 사용할 수 없습니다. Windows 사용자 환경에 MODELS_AUTH_TOKEN을 설정하고 SaravTV를 다시 시작하세요.",
+        "AI_MODEL": "모델",
+        "AI_MODEL_REQUIRED": "모델 이름을 입력하세요(최대 100자).",
+        "AI_PREFERENCES": "나만의 말로 표현하는 취향",
+        "AI_PREFERENCES_DESCRIPTION": "분위기, 주제, 전개 속도, 언어, 피하고 싶은 내용을 설명하세요. 예: 생각할 거리가 있는 SF, 천천히 전개되는 미스터리, 적은 폭력 묘사. 개인정보는 포함하지 마세요.",
+        "AI_PREFERENCES_REQUIRED": "취향을 설명하세요(최대 2000자).",
         "PORTAL_CONNECTIONS": "포털 연결",
         "PORTAL_CONNECTIVITY_GUARD": "사용할 수 없는 포털에 대한 요청 일시 중지",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "연결 오류가 반복되면 새 Xtream 및 Stalker 요청을 30초 동안 중지합니다. 포털을 간헐적으로 사용할 수 없다면 이 옵션을 꺼 보세요. 저장 후 재시작 없이 적용됩니다.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "서버 순서",
         "CATEGORY_SORT_ARIA": "카테고리 정렬",
         "DASHBOARD": {
+            "AI_PICKS": "취향에 맞춰 선정",
+            "AI_LOADING": "취향에 맞는 추천을 찾는 중…",
+            "AI_FAILED": "AI 추천을 사용할 수 없습니다. 일반 추천은 계속 제공됩니다.",
+            "AI_EMPTY": "아직 순위를 매길 수 있는 작품이 없습니다. TMDB 메타데이터를 활성화하고 영화 또는 시리즈 라이브러리를 가져오면 추천을 받을 수 있습니다.",
+            "AI_RETRY": "다시 시도",
             "ACTION_FAILED": "작업을 완료할 수 없습니다. 다시 시도해 주세요.",
             "CONTINUE_WATCHING": "이어서 시청",
             "LIVE_FAVORITES": "즐겨찾기에서 지금 라이브 중인 채널입니다",

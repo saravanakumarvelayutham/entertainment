@@ -174,8 +174,8 @@ Render rules:
    owns the initial reloads for recent items, favorites, and Xtream recently
    added rows on page entry.
 4. No dashboard-local `Layout` state, no localStorage keys, no migrations.
-   Per-rail visibility is the one persisted preference, and it lives in the
-   global settings store (`Settings.dashboardRails`), not in a
+   Rail visibility and optional AI preferences live in the global settings
+   store (`Settings.dashboardRails` / `Settings.aiRecommendations`), not in a
    dashboard-owned layout blob.
 5. Navigation state + deep-link targets come from the existing
    `getRecentItemLink()` / `getGlobalFavoriteLink()` / `getPlaylistLink()`
@@ -204,6 +204,43 @@ Render rules:
     playlist title, type, counts, favorites, recent activity, and source
     connection fields. Workflows that need channel payloads still call
     `getPlaylistById()`.
+
+## Optional AI Taste Ranking
+
+Desktop Settings → Dashboard exposes AI ranking, model and explicit taste
+preferences. It is disabled by default; the default model is `security`.
+Enabling it reranks recommendation candidates already matched to available
+library titles and supplies short reasons. Existing local/TMDB ranking still
+builds the candidate set and remains the fallback when the gateway is unavailable.
+The web/PWA does not expose the desktop gateway bridge.
+
+`DashboardAiRecommendationsService` owns asynchronous reranking and a bounded
+eight-batch session cache. Settings and candidate changes invalidate the displayed
+ranking; late completions cannot restore stale results. Failed batches retain
+the normal rails without automatic retries; the user can explicitly retry.
+
+The main-process service calls only
+`https://models.saravlabs.org/v1/chat/completions`, using
+`User-Agent: SaravLabs-Model-Gateway/1.0`. Authentication is read solely from
+`process.env.MODELS_AUTH_TOKEN`; no secret enters settings, the renderer, IPC
+responses or debug traces. On Windows, setting the User environment variable
+requires a fresh application process launched from an environment that has
+inherited it. A running app or terminal does not acquire later environment
+changes. Never paste tokens into preferences or save them in repository files.
+
+The request contains only explicit preferences and public candidate metadata
+(public TMDB identity, title, year, media type and numeric genre ids). It does not
+send watch history, favorite/dislike records, source identities, provider URLs
+or credentials. Candidate selection may reflect local taste signals, but those
+records are never serialized to the endpoint.
+
+Only the current main window's main frame may invoke the bridge. Main validates
+at most 40 candidates, 2,000 preference characters, 100 model characters and
+300 title characters. The request has a 20-second timeout, blocks redirects and
+reads at most 128 KiB of response data. Returned JSON must contain a nonempty
+ranking with unique known ids and reasons of at most 240 characters; malformed
+or invented identities reject the entire response. Provider errors become
+generic safe errors. No automatic network retry occurs.
 
 ## Empty State
 

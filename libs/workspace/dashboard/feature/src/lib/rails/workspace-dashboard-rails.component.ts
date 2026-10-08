@@ -1,3 +1,4 @@
+import { buildDashboardAiCandidates } from './dashboard-ai-candidates.util';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -15,6 +16,7 @@ import {
     isStalkerAccountPlaylist,
     isXtreamAccountPlaylist,
     normalizeDashboardRailsSettings,
+    normalizeAiRecommendationSettings,
 } from '@iptvnator/shared/interfaces';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -42,6 +44,7 @@ import {
 } from '@iptvnator/services';
 import {
     DashboardDataService,
+    DashboardAiRecommendationsService,
     DashboardFavoriteItem,
     DashboardGenreRecommendationsService,
     DashboardRecentlyAddedItem,
@@ -138,6 +141,9 @@ export class WorkspaceDashboardRailsComponent {
     private readonly settingsStore = inject(SettingsStore);
     private readonly heroTmdb = inject(DashboardHeroTmdbService);
     private readonly sourceExpiry = inject(DashboardSourceExpiryService);
+    readonly aiRecommendationsService = inject(
+        DashboardAiRecommendationsService
+    );
     readonly trendingService = inject(DashboardTrendingService);
     readonly recommendationsService = inject(DashboardRecommendationsService);
     readonly genreRecommendationsService = inject(
@@ -159,6 +165,69 @@ export class WorkspaceDashboardRailsComponent {
     readonly dashboardRails = computed(() =>
         normalizeDashboardRailsSettings(this.settingsStore.dashboardRails?.())
     );
+
+    readonly aiEnabled = computed(
+        () =>
+            this.isElectron &&
+            normalizeAiRecommendationSettings(
+                this.settingsStore.aiRecommendations?.()
+            ).enabled
+    );
+    readonly aiCandidates = computed(() =>
+        buildDashboardAiCandidates(
+            [
+                ...(this.recommendationsService.isAvailable
+                    ? this.recommendationsService.items()
+                    : []),
+                ...(this.genreRecommendationsService.isAvailable
+                    ? this.genreRecommendationsService
+                          .rails()
+                          .reduce<DashboardRecommendationItem[]>(
+                              (items, rail) => [...items, ...rail.items],
+                              []
+                          )
+                    : []),
+            ],
+            this.trendingService.isAvailable
+                ? this.trendingService.items()
+                : [],
+            [
+                ...this.data.globalRecentVodItems(),
+                ...this.data.globalFavoriteItems(),
+            ],
+            new Set(this.data.playlists().map((playlist) => playlist._id)),
+            (item) => this.recommendationFeedback.isDismissed(item)
+        )
+    );
+    readonly aiCards = computed(() =>
+        this.aiRecommendationsService
+            .items()
+            .filter(({ item }) =>
+                this.aiCandidates().some(
+                    (candidate) =>
+                        candidate.mediaType === item.mediaType &&
+                        candidate.tmdbId === item.tmdbId
+                )
+            )
+            .map(({ item, reason }) =>
+                this.toRecommendationCard(item, 'genre', reason)
+            )
+    );
+    readonly aiCandidatesLoading = computed(
+        () =>
+            !this.ready() ||
+            this.trendingService.loading() ||
+            this.recommendationsService.loading() ||
+            this.genreRecommendationsService.loading()
+    );
+
+    retryAiRecommendations(): void {
+        this.aiRecommendationsService.refresh(
+            this.settingsStore.aiRecommendations?.(),
+            this.aiCandidates(),
+            true
+        );
+    }
 
     private readonly heroRecentItem = computed(
         () => this.data.globalRecentItems()[0] ?? null
@@ -523,7 +592,7 @@ export class WorkspaceDashboardRailsComponent {
         // the batched title match never competes for the worker at startup.
         effect(() => {
             if (
-                !this.dashboardRails().tmdbTrending ||
+                (!this.dashboardRails().tmdbTrending && !this.aiEnabled()) ||
                 !this.data.globalFavoritesLoaded() ||
                 !this.trendingService.isAvailable
             ) {
@@ -540,7 +609,8 @@ export class WorkspaceDashboardRailsComponent {
         // catalog set and skips no-ops.
         effect(() => {
             if (
-                !this.dashboardRails().tmdbRecommendations ||
+                (!this.dashboardRails().tmdbRecommendations &&
+                    !this.aiEnabled()) ||
                 !this.data.globalFavoritesLoaded() ||
                 !this.recommendationsService.isAvailable
             ) {
@@ -558,7 +628,8 @@ export class WorkspaceDashboardRailsComponent {
         // from favorites, recent activity, completion and TMDB seed quality.
         effect(() => {
             if (
-                !this.dashboardRails().tmdbRecommendations ||
+                (!this.dashboardRails().tmdbRecommendations &&
+                    !this.aiEnabled()) ||
                 !this.data.globalFavoritesLoaded() ||
                 !this.genreRecommendationsService.isAvailable
             ) {
@@ -570,6 +641,26 @@ export class WorkspaceDashboardRailsComponent {
             this.data.playbackPositions$();
             this.languageTick();
             untracked(() => void this.genreRecommendationsService.load());
+        });
+        effect(() => {
+            const settings = this.settingsStore.aiRecommendations?.();
+            const enabled = this.aiEnabled();
+            if (enabled && this.aiCandidatesLoading()) {
+                untracked(() =>
+                    this.aiRecommendationsService.refresh(
+                        { enabled: false },
+                        []
+                    )
+                );
+                return;
+            }
+            const candidates = enabled ? this.aiCandidates() : [];
+            untracked(() =>
+                this.aiRecommendationsService.refresh(
+                    enabled ? settings : { enabled: false },
+                    candidates
+                )
+            );
         });
     }
 
@@ -864,7 +955,8 @@ export class WorkspaceDashboardRailsComponent {
 
     private toRecommendationCard(
         item: DashboardRecommendationItem,
-        reason: 'watched' | 'genre'
+        reason: 'watched' | 'genre',
+        aiReason?: string
     ): DashboardRailCard {
         const subtitle = [
             item.year !== null ? String(item.year) : null,
@@ -880,7 +972,7 @@ export class WorkspaceDashboardRailsComponent {
             imageUrl: item.posterUrl ?? undefined,
             icon: item.mediaType === 'movie' ? 'movie' : 'video_library',
             contentType: item.mediaType === 'movie' ? 'movie' : 'series',
-            actions: this.recommendationActions(item, reason),
+            actions: this.recommendationActions(item, reason, aiReason),
             link: [
                 '/workspace/xtreams',
                 item.match.playlistId,
@@ -893,12 +985,14 @@ export class WorkspaceDashboardRailsComponent {
 
     private recommendationActions(
         item: DashboardRecommendationItem,
-        reason: 'watched' | 'genre'
+        reason: 'watched' | 'genre',
+        aiReason?: string
     ): DashboardRailAction[] {
         const liked =
             this.recommendationFeedback.choiceFor(item) === 'more-like-this';
         const explanation =
-            reason === 'watched'
+            aiReason ??
+            (reason === 'watched'
                 ? this.translate.instant(
                       'WORKSPACE.DASHBOARD.TMDB_RECOMMENDED_BECAUSE',
                       { title: item.seedTitle }
@@ -906,7 +1000,7 @@ export class WorkspaceDashboardRailsComponent {
                 : this.translate.instant(
                       'WORKSPACE.DASHBOARD.TMDB_YOUR_GENRE',
                       { genre: item.seedTitle }
-                  );
+                  ));
         return [
             {
                 id: 'recommendation-explanation',
@@ -936,7 +1030,10 @@ export class WorkspaceDashboardRailsComponent {
     private findRecommendation(
         cardId: string
     ): DashboardRecommendationItem | null {
-        const candidates = [...this.recommendationsService.items()];
+        const candidates = [
+            ...this.recommendationsService.items(),
+            ...this.aiRecommendationsService.items().map(({ item }) => item),
+        ];
         for (const rail of this.genreRecommendationsService.rails()) {
             candidates.push(...rail.items);
         }

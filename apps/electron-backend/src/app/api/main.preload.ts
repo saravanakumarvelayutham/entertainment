@@ -1,4 +1,8 @@
-import type { SourceProbeContext } from '@iptvnator/shared/interfaces';
+import {
+    AI_RECOMMENDATIONS_STATUS,
+    AI_RECOMMENDATIONS_RANK,
+    type SourceProbeContext,
+} from '@iptvnator/shared/interfaces';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
 import {
     APP_UPDATE_CHECK,
@@ -144,6 +148,7 @@ function wrapElectronApi<T extends object>(api: T): T {
                 toXtreamPreloadPerformanceTargetMethod(name) !== null;
             if (
                 typeof value !== 'function' ||
+                name === 'rankAiRecommendations' ||
                 name.startsWith('on') ||
                 name.startsWith('remove') ||
                 (!shouldTraceRendererApi &&
@@ -403,6 +408,10 @@ const electronApi: ElectronBridgeApi = {
     getAppVersion: () => ipcRenderer.invoke('get-app-version'),
     platform: process.platform,
     getAppUpdateStatus: () => ipcRenderer.invoke(APP_UPDATE_GET_STATUS),
+    getAiRecommendationsStatus: () =>
+        ipcRenderer.invoke(AI_RECOMMENDATIONS_STATUS),
+    rankAiRecommendations: (request) =>
+        ipcRenderer.invoke(AI_RECOMMENDATIONS_RANK, request),
     checkForAppUpdate: () => ipcRenderer.invoke(APP_UPDATE_CHECK),
     downloadAppUpdate: () => ipcRenderer.invoke(APP_UPDATE_DOWNLOAD),
     installAppUpdate: () => ipcRenderer.invoke(APP_UPDATE_INSTALL),

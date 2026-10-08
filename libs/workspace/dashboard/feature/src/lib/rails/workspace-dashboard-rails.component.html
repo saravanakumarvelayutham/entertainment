@@ -357,6 +357,47 @@
             </section>
         }
 
+        @if (aiEnabled()) {
+            @if (aiCards().length > 0) {
+                <lib-dashboard-rail
+                    [label]="'WORKSPACE.DASHBOARD.AI_PICKS' | translate"
+                    layout="recommendation"
+                    [items]="aiCards()"
+                    [totalCount]="aiCards().length"
+                    testId="dashboard-ai-recommendations-rail"
+                    (actionSelected)="onRecommendationActionSelected($event)"
+                />
+            } @else {
+                <section data-test-id="dashboard-ai-status" aria-live="polite">
+                    <h2>{{ 'WORKSPACE.DASHBOARD.AI_PICKS' | translate }}</h2>
+                    <p>
+                        {{
+                            (aiCandidatesLoading() ||
+                            aiRecommendationsService.loading()
+                                ? 'WORKSPACE.DASHBOARD.AI_LOADING'
+                                : aiRecommendationsService.failed()
+                                  ? 'WORKSPACE.DASHBOARD.AI_FAILED'
+                                  : 'WORKSPACE.DASHBOARD.AI_EMPTY'
+                            ) | translate
+                        }}
+                    </p>
+                    @if (
+                        aiRecommendationsService.failed() &&
+                        !aiCandidatesLoading()
+                    ) {
+                        <button
+                            mat-stroked-button
+                            type="button"
+                            (click)="retryAiRecommendations()"
+                            data-test-id="dashboard-ai-retry"
+                        >
+                            {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                        </button>
+                    }
+                </section>
+            }
+        }
+
         <!-- TMDB recommendations rail ("Because you watched"; opt-in; Electron only) -->
         @if (
             dashboardRails().tmdbRecommendations &&

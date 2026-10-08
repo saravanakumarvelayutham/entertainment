@@ -52,7 +52,10 @@
                     />
                 }
                 @case ('dashboard') {
-                    <app-settings-dashboard-section [form]="settingsForm" />
+                    <app-settings-dashboard-section
+                        [form]="settingsForm"
+                        [isDesktop]="isDesktop"
+                    />
                 }
                 @case ('remote-control') {
                     <app-settings-remote-control-section

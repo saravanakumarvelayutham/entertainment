@@ -1,4 +1,8 @@
 import type { AppUpdateChannel } from './app-update-channel.util';
+import type {
+    AiRecommendationRankRequest,
+    AiRecommendationRankResponse,
+} from './ai-recommendations.interface';
 import type { SourceProbeContext, SourceHealthResult } from './source-health';
 import type { XtreamConnectionFailure } from './xtream-connection-test';
 import type {
@@ -696,6 +700,10 @@ export interface ElectronBridgeTmdbSettings {
 }
 
 export interface ElectronBridgeApi {
+    getAiRecommendationsStatus: () => Promise<{ available: boolean }>;
+    rankAiRecommendations: (
+        request: AiRecommendationRankRequest
+    ) => Promise<AiRecommendationRankResponse>;
     /** Opens a local Netflix viewing-history CSV and returns only its title/date rows. */
     importNetflixViewingHistory: () => Promise<
         | { cancelled: true }

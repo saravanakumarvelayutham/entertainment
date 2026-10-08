@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "AI 電影與影集推薦",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "啟用後，您填寫的偏好及候選電影或影集的中繼資料將傳送至 models.saravlabs.org。觀看紀錄和播放清單憑證絕不會傳送。若 AI 無法使用，現有推薦仍然可用。",
+        "AI_TOKEN_CHECKING": "正在檢查閘道存取權限…",
+        "AI_TOKEN_CONFIGURED": "閘道權杖已設定。",
+        "AI_TOKEN_MISSING": "閘道權杖無法使用。請在 Windows 使用者環境中設定 MODELS_AUTH_TOKEN，然後重新啟動 SaravTV。",
+        "AI_MODEL": "模型",
+        "AI_MODEL_REQUIRED": "請輸入模型名稱（最多 100 個字元）。",
+        "AI_PREFERENCES": "用自己的話描述您的喜好",
+        "AI_PREFERENCES_DESCRIPTION": "描述喜歡的氛圍、主題、節奏、語言以及想避開的內容。例如：有深度的科幻、步調緩慢的懸疑和少量暴力。請勿包含個人資訊。",
+        "AI_PREFERENCES_REQUIRED": "請描述您的偏好（最多 2000 個字元）。",
         "PORTAL_CONNECTIONS": "入口網站連線",
         "PORTAL_CONNECTIVITY_GUARD": "暫停向無法使用的入口網站傳送請求",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "連線連續失敗後，暫停新的 Xtream 和 Stalker 請求 30 秒。如果入口網站間歇性無法使用，請嘗試關閉此選項。儲存後生效，無需重新啟動。",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "伺服器排序",
         "CATEGORY_SORT_ARIA": "排序分類",
         "DASHBOARD": {
+            "AI_PICKS": "依照您的喜好精選",
+            "AI_LOADING": "正在尋找符合您偏好的推薦…",
+            "AI_FAILED": "AI 推薦無法使用。一般推薦仍然可用。",
+            "AI_EMPTY": "尚無可供排序的片名。請啟用 TMDB 中繼資料並匯入電影或影集資料庫，以取得推薦。",
+            "AI_RETRY": "重試",
             "ACTION_FAILED": "無法完成該操作。請重試。",
             "CONTINUE_WATCHING": "繼續觀看",
             "LIVE_FAVORITES": "我的最愛正在直播",

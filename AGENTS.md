@@ -374,6 +374,19 @@ MPV/VLC and Embedded MPV retain manual TS; Video.js segment retry cycles without
 a terminal diagnostic also need manual TS. Contract and full support matrix:
 `docs/architecture/xtream-portal-compatibility.md` (Initial Auto HLS failure).
 
+## Optional AI Recommendations
+
+Desktop Settings → Dashboard exposes disabled-by-default
+`Settings.aiRecommendations` (model `security`, explicit preferences). Main alone
+reads `process.env.MODELS_AUTH_TOKEN` and calls the fixed SaravLabs gateway;
+tokens never enter renderer/settings/IPC/debug logs. Only public candidate
+metadata and entered preferences are sent, without history or source identities.
+Requests are bounded, redirects blocked, responses validated against known ids,
+and failures retain normal recommendation rails after a 20-second timeout.
+The dashboard caches eight session batches and retries only explicitly.
+Contract and Windows environment launch guidance:
+`docs/architecture/workspace-dashboard.md` (Optional AI Taste Ranking).
+
 ## Xtream Catch-Up Server Timezone
 
 The `{Y-m-d:H-M}` segment of a timeshift URL is read by the panel in ITS

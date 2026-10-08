@@ -3,6 +3,8 @@ import {
     DbWorkerOperation,
 } from '../workers/database-worker.types';
 import {
+    AI_RECOMMENDATIONS_RANK,
+    AI_RECOMMENDATIONS_STATUS,
     APP_UPDATE_CHECK,
     APP_UPDATE_DOWNLOAD,
     APP_UPDATE_GET_RELEASE_NOTES,
@@ -168,6 +170,15 @@ describe('main preload DB IPC contract', () => {
                 cookie: 'mac=00%3A1A%3A79%3A00%3A00%3A01',
             }
         );
+    });
+
+    it('exposes AI availability and ranking without a credential argument', async () => {
+        const api = getExposedApi();
+        const request = { model: 'security', preferences: 'Mysteries', candidates: [] };
+        await api.getAiRecommendationsStatus();
+        await api.rankAiRecommendations(request);
+        expect(mockIpcRenderer.invoke).toHaveBeenCalledWith(AI_RECOMMENDATIONS_STATUS);
+        expect(mockIpcRenderer.invoke).toHaveBeenCalledWith(AI_RECOMMENDATIONS_RANK, request);
     });
 
     it('exposes app update commands and status events through the typed bridge', async () => {

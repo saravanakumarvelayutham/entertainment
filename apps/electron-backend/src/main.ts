@@ -42,6 +42,7 @@ import WindowEvents from './app/events/window.events';
 import { bootstrapWindowCloseGuard } from './app/services/window-close-guard.service';
 import { registerStreamProbeHandlers } from './app/events/stream-probe';
 import { registerConnectivityGuardHandlers } from './app/events/connectivity-guard.events';
+import { registerAiRecommendationHandlers } from './app/events/ai-recommendations.events';
 import XtreamEvents from './app/events/xtream.events';
 import { environment } from './environments/environment';
 import {
@@ -174,6 +175,7 @@ export default class Main {
         registerM3uSourceProbe();
         registerSourceProbeCancellation();
         registerConnectivityGuardHandlers();
+        registerAiRecommendationHandlers(() => App.mainWindow);
         DatabaseEvents.bootstrapDatabaseEvents();
         EpgEvents.bootstrapEpgEvents();
         RemoteControlEvents.bootstrapRemoteControlEvents();

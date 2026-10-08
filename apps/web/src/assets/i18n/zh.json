@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "AI 电影和剧集推荐",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "启用后，您填写的偏好以及候选电影或剧集的元数据将发送到 models.saravlabs.org。观看记录和播放列表凭据绝不会发送。如果 AI 不可用，现有推荐仍然可用。",
+        "AI_TOKEN_CHECKING": "正在检查网关访问权限…",
+        "AI_TOKEN_CONFIGURED": "网关令牌已配置。",
+        "AI_TOKEN_MISSING": "网关令牌不可用。请在 Windows 用户环境中设置 MODELS_AUTH_TOKEN，然后重启 SaravTV。",
+        "AI_MODEL": "模型",
+        "AI_MODEL_REQUIRED": "请输入模型名称（最多 100 个字符）。",
+        "AI_PREFERENCES": "用自己的话描述您的喜好",
+        "AI_PREFERENCES_DESCRIPTION": "描述喜欢的氛围、主题、节奏、语言以及想避开的内容。例如：有深度的科幻、节奏缓慢的悬疑和少量暴力。请勿包含个人信息。",
+        "AI_PREFERENCES_REQUIRED": "请描述您的偏好（最多 2000 个字符）。",
         "PORTAL_CONNECTIONS": "门户连接",
         "PORTAL_CONNECTIVITY_GUARD": "暂停向不可用门户发送请求",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "连接连续失败后，暂停新的 Xtream 和 Stalker 请求 30 秒。如果门户间歇性不可用，请尝试关闭此选项。保存后生效，无需重启。",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "服务器排序",
         "CATEGORY_SORT_ARIA": "排序分类",
         "DASHBOARD": {
+            "AI_PICKS": "根据您的喜好精选",
+            "AI_LOADING": "正在寻找符合您偏好的推荐…",
+            "AI_FAILED": "AI 推荐不可用。常规推荐仍然可用。",
+            "AI_EMPTY": "尚无可供排序的片名。请启用 TMDB 元数据并导入电影或剧集库，以获取推荐。",
+            "AI_RETRY": "重试",
             "ACTION_FAILED": "无法完成该操作。请重试。",
             "CONTINUE_WATCHING": "继续观看",
             "LIVE_FAVORITES": "收藏频道正在播放",

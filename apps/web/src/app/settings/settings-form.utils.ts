@@ -10,6 +10,10 @@ import {
     AppUpdateChannel,
     CoverSize,
     DEFAULT_APP_UPDATE_CHANNEL,
+    DEFAULT_AI_RECOMMENDATION_SETTINGS,
+    normalizeAiRecommendationSettings,
+    MAX_AI_MODEL_LENGTH,
+    MAX_AI_PREFERENCES_LENGTH,
     DEFAULT_DASHBOARD_RAILS_SETTINGS,
     DEFAULT_TMDB_SETTINGS,
     EpgViewMode,
@@ -55,6 +59,29 @@ export function createEpgUrlControl(value = ''): FormControl<string | null> {
     return new FormControl(value, [validateEpgSourceReferenceControl]);
 }
 
+/** Hidden opt-out fields cannot block unrelated settings saves. */
+export function aiRecommendationSettingsValidator(
+    control: AbstractControl
+): ValidationErrors | null {
+    const value = control.value;
+    if (value?.enabled !== true) return null;
+    if (
+        typeof value.model !== 'string' ||
+        !value.model.trim() ||
+        value.model.length > MAX_AI_MODEL_LENGTH
+    ) {
+        return { aiModel: true };
+    }
+    if (
+        typeof value.preferences !== 'string' ||
+        !value.preferences.trim() ||
+        value.preferences.length > MAX_AI_PREFERENCES_LENGTH
+    ) {
+        return { aiPreferences: true };
+    }
+    return null;
+}
+
 export function createSettingsForm(
     formBuilder: FormBuilder,
     supportsEpg: boolean
@@ -90,6 +117,12 @@ export function createSettingsForm(
             tmdbRecommendations:
                 DEFAULT_DASHBOARD_RAILS_SETTINGS.tmdbRecommendations,
         }),
+        aiRecommendations: formBuilder.group(
+            {
+                ...DEFAULT_AI_RECOMMENDATION_SETTINGS,
+            },
+            { validators: aiRecommendationSettingsValidator }
+        ),
         startupBehavior: StartupBehavior.FirstView,
         startupWindowMode: 'normal' as StartupWindowMode,
         updateChannel: DEFAULT_APP_UPDATE_CHANNEL as AppUpdateChannel,
@@ -184,6 +217,9 @@ export function createSettingsFromFormValue(
         showCaptions: value.showCaptions ?? false,
         showDashboard: value.showDashboard ?? true,
         dashboardRails: normalizeDashboardRailsSettings(value.dashboardRails),
+        aiRecommendations: normalizeAiRecommendationSettings(
+            value.aiRecommendations
+        ),
         startupBehavior: value.startupBehavior ?? StartupBehavior.FirstView,
         startupWindowMode: normalizeStartupWindowMode(value.startupWindowMode),
         updateChannel: normalizeAppUpdateChannel(value.updateChannel),

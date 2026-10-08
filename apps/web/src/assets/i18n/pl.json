@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "Wybór filmów i seriali z AI",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Po włączeniu Twoje pisemne preferencje i metadane wybranych kandydatów na filmy lub seriale są wysyłane do models.saravlabs.org. Historia oglądania i dane logowania do list odtwarzania nigdy nie są wysyłane. Dotychczasowe rekomendacje pozostają dostępne, gdy AI jest niedostępne.",
+        "AI_TOKEN_CHECKING": "Sprawdzanie dostępu do bramy…",
+        "AI_TOKEN_CONFIGURED": "Token bramy został skonfigurowany.",
+        "AI_TOKEN_MISSING": "Token bramy jest niedostępny. Ustaw MODELS_AUTH_TOKEN w środowisku użytkownika Windows i uruchom ponownie SaravTV.",
+        "AI_MODEL": "Model",
+        "AI_MODEL_REQUIRED": "Wpisz nazwę modelu (do 100 znaków).",
+        "AI_PREFERENCES": "Twój gust, Twoimi słowami",
+        "AI_PREFERENCES_DESCRIPTION": "Opisz nastrój, tematykę, tempo, języki i rzeczy, których chcesz unikać. Na przykład: refleksyjna fantastyka naukowa, powoli rozwijające się zagadki i mało przemocy. Nie podawaj danych osobowych.",
+        "AI_PREFERENCES_REQUIRED": "Opisz swoje preferencje (do 2000 znaków).",
         "PORTAL_CONNECTIONS": "Połączenia z portalami",
         "PORTAL_CONNECTIVITY_GUARD": "Wstrzymuj żądania do niedostępnych portali",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "Po powtarzających się błędach połączenia wstrzymuj nowe żądania Xtream i Stalker na 30 sekund. Spróbuj wyłączyć, jeśli portal bywa niedostępny. Zmiana działa po zapisaniu, bez ponownego uruchomienia.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Kolejność serwera",
         "CATEGORY_SORT_ARIA": "Sortuj kategorie",
         "DASHBOARD": {
+            "AI_PICKS": "Wybrane według Twojego gustu",
+            "AI_LOADING": "Szukanie propozycji pasujących do Twoich preferencji…",
+            "AI_FAILED": "Propozycje AI są niedostępne. Twoje zwykłe rekomendacje nadal tu są.",
+            "AI_EMPTY": "Nie ma jeszcze dostępnych tytułów do uporządkowania. Włącz metadane TMDB i zaimportuj bibliotekę filmów lub seriali, aby znaleźć propozycje.",
+            "AI_RETRY": "Spróbuj ponownie",
             "ACTION_FAILED": "Nie udało się wykonać akcji. Spróbuj ponownie.",
             "CONTINUE_WATCHING": "Kontynuuj oglądanie",
             "LIVE_FAVORITES": "Na żywo w Twoich ulubionych",

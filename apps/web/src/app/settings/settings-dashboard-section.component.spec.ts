@@ -21,6 +21,11 @@ describe('SettingsDashboardSectionComponent', () => {
     const createForm = () =>
         new FormGroup({
             showDashboard: new FormControl(true),
+            aiRecommendations: new FormGroup({
+                enabled: new FormControl(false),
+                model: new FormControl('security'),
+                preferences: new FormControl(''),
+            }),
             dashboardRails: new FormGroup({
                 hero: new FormControl(true),
                 continueWatching: new FormControl(true),
@@ -103,6 +108,39 @@ describe('SettingsDashboardSectionComponent', () => {
         fixture = TestBed.createComponent(SettingsDashboardSectionComponent);
         fixture.componentRef.setInput('form', createForm());
         fixture.detectChanges();
+    });
+
+    it('shows AI controls only on desktop and preserves edits in the shared form', async () => {
+        expect(
+            fixture.nativeElement.querySelector('[data-test-id="ai-enabled"]')
+        ).toBeNull();
+        fixture.componentRef.setInput('isDesktop', true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(
+            fixture.nativeElement.querySelector('[data-test-id="ai-enabled"]')
+        ).not.toBeNull();
+        fixture.componentInstance
+            .form()
+            .get('aiRecommendations.enabled')
+            ?.setValue(true);
+        fixture.detectChanges();
+        const textarea = fixture.nativeElement.querySelector(
+            '[data-test-id="ai-preferences"]'
+        ) as HTMLTextAreaElement;
+        textarea.value = 'Slow mysteries';
+        textarea.dispatchEvent(new Event('input'));
+        expect(
+            fixture.componentInstance
+                .form()
+                .get('aiRecommendations.preferences')?.value
+        ).toBe('Slow mysteries');
+        expect(fixture.componentInstance.form().dirty).toBe(true);
+        expect(
+            fixture.nativeElement.querySelector(
+                '[data-test-id="ai-token-status"]'
+            ).textContent
+        ).toContain('SETTINGS.AI_TOKEN_MISSING');
     });
 
     it('keeps the previous successful import visible after reopening settings', () => {

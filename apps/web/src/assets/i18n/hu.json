@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "MI-alapú film- és sorozatajánlók",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Bekapcsoláskor az írásos preferenciáid és a lehetséges filmek vagy sorozatok metaadatai a models.saravlabs.org címre kerülnek. A megtekintési előzmények és a lejátszási listák hitelesítő adatai soha nem kerülnek elküldésre. A meglévő ajánlások akkor is elérhetők, ha az MI nem érhető el.",
+        "AI_TOKEN_CHECKING": "Átjáró-hozzáférés ellenőrzése…",
+        "AI_TOKEN_CONFIGURED": "Az átjáró tokenje beállítva.",
+        "AI_TOKEN_MISSING": "Az átjáró tokenje nem érhető el. Állítsd be a MODELS_AUTH_TOKEN változót a Windows felhasználói környezetedben, és indítsd újra a SaravTV-t.",
+        "AI_MODEL": "Modell",
+        "AI_MODEL_REQUIRED": "Adj meg egy modellnevet (legfeljebb 100 karakter).",
+        "AI_PREFERENCES": "Az ízlésed, a saját szavaiddal",
+        "AI_PREFERENCES_DESCRIPTION": "Írd le a hangulatokat, témákat, tempót, nyelveket és a kerülendő dolgokat. Például: elgondolkodtató sci-fi, lassan kibontakozó rejtélyek és kevés erőszak. Ne adj meg személyes adatokat.",
+        "AI_PREFERENCES_REQUIRED": "Írd le a preferenciáidat (legfeljebb 2000 karakter).",
         "PORTAL_CONNECTIONS": "Portálkapcsolatok",
         "PORTAL_CONNECTIVITY_GUARD": "Kérések szüneteltetése az elérhetetlen portálokhoz",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "Ismételt kapcsolódási hibák után az új Xtream- és Stalker-kérések szüneteltetése 30 másodpercre. Ha egy portál időnként elérhetetlenné válik, próbálja kikapcsolni. Mentés után, újraindítás nélkül érvényesül.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Kiszolgálóoldali rendezés",
         "CATEGORY_SORT_ARIA": "Kategóriák rendezése",
         "DASHBOARD": {
+            "AI_PICKS": "Az ízlésedre válogatva",
+            "AI_LOADING": "A preferenciáidhoz illő ajánlások keresése…",
+            "AI_FAILED": "Az MI-ajánlások nem érhetők el. A szokásos ajánlásaid továbbra is itt vannak.",
+            "AI_EMPTY": "Még nincsenek rangsorolható címek. Kapcsold be a TMDB-metaadatokat, és importálj film- vagy sorozatkönyvtárat az ajánlásokhoz.",
+            "AI_RETRY": "Próbáld újra",
             "ACTION_FAILED": "A műveletet nem sikerült végrehajtani. Próbáld újra.",
             "CONTINUE_WATCHING": "Lejátszás folytatása",
             "LIVE_FAVORITES": "Most a kedvenc csatornákon",

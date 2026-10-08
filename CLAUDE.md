@@ -1640,6 +1640,16 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
   `Not for me` feedback. The like button exposes its saved state and undo.
   Contract: `docs/architecture/workspace-dashboard.md`.
 
+- Desktop Settings → Dashboard optionally reranks available recommendation
+  candidates through the fixed SaravLabs gateway (default model `security`).
+  `Settings.aiRecommendations` stores enabled/model/explicit preferences;
+  authentication stays exclusively in main-process `MODELS_AUTH_TOKEN`.
+  Only public candidate metadata and entered preferences leave the app, never
+  history/source identities/credentials. Main bounds requests, blocks redirects,
+  validates known unique response ids and times out after 20 seconds; failures
+  retain normal rails. The dashboard keeps eight session batches and retries
+  only explicitly. Contract: `docs/architecture/workspace-dashboard.md`.
+
 **Paused Movie Recovery**:
 
 - The shared built-in player captures pauses after playback starts. Network

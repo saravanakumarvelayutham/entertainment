@@ -1,3 +1,4 @@
+import { DEFAULT_SETTINGS } from './settings-defaults';
 import {
     EpgSourceSettingsService,
     epgSourceUrlsChanged,
@@ -18,16 +19,12 @@ import {
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { firstValueFrom } from 'rxjs';
 import {
-    DEFAULT_DASHBOARD_RAILS_SETTINGS,
+    normalizeAiRecommendationSettings,
     DEFAULT_TMDB_SETTINGS,
     ElectronBridgeTrustOptions,
     EpgViewMode,
-    Language,
     Settings,
-    StartupBehavior,
     STORE_KEY,
-    StreamFormat,
-    Theme,
     VideoPlayer,
     normalizeAppUpdateChannel,
     normalizeEpgOffsetMinutes,
@@ -39,51 +36,6 @@ import {
     readDesktopTmdbSettings,
     saveDesktopTmdbSettings,
 } from './tmdb/tmdb-settings-persistence';
-
-const DEFAULT_SETTINGS: Settings = {
-    player: VideoPlayer.VideoJs,
-    webPlayerSharedControls: true,
-    playerAmbientMode: false,
-    playerUpNextRail: true,
-    fullscreenChannelPanel: true,
-    vodAutoFailover: false,
-    m3uVodDetails: true,
-    streamFormat: StreamFormat.AutoStreamFormat,
-    openStreamOnDoubleClick: false,
-    language: Language.ENGLISH,
-    showCaptions: false,
-    showDashboard: true,
-    startupBehavior: StartupBehavior.FirstView,
-    startupWindowMode: 'normal',
-    updateChannel: 'stable',
-    showExternalPlaybackBar: true,
-    stripCountryPrefix: false,
-    theme: Theme.SystemTheme,
-    mpvPlayerPath: '',
-    mpvPlayerArguments: '',
-    mpvReuseInstance: false,
-    vlcPlayerPath: '',
-    vlcPlayerArguments: '',
-    vlcReuseInstance: false,
-    remoteControl: false,
-    remoteControlPort: 8765,
-    epgUrl: [],
-    downloadFolder: '',
-    recordingFolder: '',
-    embeddedMpvFrameCopy: false,
-    embeddedMpvExtraOptions: '',
-    embeddedMpvAutoReconnect: true,
-    portalConnectivityGuard: true,
-    coverSize: 'medium',
-    showCoverTitles: true,
-    epgViewMode: 'timeline',
-    epgOffsetMinutes: 0,
-    dashboardRails: DEFAULT_DASHBOARD_RAILS_SETTINGS,
-    preferUploadedEpgOverXtream: false,
-    trustedPrivateNetworkEpgUrls: [],
-    trustedInsecureTlsHosts: [],
-    tmdb: DEFAULT_TMDB_SETTINGS,
-};
 
 /**
  * Which half of the settings persistence round-trip failed, if any.
@@ -186,6 +138,10 @@ export const SettingsStore = signalStore(
                             dashboardRails: normalizeDashboardRailsSettings(
                                 storedSettings.dashboardRails
                             ),
+                            aiRecommendations:
+                                normalizeAiRecommendationSettings(
+                                    storedSettings.aiRecommendations
+                                ),
                             tmdb:
                                 desktopTmdb ??
                                 storedSettings.tmdb ??
@@ -231,6 +187,15 @@ export const SettingsStore = signalStore(
                 patchState(store, {
                     ...settings,
                     ...coerceProvidedDefaultOnSettings(settings),
+                    ...(settings.aiRecommendations !== undefined
+                        ? {
+                              aiRecommendations:
+                                  normalizeAiRecommendationSettings({
+                                      ...store.aiRecommendations?.(),
+                                      ...settings.aiRecommendations,
+                                  }),
+                          }
+                        : {}),
                     ...(settings.dashboardRails !== undefined
                         ? {
                               dashboardRails: normalizeDashboardRailsSettings(
@@ -357,6 +322,9 @@ export const SettingsStore = signalStore(
                     trustedInsecureTlsHosts:
                         store.trustedInsecureTlsHosts?.() ??
                         DEFAULT_SETTINGS.trustedInsecureTlsHosts,
+                    aiRecommendations: normalizeAiRecommendationSettings(
+                        store.aiRecommendations?.()
+                    ),
                     tmdb: store.tmdb?.() ?? DEFAULT_SETTINGS.tmdb,
                 };
             },

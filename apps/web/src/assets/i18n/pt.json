@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "Sugestões de filmes e séries com IA",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Quando ativado, as suas preferências escritas e os metadados dos filmes ou séries candidatos são enviados para models.saravlabs.org. O histórico de visualização e as credenciais das listas nunca são enviados. As recomendações existentes continuam disponíveis se a IA estiver indisponível.",
+        "AI_TOKEN_CHECKING": "A verificar o acesso ao gateway…",
+        "AI_TOKEN_CONFIGURED": "Token do gateway configurado.",
+        "AI_TOKEN_MISSING": "Token do gateway indisponível. Defina MODELS_AUTH_TOKEN no ambiente do seu utilizador Windows e reinicie o SaravTV.",
+        "AI_MODEL": "Modelo",
+        "AI_MODEL_REQUIRED": "Introduza um nome de modelo (até 100 caracteres).",
+        "AI_PREFERENCES": "Os seus gostos, pelas suas palavras",
+        "AI_PREFERENCES_DESCRIPTION": "Descreva ambientes, temas, ritmo, idiomas e coisas a evitar. Por exemplo: ficção científica reflexiva, mistérios de desenvolvimento lento e pouca violência. Não inclua informações pessoais.",
+        "AI_PREFERENCES_REQUIRED": "Descreva as suas preferências (até 2000 caracteres).",
         "PORTAL_CONNECTIONS": "Ligações aos portais",
         "PORTAL_CONNECTIVITY_GUARD": "Pausar pedidos a portais indisponíveis",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "Após falhas repetidas de ligação, pausar novos pedidos Xtream e Stalker durante 30 segundos. Experimente desativar se um portal ficar indisponível de forma intermitente. Aplica-se ao guardar, sem reiniciar.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Ordem do servidor",
         "CATEGORY_SORT_ARIA": "Ordenar categorias",
         "DASHBOARD": {
+            "AI_PICKS": "Selecionados para os seus gostos",
+            "AI_LOADING": "A procurar sugestões adequadas às suas preferências…",
+            "AI_FAILED": "As sugestões de IA estão indisponíveis. As suas recomendações habituais continuam aqui.",
+            "AI_EMPTY": "Ainda não existem títulos disponíveis para ordenar. Ative os metadados TMDB e importe uma biblioteca de filmes ou séries para obter sugestões.",
+            "AI_RETRY": "Tentar novamente",
             "ACTION_FAILED": "Não foi possível concluir a ação. Tente novamente.",
             "CONTINUE_WATCHING": "Continuar assistindo",
             "LIVE_FAVORITES": "Ao vivo agora nos seus favoritos",

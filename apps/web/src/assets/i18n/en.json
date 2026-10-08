@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "AI movie and series picks",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "When enabled, your written preferences and candidate movie or series metadata are sent to models.saravlabs.org. Watch history and playlist credentials are never sent. Existing recommendations remain available if AI is unavailable.",
+        "AI_TOKEN_CHECKING": "Checking gateway access…",
+        "AI_TOKEN_CONFIGURED": "Gateway token configured.",
+        "AI_TOKEN_MISSING": "Gateway token unavailable. Set MODELS_AUTH_TOKEN in your Windows user environment and restart SaravTV.",
+        "AI_MODEL": "Model",
+        "AI_MODEL_REQUIRED": "Enter a model name (up to 100 characters).",
+        "AI_PREFERENCES": "Your taste, in your words",
+        "AI_PREFERENCES_DESCRIPTION": "Describe moods, themes, pacing, languages, and things to avoid. For example: thoughtful science fiction, slow-burn mysteries, and little violence. Do not include personal information.",
+        "AI_PREFERENCES_REQUIRED": "Describe your preferences (up to 2000 characters).",
         "PORTAL_CONNECTIONS": "Portal connections",
         "PORTAL_CONNECTIVITY_GUARD": "Pause requests to unavailable portals",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "After repeated connection failures, pause new Xtream and Stalker requests for 30 seconds. Try disabling this if a portal becomes unavailable intermittently. Applies after saving, without restarting.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Server sorting",
         "CATEGORY_SORT_ARIA": "Sort categories",
         "DASHBOARD": {
+            "AI_PICKS": "Selected for your taste",
+            "AI_LOADING": "Finding picks that fit your preferences…",
+            "AI_FAILED": "AI picks are unavailable. Your regular recommendations are still here.",
+            "AI_EMPTY": "No available titles to rank yet. Enable TMDB metadata and import a movie or series library to find picks.",
+            "AI_RETRY": "Try again",
             "ACTION_FAILED": "The action could not be completed. Please try again.",
             "CONTINUE_WATCHING": "Continue Watching",
             "LIVE_FAVORITES": "Live now on your favorites",

@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "AIによる映画・シリーズのおすすめ",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "有効にすると、入力した好みと候補の映画やシリーズのメタデータが models.saravlabs.org に送信されます。視聴履歴やプレイリストの認証情報は送信されません。AIが利用できない場合も、既存のおすすめは引き続き表示されます。",
+        "AI_TOKEN_CHECKING": "ゲートウェイへのアクセスを確認中…",
+        "AI_TOKEN_CONFIGURED": "ゲートウェイトークンを設定済みです。",
+        "AI_TOKEN_MISSING": "ゲートウェイトークンを利用できません。Windowsのユーザー環境に MODELS_AUTH_TOKEN を設定し、SaravTVを再起動してください。",
+        "AI_MODEL": "モデル",
+        "AI_MODEL_REQUIRED": "モデル名を入力してください（100文字以内）。",
+        "AI_PREFERENCES": "あなたの言葉で好みを記入",
+        "AI_PREFERENCES_DESCRIPTION": "雰囲気、テーマ、展開の速さ、言語、避けたい内容を記入してください。例：考えさせられるSF、ゆっくり展開するミステリー、暴力描写は少なめ。個人情報は含めないでください。",
+        "AI_PREFERENCES_REQUIRED": "好みを記入してください（2000文字以内）。",
         "PORTAL_CONNECTIONS": "ポータル接続",
         "PORTAL_CONNECTIVITY_GUARD": "利用できないポータルへのリクエストを一時停止",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "接続エラーが繰り返された場合、新しい Xtream と Stalker のリクエストを30秒間停止します。ポータルが断続的に利用できなくなる場合は、無効にしてみてください。保存後、再起動せずに適用されます。",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "サーバー順",
         "CATEGORY_SORT_ARIA": "カテゴリを並び替え",
         "DASHBOARD": {
+            "AI_PICKS": "あなたの好みに合わせて選択",
+            "AI_LOADING": "好みに合う作品を検索中…",
+            "AI_FAILED": "AIのおすすめを利用できません。通常のおすすめは引き続き表示されます。",
+            "AI_EMPTY": "まだ順位付けできる作品がありません。TMDBメタデータを有効にして映画またはシリーズのライブラリをインポートすると、おすすめが表示されます。",
+            "AI_RETRY": "再試行",
             "ACTION_FAILED": "操作を完了できませんでした。もう一度お試しください。",
             "CONTINUE_WATCHING": "視聴を再開",
             "LIVE_FAVORITES": "お気に入りで現在放送中",

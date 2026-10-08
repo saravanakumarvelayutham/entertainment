@@ -1,3 +1,4 @@
+import type { AiRecommendationSettings } from './ai-recommendations.interface';
 import type { AppUpdateChannel } from './app-update-channel.util';
 import { Language } from './language.enum';
 import { StreamFormat } from './stream-format.enum';
@@ -272,6 +273,8 @@ export interface Settings {
     epgOffsetMinutes?: number;
     /** Per-rail dashboard visibility preferences. Missing keys default on. */
     dashboardRails?: DashboardRailsSettings;
+    /** Optional desktop AI picks using explicit preferences only. Default off. */
+    aiRecommendations?: AiRecommendationSettings;
     /**
      * When true, the locally-parsed XMLTV programs (loaded from `epgUrl`)
      * take precedence over the Xtream provider's EPG for live TV channels.

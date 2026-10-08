@@ -259,6 +259,16 @@
         }
     },
     "SETTINGS": {
+        "AI_RECOMMENDATIONS": "Yapay zekâ film ve dizi önerileri",
+        "AI_RECOMMENDATIONS_DISCLOSURE": "Etkinleştirildiğinde yazılı tercihleriniz ve aday film veya dizi meta verileri models.saravlabs.org adresine gönderilir. İzleme geçmişi ve oynatma listesi kimlik bilgileri asla gönderilmez. Yapay zekâ kullanılamadığında mevcut öneriler kullanılabilir kalır.",
+        "AI_TOKEN_CHECKING": "Ağ geçidi erişimi denetleniyor…",
+        "AI_TOKEN_CONFIGURED": "Ağ geçidi belirteci yapılandırıldı.",
+        "AI_TOKEN_MISSING": "Ağ geçidi belirteci kullanılamıyor. Windows kullanıcı ortamınızda MODELS_AUTH_TOKEN değişkenini ayarlayın ve SaravTV’yi yeniden başlatın.",
+        "AI_MODEL": "Model",
+        "AI_MODEL_REQUIRED": "Bir model adı girin (en fazla 100 karakter).",
+        "AI_PREFERENCES": "Zevkiniz, kendi sözlerinizle",
+        "AI_PREFERENCES_DESCRIPTION": "Atmosferleri, temaları, tempoyu, dilleri ve kaçınmak istediğiniz şeyleri açıklayın. Örneğin: düşündürücü bilim kurgu, yavaş gelişen gizemler ve az şiddet. Kişisel bilgi eklemeyin.",
+        "AI_PREFERENCES_REQUIRED": "Tercihlerinizi açıklayın (en fazla 2000 karakter).",
         "PORTAL_CONNECTIONS": "Portal bağlantıları",
         "PORTAL_CONNECTIVITY_GUARD": "Kullanılamayan portallara istekleri duraklat",
         "PORTAL_CONNECTIVITY_GUARD_DESCRIPTION": "Tekrarlanan bağlantı hatalarından sonra yeni Xtream ve Stalker isteklerini 30 saniye duraklatır. Portal zaman zaman kullanılamıyorsa kapatmayı deneyin. Kaydettikten sonra yeniden başlatmadan uygulanır.",
@@ -1499,6 +1509,11 @@
         "SORT_SERVER": "Sunucu sıralaması",
         "CATEGORY_SORT_ARIA": "Kategorileri sırala",
         "DASHBOARD": {
+            "AI_PICKS": "Zevkinize göre seçildi",
+            "AI_LOADING": "Tercihlerinize uyan öneriler bulunuyor…",
+            "AI_FAILED": "Yapay zekâ önerileri kullanılamıyor. Normal önerileriniz hâlâ burada.",
+            "AI_EMPTY": "Henüz sıralanabilecek başlık yok. Öneri bulmak için TMDB meta verilerini etkinleştirin ve bir film veya dizi kitaplığı içe aktarın.",
+            "AI_RETRY": "Yeniden dene",
             "ACTION_FAILED": "İşlem tamamlanamadı. Lütfen tekrar deneyin.",
             "CONTINUE_WATCHING": "İzlemeye Devam Et",
             "LIVE_FAVORITES": "Favorilerinizde şu an canlı",
