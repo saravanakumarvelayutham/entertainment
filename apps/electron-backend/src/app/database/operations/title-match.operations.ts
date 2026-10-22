@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import {
     CatalogTitleMatch,
+    bracketedReleaseYear,
     normalizeTitleKeys,
 } from '@iptvnator/shared/interfaces';
 import type { AppDatabase } from '../database.types';
@@ -13,6 +14,13 @@ import type { AppDatabase } from '../database.types';
  * either the candidate's exact normalized title, or its year-stripped form
  * — in which case the stripped year tag is returned so the renderer can
  * reject year-incompatible matches.
+ *
+ * A matching title is not yet a matching FILM. "Dune (1984)" and "Dune
+ * (2021)" normalize to the same exact key, so every row also reports the
+ * year it states (bracketed tag, or the back-filled `release_year`) and the
+ * TMDB id it already carries; the renderer's `pickTitleMatch` rejects a row
+ * that contradicts the lookup on either. Without that, a dashboard card
+ * wearing the 2021 poster opened the 1984 film.
  */
 
 const MAX_TITLES_PER_REQUEST = 200;
@@ -25,6 +33,15 @@ interface TitleMatchRow {
     category_xtream_id: number;
     playlist_id: string;
     playlist_name: string;
+    release_year: number | null;
+    tmdb_id: number | null;
+}
+
+/** A stored integer id/year, or null for SQL NULL and legacy junk. */
+function positiveIntegerOrNull(value: unknown): number | null {
+    return typeof value === 'number' && Number.isInteger(value) && value > 0
+        ? value
+        : null;
 }
 
 function buildFtsMatchQuery(normalizedTitle: string): string {
@@ -67,7 +84,9 @@ export async function matchTitles(
                     c.type AS type,
                     cat.xtream_id AS category_xtream_id,
                     cat.playlist_id AS playlist_id,
-                    p.name AS playlist_name
+                    p.name AS playlist_name,
+                    c.release_year AS release_year,
+                    c.tmdb_id AS tmdb_id
                 FROM content_title_fts
                 INNER JOIN content AS c ON c.id = content_title_fts.rowid
                 INNER JOIN categories AS cat ON c.category_id = cat.id
@@ -93,6 +112,13 @@ export async function matchTitles(
             if (!exactMatch && !baseMatch) {
                 continue;
             }
+            // On the exact tier a trailing number is part of the NAME (the
+            // query has it too), so only a bracketed tag or the stored
+            // provider year can say which same-titled film this row is.
+            const statedYear =
+                (exactMatch ? null : rowKeys.trailingYear) ??
+                bracketedReleaseYear(row.title) ??
+                positiveIntegerOrNull(row.release_year);
             matches.push({
                 queryTitle,
                 playlistId: row.playlist_id,
@@ -100,7 +126,8 @@ export async function matchTitles(
                 categoryId: row.category_xtream_id,
                 xtreamId: row.xtream_id,
                 type: row.type,
-                trailingYear: exactMatch ? null : rowKeys.trailingYear,
+                trailingYear: statedYear,
+                tmdbId: positiveIntegerOrNull(row.tmdb_id),
             });
         }
     }

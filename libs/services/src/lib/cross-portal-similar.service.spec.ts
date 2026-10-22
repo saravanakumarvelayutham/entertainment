@@ -21,6 +21,7 @@ describe('CrossPortalSimilarService', () => {
         xtreamId: 42,
         type: 'movie',
         trailingYear: null,
+        tmdbId: null,
         ...overrides,
     });
 

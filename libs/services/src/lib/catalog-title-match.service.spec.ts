@@ -15,6 +15,7 @@ describe('catalog title matching', () => {
         xtreamId: 1,
         type: 'movie',
         trailingYear: null,
+        tmdbId: null,
         ...overrides,
     });
 
@@ -23,6 +24,7 @@ describe('catalog title matching', () => {
             titles: string[];
             year: number | null;
             type?: 'movie' | 'series';
+            tmdbId?: number | null;
         },
         matches: CatalogTitleMatch[]
     ) =>
@@ -185,6 +187,49 @@ describe('catalog title matching', () => {
             expect(
                 pick({ titles: ['Unmatched'], year: null }, [match()])
             ).toBeNull();
+        });
+
+        it('rejects a same-titled row that states a different year', () => {
+            // The worker reports "Dune (1984)" as an exact match carrying
+            // 1984, so a 2021 lookup must not open the 1984 film.
+            const picked = pick({ titles: ['Dune'], year: 2021 }, [
+                match({ trailingYear: 1984, xtreamId: 84 }),
+            ]);
+
+            expect(picked).toBeNull();
+        });
+
+        it('drops a row carrying a different TMDB id, whatever its year', () => {
+            const picked = pick(
+                { titles: ['Dune'], year: 2021, tmdbId: 438631 },
+                [
+                    match({ tmdbId: 841, trailingYear: 2021, xtreamId: 84 }),
+                    match({ tmdbId: null, trailingYear: null, xtreamId: 7 }),
+                ]
+            );
+
+            expect(picked?.xtreamId).toBe(7);
+        });
+
+        it('lets a matching TMDB id outrank every title-only row', () => {
+            const picked = pick(
+                { titles: ['Dune'], year: 2021, tmdbId: 438631 },
+                [
+                    match({ trailingYear: 2021, xtreamId: 21 }),
+                    match({ tmdbId: 438631, trailingYear: null, xtreamId: 9 }),
+                ]
+            );
+
+            expect(picked?.xtreamId).toBe(9);
+        });
+
+        it('ignores an unknown lookup id and a missing row id', () => {
+            const picked = pick(
+                { titles: ['Dune'], year: 2021, tmdbId: null },
+                [match({ tmdbId: 841, trailingYear: null, xtreamId: 84 })]
+            );
+
+            expect(picked?.xtreamId).toBe(84);
         });
     });
 });

@@ -37,6 +37,7 @@ const match = (
     categoryId: 1,
     xtreamId: Number(title.replace(/\D/g, '')) || 1,
     trailingYear: null,
+    tmdbId: null,
 });
 const input = (
     changes: Partial<DashboardAiDiscoveryInput> = {}

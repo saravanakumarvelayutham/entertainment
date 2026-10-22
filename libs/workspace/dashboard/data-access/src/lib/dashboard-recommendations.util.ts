@@ -163,6 +163,7 @@ export function candidateLookup(
             ? [candidate.title, candidate.originalTitle]
             : [candidate.title],
         year: candidate.year,
+        tmdbId: candidate.tmdbId,
     };
 }
 

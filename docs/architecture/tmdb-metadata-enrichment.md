@@ -351,10 +351,21 @@ LOOKUP, which the grouping cannot see, so a catalog holding both
 the other lookup then failed its own year check with the right row
 already discarded — rendering a movie the user owns as unavailable.
 
-`pickTitleMatch` ranks the year-compatible rows by evidence: a row whose
-stripped year IS the lookup's year wins, then an untagged row (the only
-tier reachable when the lookup year is unknown), then anything else
-compatible. `titles` accepts aliases most-trusted-first; ranking spans all
+A matching title is not yet a matching film, so every worker row also
+carries the year it STATES — the tag stripped on the base tier, a
+bracketed tag on either tier ("Dune (1984)" and "Dune (2021)" both
+normalize to exactly "dune"), or the provider `release_year` a detail view
+back-filled onto the row — plus the `tmdb_id` it already holds. On the
+exact tier a bare trailing number is never a year, because the query has
+it too ("Blade Runner 2049"). Before this, a Trending or recommendation
+card wearing the 2021 poster opened the 1984 film.
+
+`pickTitleMatch` first drops any row whose stored TMDB id differs from
+the lookup's (callers pass `tmdbId` when they have one; every TMDB-fed
+rail does) and returns a row carrying the SAME id outright. It then ranks
+the year-compatible rows by evidence: a row whose stated year IS the
+lookup's year wins, then an untagged row (the only tier reachable when the
+lookup year is unknown), then anything else compatible. `titles` accepts aliases most-trusted-first; ranking spans all
 aliases at once, so a weak hit under the first alias cannot veto a strong
 one under the second, and alias order only breaks ties inside a tier. The
 recommendations rail is the one caller that passes two — TMDB's localized

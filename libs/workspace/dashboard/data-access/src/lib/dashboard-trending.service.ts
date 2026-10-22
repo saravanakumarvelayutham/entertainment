@@ -80,6 +80,7 @@ export class DashboardTrendingService {
                 type: entry.mediaType === 'movie' ? 'movie' : 'series',
                 titles: [entry.title],
                 year: entry.year,
+                tmdbId: entry.tmdbId,
             },
             grouped
         );

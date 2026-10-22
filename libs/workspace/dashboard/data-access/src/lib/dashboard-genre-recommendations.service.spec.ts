@@ -137,6 +137,7 @@ describe('DashboardGenreRecommendationsService', () => {
                     xtreamId: matchedTitleIds.get(title),
                     type: 'movie',
                     trailingYear: null,
+                    tmdbId: null,
                 };
             })
         );
@@ -415,6 +416,7 @@ describe('DashboardGenreRecommendationsService', () => {
                 xtreamId: index + 500,
                 type: title.startsWith('TV') ? 'series' : 'movie',
                 trailingYear: null,
+                tmdbId: null,
             }))
         );
         const service = createService();

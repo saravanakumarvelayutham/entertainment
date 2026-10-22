@@ -165,6 +165,7 @@ export class StalkerDiscoverRouteComponent {
                     ? [title.title, title.originalTitle]
                     : [title.title],
                 year: title.year,
+                tmdbId: title.tmdbId,
             },
             this.globalIndex()
         );

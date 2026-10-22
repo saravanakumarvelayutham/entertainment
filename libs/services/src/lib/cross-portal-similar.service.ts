@@ -69,6 +69,7 @@ export class CrossPortalSimilarService {
                     type,
                     titles: [recommendation.title],
                     year: recommendation.year,
+                    tmdbId: recommendation.tmdbId,
                 },
                 grouped
             );

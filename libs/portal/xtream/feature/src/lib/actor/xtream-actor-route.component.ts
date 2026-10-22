@@ -187,6 +187,7 @@ export class XtreamActorRouteComponent {
                 type: credit.mediaType === 'movie' ? 'movie' : 'series',
                 titles: [credit.title],
                 year: credit.year,
+                tmdbId: credit.tmdbId,
             },
             this.globalIndex()
         );

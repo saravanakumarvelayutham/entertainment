@@ -30,6 +30,7 @@ const candidate = (id = 1): DashboardRecommendationItem => ({
         xtreamId: id,
         type: 'movie',
         trailingYear: null,
+        tmdbId: null,
     },
 });
 const response = (id = 1): AiRecommendationRankResponse => ({

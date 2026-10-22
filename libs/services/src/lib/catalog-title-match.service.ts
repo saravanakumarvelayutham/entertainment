@@ -17,6 +17,12 @@ export interface CatalogTitleLookup {
     readonly titles: readonly string[];
     /** Release year, or null when unknown — unknown never rejects a row */
     readonly year: number | null;
+    /**
+     * The lookup's own TMDB id when the caller has one. A row that already
+     * carries a DIFFERENT id is a different film however its title reads,
+     * and a row carrying the SAME id outranks every title-only match.
+     */
+    readonly tmdbId?: number | null;
 }
 
 /**
@@ -58,11 +64,19 @@ export function groupTitleMatchesByKey(
  * away). Untagged rows come next — the only tier reachable when the
  * lookup's own year is unknown — then anything else year-compatible.
  * Alias order survives as the tiebreaker within a tier.
+ *
+ * Identity beats title: a row whose stored TMDB id IS the lookup's wins
+ * outright, and a row naming a different id is dropped before any tier,
+ * since two films can share a normalized title but never a TMDB id.
  */
 export function pickTitleMatch(
     lookup: CatalogTitleLookup,
     grouped: ReadonlyMap<string, CatalogTitleMatch[]>
 ): CatalogTitleMatch | null {
+    const lookupTmdbId =
+        typeof lookup.tmdbId === 'number' && lookup.tmdbId > 0
+            ? lookup.tmdbId
+            : null;
     const compatible: CatalogTitleMatch[] = [];
     const seenKeys = new Set<string>();
     for (const title of lookup.titles) {
@@ -75,6 +89,17 @@ export function pickTitleMatch(
         }
         seenKeys.add(key);
         for (const row of grouped.get(key) ?? []) {
+            const rowTmdbId = row.tmdbId ?? null;
+            if (
+                lookupTmdbId !== null &&
+                rowTmdbId !== null &&
+                rowTmdbId !== lookupTmdbId
+            ) {
+                continue;
+            }
+            if (lookupTmdbId !== null && rowTmdbId === lookupTmdbId) {
+                return row;
+            }
             if (titleYearsCompatible(lookup.year, row.trailingYear)) {
                 compatible.push(row);
             }

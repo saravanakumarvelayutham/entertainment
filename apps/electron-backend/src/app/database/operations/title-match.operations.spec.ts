@@ -33,8 +33,61 @@ describe('title-match.operations', () => {
                 xtreamId: 42,
                 type: 'movie',
                 trailingYear: null,
+                tmdbId: null,
             },
         ]);
+    });
+
+    it('reports a bracketed year tag on the exact tier', async () => {
+        // "Dune (1984)" and "Dune (2021)" normalize to the same exact key,
+        // so the bracket is the only thing that tells the two films apart.
+        const { db } = createDbMock([
+            [
+                { ...matrixRow, title: 'Dune (1984)', xtream_id: 84 },
+                { ...matrixRow, title: 'Dune (2021)', xtream_id: 21 },
+            ],
+        ]);
+
+        const matches = await matchTitles(db, ['Dune']);
+        expect(matches.map((match) => match.trailingYear)).toEqual([
+            1984, 2021,
+        ]);
+    });
+
+    it('falls back to the stored provider release year and TMDB id', async () => {
+        const { db } = createDbMock([
+            [
+                {
+                    ...matrixRow,
+                    title: 'Dune',
+                    release_year: 2021,
+                    tmdb_id: 438631,
+                },
+            ],
+        ]);
+
+        const [match] = await matchTitles(db, ['Dune']);
+        expect(match.trailingYear).toBe(2021);
+        expect(match.tmdbId).toBe(438631);
+    });
+
+    it('prefers the title tag over the stored release year', async () => {
+        const { db } = createDbMock([
+            [{ ...matrixRow, title: 'Dune (1984)', release_year: 2021 }],
+        ]);
+
+        const [match] = await matchTitles(db, ['Dune']);
+        expect(match.trailingYear).toBe(1984);
+    });
+
+    it('treats junk stored ids and years as unknown', async () => {
+        const { db } = createDbMock([
+            [{ ...matrixRow, release_year: 0, tmdb_id: '12' }],
+        ]);
+
+        const [match] = await matchTitles(db, ['The Matrix']);
+        expect(match.trailingYear).toBeNull();
+        expect(match.tmdbId).toBeNull();
     });
 
     it('reports the stripped year tag for base-tier matches', async () => {

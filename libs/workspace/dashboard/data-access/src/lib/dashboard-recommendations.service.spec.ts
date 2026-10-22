@@ -49,6 +49,7 @@ describe('DashboardRecommendationsService', () => {
         xtreamId: rowIdFor(queryTitle),
         type: 'movie',
         trailingYear: null,
+        tmdbId: null,
         ...overrides,
     });
 

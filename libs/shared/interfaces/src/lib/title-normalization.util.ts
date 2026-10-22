@@ -560,6 +560,21 @@ export function extractYear(
 const BRACKETED_YEAR_PATTERN = /[([{]\s*(19\d{2}|20\d{2})\s*[)\]}]/;
 
 /**
+ * The year a provider title states in a BRACKETED tag, and nothing else.
+ *
+ * `normalizeTitleKeys` strips bracketed segments wholesale, so "Dune (1984)"
+ * and "Dune (2021)" both normalize to exactly "dune" and are indistinguishable
+ * on the exact tier. The tag is the only evidence that separates them, and it
+ * is unambiguous in a way a trailing number is not ("Blade Runner 2049").
+ */
+export function bracketedReleaseYear(
+    rawTitle: string | null | undefined
+): number | null {
+    const match = rawTitle?.match(BRACKETED_YEAR_PATTERN);
+    return match ? Number(match[1]) : null;
+}
+
+/**
  * The year a provider title states as a release TAG, never one that belongs to
  * the film's name.
  *
@@ -583,8 +598,8 @@ export function releaseTagYear(
 
     // Before `normalizeTitleKeys`, which strips bracketed segments wholesale
     // and would take the tag with them.
-    const bracketed = rawTitle.match(BRACKETED_YEAR_PATTERN);
-    return bracketed
-        ? Number(bracketed[1])
-        : normalizeTitleKeys(rawTitle).trailingYear;
+    return (
+        bracketedReleaseYear(rawTitle) ??
+        normalizeTitleKeys(rawTitle).trailingYear
+    );
 }
