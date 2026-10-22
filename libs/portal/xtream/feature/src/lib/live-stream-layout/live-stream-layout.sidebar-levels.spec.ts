@@ -24,6 +24,7 @@ import {
 import {
     ChannelListHiddenStateComponent,
     GridListComponent,
+    LiveOnNowStageComponent,
 } from '@iptvnator/portal/shared/ui';
 import {
     FavoritesService,
@@ -35,6 +36,11 @@ import { EpgListViewComponent, EpgTimelineComponent } from '@iptvnator/ui/epg';
 import { WebPlayerViewComponent } from '@iptvnator/ui/playback';
 import { PortalChannelsListComponent } from '../portal-channels-list/portal-channels-list.component';
 import { LiveStreamLayoutComponent } from './live-stream-layout.component';
+import {
+    liveOnNowStubProvider,
+    StubLiveOnNowStageComponent,
+} from './live-stream-layout-stubs.spec-data';
+import { XtreamLiveOnNowService } from './xtream-live-on-now.service';
 
 /**
  * The channels header while the shell's categories rail is folded: the
@@ -216,6 +222,7 @@ describe('LiveStreamLayoutComponent sidebar levels', () => {
             .overrideComponent(LiveStreamLayoutComponent, {
                 remove: {
                     imports: [
+                        LiveOnNowStageComponent,
                         ChannelListHiddenStateComponent,
                         EpgListViewComponent,
                         EpgTimelineComponent,
@@ -228,6 +235,7 @@ describe('LiveStreamLayoutComponent sidebar levels', () => {
                 },
                 add: {
                     imports: [
+                        StubLiveOnNowStageComponent,
                         StubChannelListHiddenStateComponent,
                         StubGridListComponent,
                         StubPassiveComponent,
@@ -237,6 +245,7 @@ describe('LiveStreamLayoutComponent sidebar levels', () => {
                     ],
                 },
             })
+            .overrideProvider(XtreamLiveOnNowService, liveOnNowStubProvider())
             .compileComponents();
 
         fixture = TestBed.createComponent(LiveStreamLayoutComponent);

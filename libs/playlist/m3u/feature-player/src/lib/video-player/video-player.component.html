@@ -106,7 +106,9 @@
                         <app-audio-player
                             [url]="activeChannel.url"
                             [icon]="
-                                $safeNavigationMigration(activeChannel?.tvg?.logo)!
+                                $safeNavigationMigration(
+                                    activeChannel?.tvg?.logo
+                                )!
                             "
                             [channelName]="displayChannelName()"
                             [volume]="volume()"
@@ -261,9 +263,13 @@
     } @else if (isSidebarCollapsed()) {
         <app-channel-list-hidden-state (restore)="toggleSidebar()" />
     } @else {
-        <app-portal-empty-state
-            icon="live_tv"
-            [message]="'CHANNELS.SELECT_CHANNEL_PLAYBACK' | translate"
+        <app-live-on-now-stage
+            [tiles]="liveOnNow.tiles()"
+            [lastWatched]="liveOnNow.lastWatched()"
+            [source]="liveOnNow.source()"
+            [sourceLabel]="liveOnNow.sourceLabel()"
+            [nowMs]="liveOnNow.nowMs()"
+            (channelSelected)="onOnNowChannelSelected($event)"
         />
     }
 </div>

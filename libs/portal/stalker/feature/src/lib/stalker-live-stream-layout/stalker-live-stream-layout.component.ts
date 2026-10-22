@@ -87,6 +87,7 @@ import {
 } from '@iptvnator/portal/shared/util';
 import {
     ChannelListHiddenStateComponent,
+    LiveOnNowStageComponent,
     PortalEmptyStateComponent,
 } from '@iptvnator/portal/shared/ui';
 import {
@@ -102,6 +103,7 @@ import {
     shouldAutoFillStampedList,
 } from './panel-search-window';
 import { StalkerItvAllItemsComponent } from './stalker-itv-all-items.component';
+import { StalkerLiveOnNowService } from './stalker-live-on-now.service';
 import {
     EPG_PREVIEW_FETCH_SIZE,
     StalkerEpgPreviewQueue,
@@ -157,6 +159,7 @@ import { StalkerLiveNavigation } from './stalker-live-navigation';
         MatTooltipModule,
         NgTemplateOutlet,
         ChannelListHiddenStateComponent,
+        LiveOnNowStageComponent,
         PortalEmptyStateComponent,
         ResizableDirective,
         StalkerItvAllItemsComponent,
@@ -164,6 +167,7 @@ import { StalkerLiveNavigation } from './stalker-live-navigation';
         WebPlayerViewComponent,
     ],
     providers: [
+        StalkerLiveOnNowService,
         // The fullscreen channel panel inside the player renders this
         // category's channel list (see the `fullscreenChannelPanel` template).
         {
@@ -509,6 +513,15 @@ export class StalkerLiveStreamLayoutComponent
         restoreButton: this.restoreButton,
     });
     readonly isSidebarCollapsed = this.livePanels.isSidebarCollapsed;
+    /** "On now" stage data; rendered while an ITV category is open and nothing plays. */
+    readonly liveOnNow = inject(StalkerLiveOnNowService);
+    readonly showsOnNowStage = computed(
+        () =>
+            !this.isRadioMode() &&
+            !!this.stalkerStore.selectedCategoryId() &&
+            !this.stalkerStore.selectedItem() &&
+            !this.isSidebarCollapsed()
+    );
     readonly liveEpgPanelSummary = computed(() =>
         this.toLiveEpgPanelSummary(this.currentProgram())
     );
@@ -620,6 +633,7 @@ export class StalkerLiveStreamLayoutComponent
     private lastPlaylistId: string | null | undefined = undefined;
 
     constructor() {
+        effect(() => this.liveOnNow.active.set(this.showsOnNowStage()));
         this.epgClockTimer = setInterval(
             () => this.epgClockTick.update((tick) => tick + 1),
             30_000
@@ -1054,6 +1068,7 @@ export class StalkerLiveStreamLayoutComponent
         if (this.favorites.has(itemId)) {
             this.stalkerStore.removeFromFavorites(itemId);
             this.favorites.delete(itemId);
+            this.liveOnNow.setFavorite(item, false);
         } else {
             const playableItem = this.toPlayableChannel(item);
             this.stalkerStore.addToFavorites({
@@ -1064,6 +1079,15 @@ export class StalkerLiveStreamLayoutComponent
                 added_at: new Date().toISOString(),
             });
             this.favorites.set(itemId, true);
+            this.liveOnNow.setFavorite(item, true);
+        }
+    }
+
+    /** A stage tile or its Tune in: the same path as a channel-list click. */
+    onOnNowChannelSelected(id: string): void {
+        const item = this.liveOnNow.resolveChannel(id);
+        if (item) {
+            void this.playChannel(item, true);
         }
     }
 

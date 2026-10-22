@@ -1,4 +1,4 @@
-import { Component, Directive, input, output } from '@angular/core';
+import { Component, Directive, input, output, signal } from '@angular/core';
 import {
     Channel,
     EpgProgram,
@@ -153,4 +153,31 @@ export class StubResizableDirective {
     readonly storageKey = input('');
     readonly widthChange = output<number>();
     readonly resizeEnd = output<number>();
+}
+
+@Component({
+    selector: 'app-live-on-now-stage',
+    template: '<div data-test-id="stub-live-on-now-stage"></div>',
+})
+export class StubLiveOnNowStageComponent {
+    readonly tiles = input<readonly unknown[]>([]);
+    readonly lastWatched = input<unknown>(null);
+    readonly source = input<string>('favorites');
+    readonly sourceLabel = input<string>('');
+    readonly nowMs = input<number>(0);
+    readonly channelSelected = output<string>();
+}
+
+/** Component-scoped `M3uLiveOnNowService` replacement for player specs. */
+export function createLiveOnNowServiceStub() {
+    return {
+        active: signal(false),
+        selectedGroup: signal(null),
+        nowMs: signal(0),
+        tiles: signal([]),
+        lastWatched: signal(null),
+        source: signal('category'),
+        sourceLabel: signal(''),
+        resolveChannel: jest.fn(() => null),
+    };
 }

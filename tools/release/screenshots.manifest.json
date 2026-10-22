@@ -38,6 +38,13 @@
             ]
         },
         {
+            "slug": "xtream-live-on-now",
+            "title": "Live TV: On now",
+            "setup": [
+                "open-xtream-live=Newsroom"
+            ]
+        },
+        {
             "slug": "m3u-live-groups-two-column",
             "title": "Live TV groups",
             "setup": [

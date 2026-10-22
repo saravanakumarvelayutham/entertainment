@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "現在放送中",
+        "ACROSS_FAVORITE": "お気に入りチャンネル",
+        "ACROSS_FAVORITES": "お気に入りの{{count}}チャンネル",
+        "FROM_CATEGORY": "{{category}}の{{count}}チャンネル",
+        "MINUTES_LEFT": "残り{{count}}分",
+        "ENDS_AT": "{{time}}終了",
+        "LAST_WATCHED": "最後に視聴",
+        "TUNE_IN": "視聴する",
+        "JUST_NOW": "たった今",
+        "MINUTES_AGO": "{{count}}分前",
+        "HOURS_AGO": "{{count}}時間前",
+        "TODAY_AT": "今日 {{time}}",
+        "YESTERDAY_AT": "昨日 {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

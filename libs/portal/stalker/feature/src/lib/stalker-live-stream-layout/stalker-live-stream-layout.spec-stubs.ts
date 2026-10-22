@@ -4,6 +4,7 @@ import {
     Directive,
     input,
     output,
+    signal,
 } from '@angular/core';
 import { type PlaybackFallbackRequest } from '@iptvnator/ui/playback';
 import {
@@ -122,3 +123,29 @@ export class StubPortalEmptyStateComponent {
     standalone: true,
 })
 export class StubResizableDirective {}
+
+@Component({
+    selector: 'app-live-on-now-stage',
+    template: '<div data-test-id="stub-live-on-now-stage"></div>',
+})
+export class StubLiveOnNowStageComponent {
+    readonly tiles = input<readonly unknown[]>([]);
+    readonly lastWatched = input<unknown>(null);
+    readonly source = input<string>('favorites');
+    readonly sourceLabel = input<string>('');
+    readonly nowMs = input<number>(0);
+    readonly channelSelected = output<string>();
+}
+
+/** Component-scoped `StalkerLiveOnNowService` replacement for layout specs. */
+export function createLiveOnNowServiceStub() {
+    return {
+        active: signal(false),
+        nowMs: signal(0),
+        tiles: signal([]),
+        lastWatched: signal(null),
+        source: signal('category'),
+        resolveChannel: jest.fn(() => null),
+        setFavorite: jest.fn(),
+    };
+}

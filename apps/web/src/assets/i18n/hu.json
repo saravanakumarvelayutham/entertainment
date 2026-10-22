@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Most megy",
+        "ACROSS_FAVORITE": "A kedvenc csatornádon",
+        "ACROSS_FAVORITES": "{{count}} kedvenc csatornádon",
+        "FROM_CATEGORY": "{{count}} csatorna itt: {{category}}",
+        "MINUTES_LEFT": "{{count}} perc van hátra",
+        "ENDS_AT": "Vége: {{time}}",
+        "LAST_WATCHED": "Utoljára nézett",
+        "TUNE_IN": "Bekapcsolás",
+        "JUST_NOW": "az imént",
+        "MINUTES_AGO": "{{count}} perce",
+        "HOURS_AGO": "{{count}} órája",
+        "TODAY_AT": "ma {{time}}",
+        "YESTERDAY_AT": "tegnap {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

@@ -33,6 +33,8 @@ import {
 import type { PlaybackFallbackRequest } from '@iptvnator/ui/playback';
 import { createPlaybackSessionKey } from '@iptvnator/playback/util';
 import type { VideoPlayerComponent as VideoPlayerComponentInstance } from './video-player.component';
+import { M3uLiveOnNowService } from './m3u-live-on-now.service';
+import { createLiveOnNowServiceStub } from './video-player.spec-stubs';
 import {
     activeChannel,
     activeEpgProgram,
@@ -67,6 +69,7 @@ import {
     StubEpgGuideComponent,
     StubEpgGuideNowPlayingComponent,
     StubEpgTimelineComponent,
+    StubLiveOnNowStageComponent,
     StubPortalEmptyStateComponent,
     StubResizableDirective,
     StubSidebarComponent,
@@ -229,6 +232,7 @@ describe('VideoPlayerComponent', () => {
                         StubEpgGuideNowPlayingComponent,
                         StubEpgTimelineComponent,
                         StubPortalEmptyStateComponent,
+                        StubLiveOnNowStageComponent,
                         StubResizableDirective,
                         StubSidebarComponent,
                         StubWebPlayerViewComponent,
@@ -238,6 +242,9 @@ describe('VideoPlayerComponent', () => {
                         ),
                     ],
                 },
+            })
+            .overrideProvider(M3uLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
 

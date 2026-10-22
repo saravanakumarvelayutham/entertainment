@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "正在播出",
+        "ACROSS_FAVORITE": "您的收藏频道",
+        "ACROSS_FAVORITES": "您的 {{count}} 个收藏频道",
+        "FROM_CATEGORY": "{{category}} 中的 {{count}} 个频道",
+        "MINUTES_LEFT": "剩余 {{count}} 分钟",
+        "ENDS_AT": "{{time}} 结束",
+        "LAST_WATCHED": "上次观看",
+        "TUNE_IN": "立即观看",
+        "JUST_NOW": "刚刚",
+        "MINUTES_AGO": "{{count}} 分钟前",
+        "HOURS_AGO": "{{count}} 小时前",
+        "TODAY_AT": "今天 {{time}}",
+        "YESTERDAY_AT": "昨天 {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

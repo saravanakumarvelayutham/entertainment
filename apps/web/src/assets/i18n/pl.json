@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Teraz w TV",
+        "ACROSS_FAVORITE": "Na Twoim ulubionym kanale",
+        "ACROSS_FAVORITES": "Na Twoich ulubionych kanałach ({{count}})",
+        "FROM_CATEGORY": "Kanały w {{category}}: {{count}}",
+        "MINUTES_LEFT": "zostało {{count}} min",
+        "ENDS_AT": "Koniec o {{time}}",
+        "LAST_WATCHED": "Ostatnio oglądane",
+        "TUNE_IN": "Włącz",
+        "JUST_NOW": "przed chwilą",
+        "MINUTES_AGO": "{{count}} min temu",
+        "HOURS_AGO": "{{count}} godz. temu",
+        "TODAY_AT": "dziś o {{time}}",
+        "YESTERDAY_AT": "wczoraj o {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

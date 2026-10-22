@@ -32,6 +32,8 @@ import {
     VideoPlayer,
 } from '@iptvnator/shared/interfaces';
 import type { VideoPlayerComponent as VideoPlayerComponentInstance } from './video-player.component';
+import { M3uLiveOnNowService } from './m3u-live-on-now.service';
+import { createLiveOnNowServiceStub } from './video-player.spec-stubs';
 import { translateServiceProvider } from './video-player.spec-harness';
 
 // The component's chain reaches video.js (ui/playback → VjsPlayer); the CJS
@@ -248,6 +250,9 @@ describe('VideoPlayerComponent — M3U movie recognition gate', () => {
                     ],
                     schemas: [NO_ERRORS_SCHEMA],
                 },
+            })
+            .overrideProvider(M3uLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
 

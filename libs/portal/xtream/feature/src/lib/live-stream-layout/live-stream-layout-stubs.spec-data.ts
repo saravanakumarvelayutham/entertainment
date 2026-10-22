@@ -120,3 +120,34 @@ export const playlist = {
     username: 'demo',
     password: 'secret',
 };
+
+@Component({
+    selector: 'app-live-on-now-stage',
+    template: '<div data-test-id="stub-live-on-now-stage"></div>',
+})
+export class StubLiveOnNowStageComponent {
+    readonly tiles = input<readonly unknown[]>([]);
+    readonly lastWatched = input<unknown>(null);
+    readonly source = input<string>('favorites');
+    readonly sourceLabel = input<string>('');
+    readonly nowMs = input<number>(0);
+    readonly channelSelected = output<string>();
+}
+
+/** Component-scoped `XtreamLiveOnNowService` replacement for layout specs. */
+export function createLiveOnNowServiceStub() {
+    return {
+        active: signal(false),
+        nowMs: signal(0),
+        tiles: signal([]),
+        lastWatched: signal(null),
+        source: signal('category'),
+        resolveChannel: jest.fn(() => null),
+        displayedChannels: jest.fn(() => []),
+    };
+}
+
+/** `overrideProvider` argument for the stub above, kept to one call line. */
+export function liveOnNowStubProvider() {
+    return { useValue: createLiveOnNowServiceStub() };
+}

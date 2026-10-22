@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Nu op tv",
+        "ACROSS_FAVORITE": "Op je favoriete zender",
+        "ACROSS_FAVORITES": "Op je {{count}} favoriete zenders",
+        "FROM_CATEGORY": "{{count}} zenders in {{category}}",
+        "MINUTES_LEFT": "nog {{count}} min",
+        "ENDS_AT": "Eindigt om {{time}}",
+        "LAST_WATCHED": "Laatst bekeken",
+        "TUNE_IN": "Afstemmen",
+        "JUST_NOW": "zojuist",
+        "MINUTES_AGO": "{{count}} min geleden",
+        "HOURS_AGO": "{{count}} u geleden",
+        "TODAY_AT": "vandaag om {{time}}",
+        "YESTERDAY_AT": "gisteren om {{time}}",
+        "ON_DATE": "op {{date}}"
     }
 }

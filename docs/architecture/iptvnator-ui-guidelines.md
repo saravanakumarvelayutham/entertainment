@@ -472,6 +472,51 @@ remain local when the meaning is explicit.
   `Cmd/Ctrl+B`. The phone context drawer ignores the folded state entirely
   (the user explicitly opened it).
 
+### Live TV "On now" Stage
+
+- Before a channel is picked, a live layout with its channel rail visible
+  renders `app-live-on-now-stage` (`libs/portal/shared/ui`,
+  `data-test-id="live-on-now-stage"`) in the player area instead of the
+  "Please select a channel to start playback" placeholder: an "On now"
+  heading with a subline (favorite-channel count or category + channel
+  count, and the current time), a responsive grid of channel tiles
+  (`live-on-now-tile`; the first tile spans two columns, drops to one at
+  container widths under 460px) and, when the source has live history, a
+  "Last watched <channel> <relative time> · Tune in" bar
+  (`live-on-now-tune-in`). Each tile shows logo + name, the programme airing
+  now as the headline, the time window plus minutes left (hero) or the end
+  time (others) and a progress bar. Tiles without programme data render
+  logo + name only — never an empty bar.
+- The component is purely presentational (`LiveOnNowTile[]`,
+  `LiveOnNowLastWatched | null`, `source`, `nowMs` in; `channelSelected`
+  out). Each host owns a component-scoped data service that maps its own
+  favorites, history and EPG into tiles and answers the selection through
+  the SAME path a channel-list click takes, so there is one playback path:
+  Xtream `XtreamLiveOnNowService` → `playLive(item, true)` (favorites via
+  `FavoritesService` + `XtreamFavoriteMarksService`, EPG via the channel
+  list's `EpgQueueService` incl. the XMLTV fallback, history via
+  `XtreamStore.loadRecentItems`); Stalker `StalkerLiveOnNowService` →
+  `playChannel(item, true)` (ITV favorites and portal history from
+  `PlaylistsService`, bulk `get_epg_info` programmes with the same
+  short-EPG fallback queue as the sidebar rows, ITV only — radio keeps the
+  placeholder); M3U `M3uLiveOnNowService` →
+  `ChannelActions.setActiveChannel({ startPlayback: true })` (favorites by
+  URL, the browsed group or the playlist as fallback,
+  `EpgService.getCurrentProgramsForChannels`). Fallback when there are no
+  favorites: the selected category's (group's) first channels. EPG
+  requests are gated on the stage being on screen.
+- Current-programme selection is `pickLiveOnNowProgram()` in
+  `live-on-now.utils.ts`: the airing test, progress and minutes-left compare
+  raw times with `epgProviderClockMs`, the printed range uses
+  `epgDisplayTimeMs` — one offset form per comparison. Timestamps from
+  SQLite `CURRENT_TIMESTAMP` rows are read as UTC
+  (`parseLiveOnNowTimestamp`). Tiles are dark in both themes (a name-keyed
+  hue, light-on-dark text, white hover/focus ring, `--app-live-color` chip
+  and bar); heading, subline and the last-watched bar follow the app tokens.
+- With neither tiles nor history the component falls back to the plain
+  "select a channel" empty state; the collapsed rail keeps
+  `app-channel-list-hidden-state`.
+
 ### EPG Card
 
 - Radius:

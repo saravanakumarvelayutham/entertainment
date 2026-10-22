@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "كيتعرض دابا",
+        "ACROSS_FAVORITE": "فالقناة المفضلة ديالك",
+        "ACROSS_FAVORITES": "فالقنوات المفضلة ديالك ({{count}})",
+        "FROM_CATEGORY": "{{count}} قناة ف {{category}}",
+        "MINUTES_LEFT": "بقات {{count}} دقيقة",
+        "ENDS_AT": "كيسالي ف {{time}}",
+        "LAST_WATCHED": "آخر مشاهدة",
+        "TUNE_IN": "شوف دابا",
+        "JUST_NOW": "دابا",
+        "MINUTES_AGO": "هادي {{count}} دقيقة",
+        "HOURS_AGO": "هادي {{count}} ساعة",
+        "TODAY_AT": "اليوم ف {{time}}",
+        "YESTERDAY_AT": "البارح ف {{time}}",
+        "ON_DATE": "ف {{date}}"
     }
 }

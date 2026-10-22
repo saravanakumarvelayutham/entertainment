@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Зараз у эфіры",
+        "ACROSS_FAVORITE": "На вашым любімым канале",
+        "ACROSS_FAVORITES": "На вашых любімых каналах ({{count}})",
+        "FROM_CATEGORY": "Каналаў у {{category}}: {{count}}",
+        "MINUTES_LEFT": "засталося {{count}} хв",
+        "ENDS_AT": "Скончыцца ў {{time}}",
+        "LAST_WATCHED": "Апошні прагляд",
+        "TUNE_IN": "Уключыць",
+        "JUST_NOW": "толькі што",
+        "MINUTES_AGO": "{{count}} хв таму",
+        "HOURS_AGO": "{{count}} гадз таму",
+        "TODAY_AT": "сёння ў {{time}}",
+        "YESTERDAY_AT": "учора ў {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

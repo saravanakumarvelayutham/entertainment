@@ -1899,5 +1899,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Jetzt läuft",
+        "ACROSS_FAVORITE": "Auf deinem Lieblingssender",
+        "ACROSS_FAVORITES": "Auf deinen {{count}} Lieblingssendern",
+        "FROM_CATEGORY": "{{count}} Sender in {{category}}",
+        "MINUTES_LEFT": "noch {{count}} Min.",
+        "ENDS_AT": "Endet um {{time}}",
+        "LAST_WATCHED": "Zuletzt gesehen",
+        "TUNE_IN": "Einschalten",
+        "JUST_NOW": "gerade eben",
+        "MINUTES_AGO": "vor {{count}} Min.",
+        "HOURS_AGO": "vor {{count}} Std.",
+        "TODAY_AT": "heute um {{time}}",
+        "YESTERDAY_AT": "gestern um {{time}}",
+        "ON_DATE": "am {{date}}"
     }
 }
