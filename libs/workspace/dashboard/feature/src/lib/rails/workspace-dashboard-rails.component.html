@@ -479,116 +479,169 @@
             }
 
             @if (aiEnabled()) {
-                @if (aiRecommendationsService.resultCachePersistenceFailed()) {
-                    <p role="status">
-                        {{
-                            'WORKSPACE.DASHBOARD.AI_CACHE_SAVE_FAILED'
-                                | translate
-                        }}
-                    </p>
-                    <button
-                        mat-stroked-button
-                        type="button"
-                        (click)="aiRecommendationsService.retrySaveResults()"
-                        data-test-id="dashboard-ai-cache-save-retry"
-                    >
-                        {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
-                    </button>
-                }
-                @if (aiRecommendationsService.tasteSummary(); as tasteSummary) {
-                    <section
-                        data-test-id="dashboard-ai-taste-profile"
-                        aria-live="polite"
-                    >
-                        <h2>
-                            {{
-                                'WORKSPACE.DASHBOARD.AI_TASTE_PROFILE'
+                <!-- AI picks panel: the taste summary (or a slim toolbar) with
+                     the Refresh action, then the ranked rail or an empty-state
+                     card. Test ids are the E2E contract; keep them. -->
+                <section class="ai-panel" data-test-id="dashboard-ai-panel">
+                    @if (aiRecommendationsService.resultCachePersistenceFailed()) {
+                        <p class="ai-panel__notice" role="status">
+                            <mat-icon aria-hidden="true">warning</mat-icon>
+                            <span>{{
+                                'WORKSPACE.DASHBOARD.AI_CACHE_SAVE_FAILED'
                                     | translate
-                            }}
-                        </h2>
-                        <p>{{ tasteSummary }}</p>
-                        @if (aiRecommendationsService.profilePersistenceFailed()) {
-                            <p role="status">
-                                {{
-                                    'WORKSPACE.DASHBOARD.AI_PROFILE_SAVE_FAILED'
-                                        | translate
-                                }}
-                            </p>
+                            }}</span>
                             <button
-                                mat-stroked-button
+                                mat-button
                                 type="button"
-                                data-test-id="dashboard-ai-profile-save-retry"
                                 (click)="
-                                    aiRecommendationsService.retrySaveTasteProfile()
+                                    aiRecommendationsService.retrySaveResults()
                                 "
+                                data-test-id="dashboard-ai-cache-save-retry"
                             >
                                 {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
                             </button>
-                        }
-                    </section>
-                }
-                @if (
-                    aiCards().length > 0 ||
-                    aiRecommendationsService.tasteSummary()
-                ) {
-                    <button
-                        mat-stroked-button
-                        type="button"
-                        (click)="retryAiRecommendations()"
-                        [disabled]="
-                            aiCandidatesLoading() ||
-                            aiRecommendationsService.loading()
-                        "
-                        data-test-id="dashboard-ai-refresh"
-                    >
-                        {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
-                    </button>
-                }
-                @if (aiCards().length > 0) {
-                    <lib-dashboard-rail
-                        [label]="'WORKSPACE.DASHBOARD.AI_PICKS' | translate"
-                        layout="recommendation"
-                        [items]="aiCards()"
-                        [totalCount]="aiCards().length"
-                        testId="dashboard-ai-recommendations-rail"
-                        (actionSelected)="
-                            onRecommendationActionSelected($event)
-                        "
-                    />
-                } @else {
-                    <section
-                        data-test-id="dashboard-ai-status"
-                        aria-live="polite"
-                    >
-                        <h2>{{ 'WORKSPACE.DASHBOARD.AI_PICKS' | translate }}</h2>
-                        <p>
-                            {{
-                                (aiCandidatesLoading() ||
-                                aiRecommendationsService.loading()
-                                    ? 'WORKSPACE.DASHBOARD.AI_LOADING'
-                                    : aiRecommendationsService.failed()
-                                      ? 'WORKSPACE.DASHBOARD.AI_FAILED'
-                                      : aiNeedsEvidence()
-                                        ? 'WORKSPACE.DASHBOARD.AI_NEEDS_EVIDENCE'
-                                        : 'WORKSPACE.DASHBOARD.AI_EMPTY'
-                                ) | translate
-                            }}
                         </p>
-                        @if (
-                            aiRecommendationsService.failed() &&
-                            !aiCandidatesLoading()
-                        ) {
+                    }
+                    @if (
+                        aiRecommendationsService.tasteSummary();
+                        as tasteSummary
+                    ) {
+                        <section
+                            class="ai-panel__profile"
+                            data-test-id="dashboard-ai-taste-profile"
+                            aria-live="polite"
+                        >
+                            <div class="ai-panel__profile-body">
+                                <h2 class="ai-panel__eyebrow">
+                                    <mat-icon aria-hidden="true"
+                                        >auto_awesome</mat-icon
+                                    >
+                                    {{
+                                        'WORKSPACE.DASHBOARD.AI_TASTE_PROFILE'
+                                            | translate
+                                    }}
+                                </h2>
+                                <p class="ai-panel__summary">
+                                    {{ tasteSummary }}
+                                </p>
+                                @if (
+                                    aiRecommendationsService.profilePersistenceFailed()
+                                ) {
+                                    <p class="ai-panel__notice" role="status">
+                                        <mat-icon aria-hidden="true"
+                                            >warning</mat-icon
+                                        >
+                                        <span>{{
+                                            'WORKSPACE.DASHBOARD.AI_PROFILE_SAVE_FAILED'
+                                                | translate
+                                        }}</span>
+                                        <button
+                                            mat-button
+                                            type="button"
+                                            data-test-id="dashboard-ai-profile-save-retry"
+                                            (click)="
+                                                aiRecommendationsService.retrySaveTasteProfile()
+                                            "
+                                        >
+                                            {{
+                                                'WORKSPACE.DASHBOARD.AI_RETRY'
+                                                    | translate
+                                            }}
+                                        </button>
+                                    </p>
+                                }
+                            </div>
                             <button
                                 mat-stroked-button
                                 type="button"
+                                class="ai-panel__refresh"
                                 (click)="retryAiRecommendations()"
-                                data-test-id="dashboard-ai-retry"
+                                [disabled]="
+                                    aiCandidatesLoading() ||
+                                    aiRecommendationsService.loading()
+                                "
+                                data-test-id="dashboard-ai-refresh"
                             >
-                                {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                                <mat-icon aria-hidden="true">refresh</mat-icon>
+                                {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
                             </button>
-                        }
-                    </section>
-                }
+                        </section>
+                    } @else if (aiCards().length > 0) {
+                        <div class="ai-panel__toolbar">
+                            <button
+                                mat-stroked-button
+                                type="button"
+                                class="ai-panel__refresh"
+                                (click)="retryAiRecommendations()"
+                                [disabled]="
+                                    aiCandidatesLoading() ||
+                                    aiRecommendationsService.loading()
+                                "
+                                data-test-id="dashboard-ai-refresh"
+                            >
+                                <mat-icon aria-hidden="true">refresh</mat-icon>
+                                {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
+                            </button>
+                        </div>
+                    }
+                    @if (aiCards().length > 0) {
+                        <lib-dashboard-rail
+                            [label]="'WORKSPACE.DASHBOARD.AI_PICKS' | translate"
+                            layout="recommendation"
+                            [items]="aiCards()"
+                            [totalCount]="aiCards().length"
+                            testId="dashboard-ai-recommendations-rail"
+                            (actionSelected)="
+                                onRecommendationActionSelected($event)
+                            "
+                        />
+                    } @else {
+                        <section
+                            class="ai-panel__status"
+                            [class.ai-panel__status--busy]="
+                                aiCandidatesLoading() ||
+                                aiRecommendationsService.loading()
+                            "
+                            data-test-id="dashboard-ai-status"
+                            aria-live="polite"
+                        >
+                            <mat-icon class="ai-panel__status-icon" aria-hidden="true"
+                                >auto_awesome</mat-icon
+                            >
+                            <div class="ai-panel__status-body">
+                                <h2>
+                                    {{ 'WORKSPACE.DASHBOARD.AI_PICKS' | translate }}
+                                </h2>
+                                <p>
+                                    {{
+                                        (aiCandidatesLoading() ||
+                                        aiRecommendationsService.loading()
+                                            ? 'WORKSPACE.DASHBOARD.AI_LOADING'
+                                            : aiRecommendationsService.failed()
+                                              ? 'WORKSPACE.DASHBOARD.AI_FAILED'
+                                              : aiNeedsEvidence()
+                                                ? 'WORKSPACE.DASHBOARD.AI_NEEDS_EVIDENCE'
+                                                : 'WORKSPACE.DASHBOARD.AI_EMPTY'
+                                        ) | translate
+                                    }}
+                                </p>
+                            </div>
+                            @if (
+                                aiRecommendationsService.failed() &&
+                                !aiCandidatesLoading()
+                            ) {
+                                <button
+                                    mat-stroked-button
+                                    type="button"
+                                    (click)="retryAiRecommendations()"
+                                    data-test-id="dashboard-ai-retry"
+                                >
+                                    {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                                </button>
+                            }
+                        </section>
+                    }
+                </section>
                 @if (aiDiscoveryCards().length > 0) {
                     <lib-dashboard-rail
                         [label]="

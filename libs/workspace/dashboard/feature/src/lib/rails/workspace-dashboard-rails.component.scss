@@ -574,6 +574,145 @@
     }
 }
 
+// ── AI picks panel ──────────────────────────────────────────────────────────
+// The taste summary is a quiet widget-surface card with the Refresh action
+// at its end; without a summary the action sits in a slim right-aligned
+// toolbar. The empty state is one card, not loose headings on the page.
+.ai-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.ai-panel__profile,
+.ai-panel__status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background:
+        linear-gradient(
+            135deg,
+            var(--app-selection-surface, rgba(120, 173, 255, 0.14)),
+            transparent 55%
+        ),
+        var(--app-widget-bg, #1e2330);
+    border: 1px solid var(--app-widget-header-border, rgba(255, 255, 255, 0.06));
+    box-shadow: var(--app-widget-shadow);
+}
+
+.ai-panel__profile-body,
+.ai-panel__status-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ai-panel__eyebrow {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--app-selection-color, #78adff);
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.ai-panel__summary {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--app-body-color, #8b93a8);
+}
+
+.ai-panel__refresh {
+    flex: 0 0 auto;
+    app-region: no-drag;
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin-right: 6px;
+    }
+}
+
+.ai-panel__toolbar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.ai-panel__status {
+    h2 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--app-heading-color, #1a1d23);
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--app-body-color, #8b93a8);
+    }
+}
+
+.ai-panel__status-icon {
+    flex: 0 0 auto;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: var(--app-selection-color, #78adff);
+}
+
+.ai-panel__status--busy .ai-panel__status-icon {
+    animation: ai-panel-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ai-panel-pulse {
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.ai-panel__notice {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--app-expiry-warn-text, #8a5300);
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+
+    button {
+        margin-left: auto;
+    }
+}
+
 // ── Loading skeleton ────────────────────────────────────────────────────────
 // Geometry mirrors the real hero + rails so the layout doesn't shift when
 // data arrives. All shimmer targets share the `%skeleton-shimmer` placeholder
@@ -698,6 +837,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .ai-panel__status--busy .ai-panel__status-icon {
+        animation: none;
+    }
+
     .hero__progress-bar,
     .hero__live-epg-progress i,
     .hero__cta,
@@ -739,6 +882,12 @@
 }
 
 @media (max-width: 720px) {
+    .ai-panel__profile,
+    .ai-panel__status {
+        flex-wrap: wrap;
+        padding: 14px 16px;
+    }
+
     .rails-page__rails {
         gap: 28px;
         padding: 8px 16px 0;

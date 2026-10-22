@@ -135,7 +135,8 @@ Render rules:
    `remainingLabel`), `ranked` (poster plus the outlined `rank` numeral),
    `channel` (programme-first live card: logo + channel name / time range +
    LIVE chip, the current programme as the headline, progress bar) and
-   `recommendation` (landscape explanation card with inline taste feedback).
+   `recommendation` (the poster card plus an accent reason caption under the
+   title and two icon-only taste-feedback buttons).
 3. Section headers are quiet: no rule under the title, the count renders as
    plain muted text and "See all" is a text link. The artwork, not the header,
    should draw the eye.
@@ -205,11 +206,19 @@ Render rules:
        Contracts: `docs/architecture/tmdb-metadata-enrichment.md`
        ("Dashboard Integration").
        Recommendation and personalized genre rails use the shared rail's
-       `recommendation` layout: a landscape card pairs its poster with a visible
-       taste explanation and inline `More like this` and `Not for me` feedback.
-       The like button exposes its saved choice through `aria-pressed` and can
-       undo that choice. Other rails retain their existing cover/channel layouts
-       and action menus. Colors resolve app tokens in both themes.
+       `recommendation` layout: the ordinary poster card with the taste
+       explanation as an accent caption under the title (`.rail__reason`)
+       and inline `More like this` / `Not for me` feedback as two icon-only
+       buttons (`.rail__taste-action`, label kept in the DOM for assistive
+       tech and as the native tooltip). The like button exposes its saved
+       choice through `aria-pressed` and can undo that choice. Other rails
+       retain their existing layouts and action menus. Colors resolve app
+       tokens in both themes. The AI picks block renders as one `.ai-panel`:
+       the taste-summary card (`dashboard-ai-taste-profile`) carrying the
+       Refresh action, or a slim toolbar with Refresh when there is no
+       summary, then the AI rail or the `dashboard-ai-status` empty-state
+       card; persistence failures render as inline notices with their retry
+       buttons. The test ids are the E2E contract and must not change.
        The dashboard hides dismissed identities immediately; the data-access
        service owns persistence and hybrid-ranking signals. Up to four
        personalized genre rails draw a bounded seed set round-robin from local
