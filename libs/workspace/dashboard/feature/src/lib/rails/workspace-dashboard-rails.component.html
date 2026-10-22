@@ -1,6 +1,7 @@
 <section
     class="rails-page"
     [class.rails-page--empty]="ready() && !hasPlaylists()"
+    [style.--hero-ambient]="heroAmbient()"
     data-test-id="dashboard-page"
 >
     @if (data.playlistsLoaded() && !hasPlaylists()) {
@@ -10,25 +11,22 @@
             (addPlaylistClicked)="onAddPlaylist($event)"
         />
     } @else {
-        <!-- Hero: real card if a recent item resolved, skeleton while still
-             loading the first global recent item, nothing if no recent items
-             exist. Each block below renders as soon as ITS data is ready —
-             no longer pinned on the slowest rail's I/O. -->
+        <!-- Hero: full-bleed banner for the featured recent item, with the
+             other newest items as an up-next stack. A skeleton holds the
+             space while the first global recent item loads; nothing renders
+             when there is no recent activity. Each block below renders as
+             soon as ITS data is ready — never pinned on the slowest rail. -->
         @if (dashboardRails().hero) {
             @if (hero(); as item) {
-                <a
+                <section
                     class="hero"
                     data-test-id="dashboard-hero"
-                    [class.hero--with-image]="
-                        !!item.posterUrl || !!item.backdropUrl
-                    "
                     [class.hero--has-backdrop]="item.hasBackdrop"
                     [class.hero--has-default-backdrop]="
                         item.backdropSource === 'fallback'
                     "
                     [class.hero--live]="item.contentType === 'live'"
-                    [routerLink]="item.link"
-                    [state]="item.state ?? {}"
+                    [attr.aria-label]="item.title"
                 >
                     <span
                         class="hero__backdrop"
@@ -52,517 +50,660 @@
                     }
                     <span class="hero__vignette" aria-hidden="true"></span>
 
-                    <span class="hero__poster">
-                        @if (item.posterUrl; as posterUrl) {
-                            <img
-                                [src]="posterUrl"
-                                [alt]="item.title"
-                                loading="eager"
-                                decoding="async"
-                                (error)="markHeroImageFailed(posterUrl)"
-                            />
-                        } @else {
-                            <span
-                                class="hero__poster-fallback"
-                                [style.backgroundImage]="
-                                    item.fallbackPosterBackground
-                                "
-                            >
-                                <mat-icon>{{ item.icon }}</mat-icon>
-                            </span>
-                        }
-                    </span>
-
-                    <span class="hero__body">
-                        <h1 class="hero__title">{{ item.title }}</h1>
-                        <p class="hero__subtitle">{{ item.subtitle }}</p>
-
-                        @if (
-                            item.episodeBadge ||
-                            item.rating ||
-                            (item.genres && item.genres.length > 0)
-                        ) {
-                            <span
-                                class="hero__badges"
-                                data-test-id="dashboard-hero-badges"
-                            >
-                                @if (item.episodeBadge) {
+                    <div class="hero__layout">
+                        <!-- The poster only appears when the banner has no
+                             landscape artwork: a blurred poster wash needs
+                             the sharp poster to identify the title. -->
+                        @if (!item.hasBackdrop) {
+                            <span class="hero__poster">
+                                @if (item.posterUrl; as posterUrl) {
+                                    <img
+                                        [src]="posterUrl"
+                                        [alt]="item.title"
+                                        loading="eager"
+                                        decoding="async"
+                                        (error)="markHeroImageFailed(posterUrl)"
+                                    />
+                                } @else {
                                     <span
-                                        class="hero__badge hero__badge--episode"
-                                        >{{ item.episodeBadge }}</span
+                                        class="hero__poster-fallback"
+                                        [style.backgroundImage]="
+                                            item.fallbackPosterBackground
+                                        "
                                     >
-                                }
-                                @if (item.rating) {
-                                    <span
-                                        class="hero__badge hero__badge--rating"
-                                        >★ {{ item.rating }}</span
-                                    >
-                                }
-                                @for (genre of item.genres; track genre) {
-                                    <span class="hero__badge">{{ genre }}</span>
+                                        <mat-icon>{{ item.icon }}</mat-icon>
+                                    </span>
                                 }
                             </span>
                         }
 
-                        @if (
-                            item.contentType === 'live' &&
-                            (item.nowPlayingTitle ||
-                                item.nowPlayingTimeRange ||
-                                (item.nowPlayingProgress !== null &&
-                                    item.nowPlayingProgress !== undefined))
-                        ) {
-                            <span
-                                class="hero__live-epg"
-                                data-test-id="dashboard-hero-live-epg"
-                            >
-                                <span class="hero__live-epg-topline">
-                                    <span class="hero__live-epg-chip"
-                                        >LIVE</span
-                                    >
-                                    @if (item.nowPlayingTimeRange) {
-                                        <span class="hero__live-epg-time">{{
-                                            item.nowPlayingTimeRange
+                        <div class="hero__body">
+                            <span class="hero__eyebrow">{{
+                                item.subtitle
+                            }}</span>
+                            <h1 class="hero__title">{{ item.title }}</h1>
+
+                            @if (
+                                item.episodeBadge ||
+                                item.rating ||
+                                (item.genres && item.genres.length > 0)
+                            ) {
+                                <span
+                                    class="hero__badges"
+                                    data-test-id="dashboard-hero-badges"
+                                >
+                                    @if (item.episodeBadge) {
+                                        <span
+                                            class="hero__badge hero__badge--episode"
+                                            >{{ item.episodeBadge }}</span
+                                        >
+                                    }
+                                    @if (item.rating) {
+                                        <span
+                                            class="hero__badge hero__badge--rating"
+                                            >★ {{ item.rating }}</span
+                                        >
+                                    }
+                                    @for (genre of item.genres; track genre) {
+                                        <span class="hero__badge">{{
+                                            genre
                                         }}</span>
                                     }
                                 </span>
-                                @if (item.nowPlayingTitle) {
-                                    <span class="hero__live-epg-title">{{
-                                        item.nowPlayingTitle
-                                    }}</span>
-                                }
+                            }
+
+                            @if (
+                                item.contentType === 'live' &&
+                                (item.nowPlayingTitle ||
+                                    item.nowPlayingTimeRange ||
+                                    (item.nowPlayingProgress !== null &&
+                                        item.nowPlayingProgress !== undefined))
+                            ) {
                                 <span
-                                    class="hero__live-epg-progress"
-                                    [class.hero__live-epg-progress--idle]="
-                                        item.nowPlayingProgress === null ||
-                                        item.nowPlayingProgress === undefined
-                                    "
-                                    aria-hidden="true"
+                                    class="hero__live-epg"
+                                    data-test-id="dashboard-hero-live-epg"
                                 >
-                                    <i
-                                        [style.width.%]="
-                                            item.nowPlayingProgress ?? 0
+                                    <span class="hero__live-epg-topline">
+                                        <span class="hero__live-epg-chip"
+                                            >LIVE</span
+                                        >
+                                        @if (item.nowPlayingTimeRange) {
+                                            <span class="hero__live-epg-time">{{
+                                                item.nowPlayingTimeRange
+                                            }}</span>
+                                        }
+                                    </span>
+                                    @if (item.nowPlayingTitle) {
+                                        <span class="hero__live-epg-title">{{
+                                            item.nowPlayingTitle
+                                        }}</span>
+                                    }
+                                    <span
+                                        class="hero__live-epg-progress"
+                                        [class.hero__live-epg-progress--idle]="
+                                            item.nowPlayingProgress === null ||
+                                            item.nowPlayingProgress ===
+                                                undefined
                                         "
-                                    ></i>
-                                </span>
-                            </span>
-                        }
-
-                        @if (
-                            item.watchProgress !== null &&
-                            item.watchProgress !== undefined
-                        ) {
-                            <span class="hero__progress" aria-hidden="true">
-                                <span
-                                    class="hero__progress-bar"
-                                    [style.width.%]="item.watchProgress"
-                                ></span>
-                            </span>
-                            <span class="hero__progress-meta">
-                                @if (item.remainingLabel) {
-                                    <span>{{
-                                        item.remainingLabel.key
-                                            | translate
-                                                : item.remainingLabel.params
-                                    }}</span>
-                                    <span class="hero__progress-meta-sep"
-                                        >·</span
+                                        aria-hidden="true"
                                     >
-                                }
-                                <span>{{
-                                    'WORKSPACE.DASHBOARD.PERCENT_WATCHED'
-                                        | translate
-                                            : { value: item.watchProgress }
-                                }}</span>
-                            </span>
-                        }
+                                        <i
+                                            [style.width.%]="
+                                                item.nowPlayingProgress ?? 0
+                                            "
+                                        ></i>
+                                    </span>
+                                </span>
+                            }
 
-                        <span class="hero__cta">
-                            <mat-icon>play_arrow</mat-icon>
-                            <span>{{
-                                'WORKSPACE.DASHBOARD.CONTINUE_WATCHING'
-                                    | translate
-                            }}</span>
-                        </span>
-                    </span>
-                </a>
+                            @if (
+                                item.watchProgress !== null &&
+                                item.watchProgress !== undefined
+                            ) {
+                                <span class="hero__progress-row">
+                                    <span
+                                        class="hero__progress"
+                                        aria-hidden="true"
+                                    >
+                                        <span
+                                            class="hero__progress-bar"
+                                            [style.width.%]="item.watchProgress"
+                                        ></span>
+                                    </span>
+                                    <span class="hero__progress-meta">
+                                        @if (item.remainingLabel) {
+                                            <span>{{
+                                                item.remainingLabel.key
+                                                    | translate
+                                                        : item.remainingLabel
+                                                              .params
+                                            }}</span>
+                                        } @else {
+                                            <span>{{
+                                                'WORKSPACE.DASHBOARD.PERCENT_WATCHED'
+                                                    | translate
+                                                        : {
+                                                              value: item.watchProgress,
+                                                          }
+                                            }}</span>
+                                        }
+                                    </span>
+                                </span>
+                            }
+
+                            <span class="hero__actions">
+                                <a
+                                    class="hero__cta"
+                                    data-test-id="dashboard-hero-cta"
+                                    [routerLink]="item.link"
+                                    [state]="item.state ?? {}"
+                                >
+                                    <mat-icon>play_arrow</mat-icon>
+                                    <span>{{
+                                        item.ctaLabelKey | translate
+                                    }}</span>
+                                </a>
+                                @if (item.detailState; as detailState) {
+                                    <a
+                                        class="hero__secondary"
+                                        data-test-id="dashboard-hero-details"
+                                        [routerLink]="item.link"
+                                        [state]="detailState"
+                                    >
+                                        <mat-icon>info_outline</mat-icon>
+                                        <span>{{
+                                            'WORKSPACE.DASHBOARD.HERO_DETAILS'
+                                                | translate
+                                        }}</span>
+                                    </a>
+                                }
+                            </span>
+                        </div>
+
+                        @if (heroUpNext().length > 0) {
+                            <div
+                                class="hero__up-next"
+                                data-test-id="dashboard-hero-up-next"
+                            >
+                                <span class="hero__up-next-label">{{
+                                    'WORKSPACE.DASHBOARD.HERO_UP_NEXT'
+                                        | translate
+                                }}</span>
+                                <div class="hero__up-next-track" role="group">
+                                    @for (
+                                        thumb of heroUpNext();
+                                        track thumb.key
+                                    ) {
+                                        <button
+                                            type="button"
+                                            class="hero__up-next-item"
+                                            [class.hero__up-next-item--current]="
+                                                thumb.isCurrent
+                                            "
+                                            [class.hero__up-next-item--live]="
+                                                thumb.isLive
+                                            "
+                                            [attr.aria-pressed]="
+                                                thumb.isCurrent
+                                            "
+                                            [attr.aria-label]="
+                                                'WORKSPACE.DASHBOARD.HERO_FEATURE_ITEM'
+                                                    | translate
+                                                        : { title: thumb.title }
+                                            "
+                                            [attr.title]="thumb.title"
+                                            [style.backgroundImage]="
+                                                thumb.fallbackBackground
+                                            "
+                                            (click)="featureHeroItem(thumb.key)"
+                                        >
+                                            @if (thumb.imageUrl; as imageUrl) {
+                                                <img
+                                                    [src]="imageUrl"
+                                                    alt=""
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    (error)="
+                                                        markHeroImageFailed(
+                                                            imageUrl
+                                                        )
+                                                    "
+                                                />
+                                            }
+                                            @if (thumb.isLive) {
+                                                <span
+                                                    class="hero__up-next-live"
+                                                    aria-hidden="true"
+                                                    >LIVE</span
+                                                >
+                                            }
+                                            @if (thumb.watchProgress !== null) {
+                                                <span
+                                                    class="hero__up-next-progress"
+                                                    aria-hidden="true"
+                                                    ><i
+                                                        [style.width.%]="
+                                                            thumb.watchProgress
+                                                        "
+                                                    ></i
+                                                ></span>
+                                            }
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </section>
             } @else if (data.globalRecentLoading()) {
                 <section
                     class="rails-page__skeleton-hero"
                     aria-hidden="true"
                     aria-busy="true"
                 >
-                    <div class="rails-page__skeleton-hero-poster"></div>
                     <div class="rails-page__skeleton-hero-body">
+                        <div class="rails-page__skeleton-hero-eyebrow"></div>
                         <div class="rails-page__skeleton-hero-title"></div>
                         <div
                             class="rails-page__skeleton-hero-title rails-page__skeleton-hero-title--short"
                         ></div>
-                        <div class="rails-page__skeleton-hero-subtitle"></div>
                         <div class="rails-page__skeleton-hero-cta"></div>
                     </div>
                 </section>
             }
         }
 
-        <!-- Continue watching (movies + series) -->
-        @if (
-            dashboardRails().continueWatching &&
-            continueWatchingCards().length > 0
-        ) {
-            <lib-dashboard-rail
-                [label]="'WORKSPACE.DASHBOARD.CONTINUE_WATCHING' | translate"
-                [items]="continueWatchingCards()"
-                [totalCount]="data.globalRecentVodItems().length"
-                [seeAllLink]="['/workspace/global-recent']"
-                [seeAllState]="continueWatchingSeeAllState()"
-                [testId]="'dashboard-continue-watching-rail'"
-                (actionSelected)="onContinueWatchingActionSelected($event)"
-            />
-        }
-
-        <!-- Live favorites: no fallback. Recently watched live gets its own rail. -->
-        @if (
-            dashboardRails().liveFavorites &&
-            !showLiveFavoritesSkeleton() &&
-            liveFavoriteCardsEnriched().length > 0
-        ) {
-            <lib-dashboard-rail
-                [label]="liveRailTitleKeyForSource('favorites') | translate"
-                [items]="liveFavoriteCardsEnriched()"
-                [totalCount]="data.globalFavoriteLiveItems().length"
-                [seeAllLink]="['/workspace/global-favorites']"
-                [seeAllState]="liveSeeAllState"
-                layout="channel"
-                [testId]="'dashboard-live-favorites-rail'"
-            />
-        } @else if (showLiveFavoritesSkeleton()) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        @if (
-            dashboardRails().recentlyWatchedLive &&
-            recentLiveCardsEnriched().length > 0
-        ) {
-            <lib-dashboard-rail
-                [label]="liveRailTitleKeyForSource('recent') | translate"
-                [items]="recentLiveCardsEnriched()"
-                [totalCount]="data.globalRecentLiveItems().length"
-                [seeAllLink]="['/workspace/global-recent']"
-                [seeAllState]="liveSeeAllState"
-                layout="channel"
-                [testId]="'dashboard-recent-live-rail'"
-            />
-        }
-
-        @if (
-            dashboardRails().favoriteMoviesAndSeries &&
-            favoriteMoviesAndSeriesCards().length > 0
-        ) {
-            <lib-dashboard-rail
-                [label]="
-                    'WORKSPACE.DASHBOARD.FAVORITE_MOVIES_AND_SERIES' | translate
-                "
-                [items]="favoriteMoviesAndSeriesCards()"
-                [totalCount]="
-                    data.globalFavoriteItems().length -
-                    data.globalFavoriteLiveItems().length
-                "
-                [seeAllLink]="['/workspace/global-favorites']"
-                [seeAllState]="favoriteMoviesAndSeriesSeeAllState()"
-                [testId]="'dashboard-favorite-vod-rail'"
-            />
-        }
-
-        @if (showRecentContentSkeleton()) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        <!-- Sources rail -->
-        @if (dashboardRails().recentSources && sourceCards().length > 0) {
-            <lib-dashboard-rail
-                [label]="'WORKSPACE.DASHBOARD.RECENT_SOURCES' | translate"
-                [items]="sourceCards()"
-                [totalCount]="data.playlists().length"
-                [seeAllLink]="['/workspace/sources']"
-                aspectRatio="16 / 9"
-                [testId]="'dashboard-recent-sources-rail'"
-                (actionSelected)="onSourceActionSelected($event)"
-            />
-        } @else if (dashboardRails().recentSources && !data.playlistsLoaded()) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        <!-- Xtream recently-added rail (only relevant if there are Xtream playlists) -->
-        @if (
-            dashboardRails().xtreamRecentlyAdded &&
-            xtreamRecentlyAddedCards().length > 0
-        ) {
-            <lib-dashboard-rail
-                [label]="
-                    'WORKSPACE.DASHBOARD.XTREAM_RECENTLY_ADDED' | translate
-                "
-                [items]="xtreamRecentlyAddedCards()"
-                [totalCount]="data.xtreamRecentlyAddedItems().length"
-                [testId]="'dashboard-xtream-recently-added-rail'"
-            />
-        } @else if (
-            dashboardRails().xtreamRecentlyAdded &&
-            xtreamPlaylistCount() > 0 &&
-            data.xtreamRecentlyAddedLoading()
-        ) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        @if (aiEnabled()) {
-            @if (aiRecommendationsService.resultCachePersistenceFailed()) {
-                <p role="status">
-                    {{ 'WORKSPACE.DASHBOARD.AI_CACHE_SAVE_FAILED' | translate }}
-                </p>
-                <button
-                    mat-stroked-button
-                    type="button"
-                    (click)="aiRecommendationsService.retrySaveResults()"
-                    data-test-id="dashboard-ai-cache-save-retry"
-                >
-                    {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
-                </button>
+        <div class="rails-page__rails">
+            <!-- Continue watching (movies + series): landscape stills with
+                 progress and time left. -->
+            @if (
+                dashboardRails().continueWatching &&
+                continueWatchingCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="
+                        'WORKSPACE.DASHBOARD.CONTINUE_WATCHING' | translate
+                    "
+                    [items]="continueWatchingCards()"
+                    [totalCount]="data.globalRecentVodItems().length"
+                    [seeAllLink]="['/workspace/global-recent']"
+                    [seeAllState]="continueWatchingSeeAllState()"
+                    layout="landscape"
+                    [testId]="'dashboard-continue-watching-rail'"
+                    (actionSelected)="onContinueWatchingActionSelected($event)"
+                />
             }
-            @if (aiRecommendationsService.tasteSummary(); as tasteSummary) {
+
+            <!-- Live favorites: no fallback. Recently watched live gets its own rail. -->
+            @if (
+                dashboardRails().liveFavorites &&
+                !showLiveFavoritesSkeleton() &&
+                liveFavoriteCardsEnriched().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="liveRailTitleKeyForSource('favorites') | translate"
+                    [items]="liveFavoriteCardsEnriched()"
+                    [totalCount]="data.globalFavoriteLiveItems().length"
+                    [seeAllLink]="['/workspace/global-favorites']"
+                    [seeAllState]="liveSeeAllState"
+                    layout="channel"
+                    [testId]="'dashboard-live-favorites-rail'"
+                />
+            } @else if (showLiveFavoritesSkeleton()) {
                 <section
-                    data-test-id="dashboard-ai-taste-profile"
-                    aria-live="polite"
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
                 >
-                    <h2>
-                        {{ 'WORKSPACE.DASHBOARD.AI_TASTE_PROFILE' | translate }}
-                    </h2>
-                    <p>{{ tasteSummary }}</p>
-                    @if (aiRecommendationsService.profilePersistenceFailed()) {
-                        <p role="status">
-                            {{
-                                'WORKSPACE.DASHBOARD.AI_PROFILE_SAVE_FAILED'
-                                    | translate
-                            }}
-                        </p>
-                        <button
-                            mat-stroked-button
-                            type="button"
-                            data-test-id="dashboard-ai-profile-save-retry"
-                            (click)="
-                                aiRecommendationsService.retrySaveTasteProfile()
-                            "
-                        >
-                            {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
-                        </button>
-                    }
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div
+                                class="rails-page__skeleton-card rails-page__skeleton-card--channel"
+                            ></div>
+                        }
+                    </div>
                 </section>
             }
+
             @if (
-                aiCards().length > 0 || aiRecommendationsService.tasteSummary()
+                dashboardRails().recentlyWatchedLive &&
+                recentLiveCardsEnriched().length > 0
             ) {
-                <button
-                    mat-stroked-button
-                    type="button"
-                    (click)="retryAiRecommendations()"
-                    [disabled]="
-                        aiCandidatesLoading() ||
-                        aiRecommendationsService.loading()
-                    "
-                    data-test-id="dashboard-ai-refresh"
-                >
-                    {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
-                </button>
-            }
-            @if (aiCards().length > 0) {
                 <lib-dashboard-rail
-                    [label]="'WORKSPACE.DASHBOARD.AI_PICKS' | translate"
-                    layout="recommendation"
-                    [items]="aiCards()"
-                    [totalCount]="aiCards().length"
-                    testId="dashboard-ai-recommendations-rail"
-                    (actionSelected)="onRecommendationActionSelected($event)"
+                    [label]="liveRailTitleKeyForSource('recent') | translate"
+                    [items]="recentLiveCardsEnriched()"
+                    [totalCount]="data.globalRecentLiveItems().length"
+                    [seeAllLink]="['/workspace/global-recent']"
+                    [seeAllState]="liveSeeAllState"
+                    layout="channel"
+                    [testId]="'dashboard-recent-live-rail'"
                 />
-            } @else {
-                <section data-test-id="dashboard-ai-status" aria-live="polite">
-                    <h2>{{ 'WORKSPACE.DASHBOARD.AI_PICKS' | translate }}</h2>
-                    <p>
+            }
+
+            @if (
+                dashboardRails().favoriteMoviesAndSeries &&
+                favoriteMoviesAndSeriesCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="
+                        'WORKSPACE.DASHBOARD.FAVORITE_MOVIES_AND_SERIES'
+                            | translate
+                    "
+                    [items]="favoriteMoviesAndSeriesCards()"
+                    [totalCount]="
+                        data.globalFavoriteItems().length -
+                        data.globalFavoriteLiveItems().length
+                    "
+                    [seeAllLink]="['/workspace/global-favorites']"
+                    [seeAllState]="favoriteMoviesAndSeriesSeeAllState()"
+                    [testId]="'dashboard-favorite-vod-rail'"
+                />
+            }
+
+            @if (showRecentContentSkeleton()) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div
+                                class="rails-page__skeleton-card rails-page__skeleton-card--landscape"
+                            ></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            <!-- Sources rail -->
+            @if (dashboardRails().recentSources && sourceCards().length > 0) {
+                <lib-dashboard-rail
+                    [label]="'WORKSPACE.DASHBOARD.RECENT_SOURCES' | translate"
+                    [items]="sourceCards()"
+                    [totalCount]="data.playlists().length"
+                    [seeAllLink]="['/workspace/sources']"
+                    aspectRatio="16 / 9"
+                    [testId]="'dashboard-recent-sources-rail'"
+                    (actionSelected)="onSourceActionSelected($event)"
+                />
+            } @else if (
+                dashboardRails().recentSources && !data.playlistsLoaded()
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            <!-- Xtream recently-added rail (only relevant if there are Xtream playlists) -->
+            @if (
+                dashboardRails().xtreamRecentlyAdded &&
+                xtreamRecentlyAddedCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="
+                        'WORKSPACE.DASHBOARD.XTREAM_RECENTLY_ADDED' | translate
+                    "
+                    [items]="xtreamRecentlyAddedCards()"
+                    [totalCount]="data.xtreamRecentlyAddedItems().length"
+                    [testId]="'dashboard-xtream-recently-added-rail'"
+                />
+            } @else if (
+                dashboardRails().xtreamRecentlyAdded &&
+                xtreamPlaylistCount() > 0 &&
+                data.xtreamRecentlyAddedLoading()
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (aiEnabled()) {
+                @if (aiRecommendationsService.resultCachePersistenceFailed()) {
+                    <p role="status">
                         {{
-                            (aiCandidatesLoading() ||
-                            aiRecommendationsService.loading()
-                                ? 'WORKSPACE.DASHBOARD.AI_LOADING'
-                                : aiRecommendationsService.failed()
-                                  ? 'WORKSPACE.DASHBOARD.AI_FAILED'
-                                  : aiNeedsEvidence()
-                                    ? 'WORKSPACE.DASHBOARD.AI_NEEDS_EVIDENCE'
-                                    : 'WORKSPACE.DASHBOARD.AI_EMPTY'
-                            ) | translate
+                            'WORKSPACE.DASHBOARD.AI_CACHE_SAVE_FAILED'
+                                | translate
                         }}
                     </p>
-                    @if (
-                        aiRecommendationsService.failed() &&
-                        !aiCandidatesLoading()
-                    ) {
-                        <button
-                            mat-stroked-button
-                            type="button"
-                            (click)="retryAiRecommendations()"
-                            data-test-id="dashboard-ai-retry"
-                        >
-                            {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
-                        </button>
-                    }
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        (click)="aiRecommendationsService.retrySaveResults()"
+                        data-test-id="dashboard-ai-cache-save-retry"
+                    >
+                        {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                    </button>
+                }
+                @if (aiRecommendationsService.tasteSummary(); as tasteSummary) {
+                    <section
+                        data-test-id="dashboard-ai-taste-profile"
+                        aria-live="polite"
+                    >
+                        <h2>
+                            {{
+                                'WORKSPACE.DASHBOARD.AI_TASTE_PROFILE'
+                                    | translate
+                            }}
+                        </h2>
+                        <p>{{ tasteSummary }}</p>
+                        @if (aiRecommendationsService.profilePersistenceFailed()) {
+                            <p role="status">
+                                {{
+                                    'WORKSPACE.DASHBOARD.AI_PROFILE_SAVE_FAILED'
+                                        | translate
+                                }}
+                            </p>
+                            <button
+                                mat-stroked-button
+                                type="button"
+                                data-test-id="dashboard-ai-profile-save-retry"
+                                (click)="
+                                    aiRecommendationsService.retrySaveTasteProfile()
+                                "
+                            >
+                                {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                            </button>
+                        }
+                    </section>
+                }
+                @if (
+                    aiCards().length > 0 ||
+                    aiRecommendationsService.tasteSummary()
+                ) {
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        (click)="retryAiRecommendations()"
+                        [disabled]="
+                            aiCandidatesLoading() ||
+                            aiRecommendationsService.loading()
+                        "
+                        data-test-id="dashboard-ai-refresh"
+                    >
+                        {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
+                    </button>
+                }
+                @if (aiCards().length > 0) {
+                    <lib-dashboard-rail
+                        [label]="'WORKSPACE.DASHBOARD.AI_PICKS' | translate"
+                        layout="recommendation"
+                        [items]="aiCards()"
+                        [totalCount]="aiCards().length"
+                        testId="dashboard-ai-recommendations-rail"
+                        (actionSelected)="
+                            onRecommendationActionSelected($event)
+                        "
+                    />
+                } @else {
+                    <section
+                        data-test-id="dashboard-ai-status"
+                        aria-live="polite"
+                    >
+                        <h2>{{ 'WORKSPACE.DASHBOARD.AI_PICKS' | translate }}</h2>
+                        <p>
+                            {{
+                                (aiCandidatesLoading() ||
+                                aiRecommendationsService.loading()
+                                    ? 'WORKSPACE.DASHBOARD.AI_LOADING'
+                                    : aiRecommendationsService.failed()
+                                      ? 'WORKSPACE.DASHBOARD.AI_FAILED'
+                                      : aiNeedsEvidence()
+                                        ? 'WORKSPACE.DASHBOARD.AI_NEEDS_EVIDENCE'
+                                        : 'WORKSPACE.DASHBOARD.AI_EMPTY'
+                                ) | translate
+                            }}
+                        </p>
+                        @if (
+                            aiRecommendationsService.failed() &&
+                            !aiCandidatesLoading()
+                        ) {
+                            <button
+                                mat-stroked-button
+                                type="button"
+                                (click)="retryAiRecommendations()"
+                                data-test-id="dashboard-ai-retry"
+                            >
+                                {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                            </button>
+                        }
+                    </section>
+                }
+                @if (aiDiscoveryCards().length > 0) {
+                    <lib-dashboard-rail
+                        [label]="
+                            'WORKSPACE.DASHBOARD.AI_DISCOVERIES' | translate
+                        "
+                        layout="recommendation"
+                        [items]="aiDiscoveryCards()"
+                        [totalCount]="aiDiscoveryCards().length"
+                        testId="dashboard-ai-discoveries-rail"
+                        (actionSelected)="
+                            onRecommendationActionSelected($event)
+                        "
+                    />
+                }
+            }
+
+            <!-- TMDB recommendations rail ("Because you watched"; opt-in; Electron only) -->
+            @if (
+                dashboardRails().tmdbRecommendations &&
+                recommendationCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="recommendationsRailLabel()"
+                    [layout]="'recommendation'"
+                    [items]="recommendationCards()"
+                    [totalCount]="recommendationCards().length"
+                    [testId]="'dashboard-tmdb-recommendations-rail'"
+                    (actionSelected)="onRecommendationActionSelected($event)"
+                />
+            } @else if (
+                dashboardRails().tmdbRecommendations &&
+                recommendationsService.loading()
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
                 </section>
             }
-            @if (aiDiscoveryCards().length > 0) {
+
+            <!-- Personalized genre rails; every card resolves to imported content. -->
+            @if (dashboardRails().tmdbRecommendations) {
+                @for (rail of genreRails(); track rail.genre) {
+                    <lib-dashboard-rail
+                        [label]="rail.label"
+                        [layout]="'recommendation'"
+                        [items]="rail.cards"
+                        [totalCount]="rail.cards.length"
+                        [testId]="'dashboard-your-genre-' + rail.genre"
+                        (actionSelected)="
+                            onRecommendationActionSelected($event)
+                        "
+                    />
+                }
+            }
+            @if (
+                dashboardRails().tmdbRecommendations &&
+                genreRecommendationsService.loading() &&
+                genreRails().length === 0
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            <!-- TMDB Top 10 (weekly trending; opt-in; Electron only — needs title matching) -->
+            @if (dashboardRails().tmdbTrending && topTenCards().length > 0) {
                 <lib-dashboard-rail
-                    [label]="'WORKSPACE.DASHBOARD.AI_DISCOVERIES' | translate"
-                    layout="recommendation"
-                    [items]="aiDiscoveryCards()"
-                    [totalCount]="aiDiscoveryCards().length"
-                    testId="dashboard-ai-discoveries-rail"
-                    (actionSelected)="onRecommendationActionSelected($event)"
+                    [label]="'WORKSPACE.DASHBOARD.TOP_TEN' | translate"
+                    [items]="topTenCards()"
+                    [totalCount]="topTenCards().length"
+                    layout="ranked"
+                    [testId]="'dashboard-tmdb-trending-rail'"
+                />
+            } @else if (
+                dashboardRails().tmdbTrending && trendingService.loading()
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (dashboardRails().tmdbTrending && highRatedCards().length > 0) {
+                <lib-dashboard-rail
+                    [label]="'WORKSPACE.SORT_TOP_RATED' | translate"
+                    [items]="highRatedCards()"
+                    [totalCount]="highRatedCards().length"
+                    [testId]="'dashboard-high-rated-rail'"
                 />
             }
-        }
-
-        <!-- TMDB recommendations rail ("Because you watched"; opt-in; Electron only) -->
-        @if (
-            dashboardRails().tmdbRecommendations &&
-            recommendationCards().length > 0
-        ) {
-            <lib-dashboard-rail
-                [label]="recommendationsRailLabel()"
-                [layout]="'recommendation'"
-                [items]="recommendationCards()"
-                [totalCount]="recommendationCards().length"
-                [testId]="'dashboard-tmdb-recommendations-rail'"
-                (actionSelected)="onRecommendationActionSelected($event)"
-            />
-        } @else if (
-            dashboardRails().tmdbRecommendations &&
-            recommendationsService.loading()
-        ) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        <!-- Personalized genre rails; every card resolves to imported content. -->
-        @if (dashboardRails().tmdbRecommendations) {
-            @for (rail of genreRails(); track rail.genre) {
-                <lib-dashboard-rail
-                    [label]="rail.label"
-                    [layout]="'recommendation'"
-                    [items]="rail.cards"
-                    [totalCount]="rail.cards.length"
-                    [testId]="'dashboard-your-genre-' + rail.genre"
-                    (actionSelected)="onRecommendationActionSelected($event)"
-                />
-            }
-        }
-        @if (
-            dashboardRails().tmdbRecommendations &&
-            genreRecommendationsService.loading() &&
-            genreRails().length === 0
-        ) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        <!-- TMDB trending rail (opt-in; Electron only — needs title matching) -->
-        @if (dashboardRails().tmdbTrending && trendingCards().length > 0) {
-            <lib-dashboard-rail
-                [label]="'WORKSPACE.DASHBOARD.TMDB_TRENDING' | translate"
-                [items]="trendingCards()"
-                [totalCount]="trendingCards().length"
-                [testId]="'dashboard-tmdb-trending-rail'"
-            />
-        } @else if (
-            dashboardRails().tmdbTrending && trendingService.loading()
-        ) {
-            <section
-                class="rails-page__skeleton-rail"
-                aria-hidden="true"
-                aria-busy="true"
-            >
-                <div class="rails-page__skeleton-header"></div>
-                <div class="rails-page__skeleton-track">
-                    @for (slot of skeletonSlots; track slot) {
-                        <div class="rails-page__skeleton-card"></div>
-                    }
-                </div>
-            </section>
-        }
-
-        @if (dashboardRails().tmdbTrending && highRatedCards().length > 0) {
-            <lib-dashboard-rail
-                [label]="'WORKSPACE.SORT_TOP_RATED' | translate"
-                [items]="highRatedCards()"
-                [totalCount]="highRatedCards().length"
-                [testId]="'dashboard-high-rated-rail'"
-            />
-        }
+        </div>
     }
 </section>

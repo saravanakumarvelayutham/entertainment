@@ -98,6 +98,38 @@ export function isDashboardHighRated(rating: string | null): boolean {
     return rating !== null && Number.isFinite(value) && value >= 7.5;
 }
 
+// The Top 10 rail is exactly that: TMDB's weekly trending order, cut to the
+// titles the user can actually play, numbered 1–10.
+export const TOP_TEN_LIMIT = 10;
+
+/**
+ * Numbers the first `limit` cards 1..n for the 'ranked' rail layout. Input
+ * order is the ranking; the caller sorts beforehand.
+ */
+export function rankDashboardCards(
+    cards: readonly DashboardRailCard[],
+    limit: number = TOP_TEN_LIMIT
+): DashboardRailCard[] {
+    return cards
+        .slice(0, limit)
+        .map((card, index) => ({ ...card, rank: index + 1 }));
+}
+
+/**
+ * Drops cards already shown by another rail, so one title never appears in
+ * both the Top 10 and the Top rated rail.
+ */
+export function excludeDashboardCards(
+    cards: readonly DashboardRailCard[],
+    shown: readonly Pick<DashboardRailCard, 'id'>[]
+): DashboardRailCard[] {
+    if (shown.length === 0) {
+        return [...cards];
+    }
+    const shownIds = new Set(shown.map((card) => card.id));
+    return cards.filter((card) => !shownIds.has(card.id));
+}
+
 export type DashboardSourceActionId =
     'refresh' | 'playlist-info' | 'account-info' | 'remove';
 

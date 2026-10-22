@@ -76,8 +76,16 @@ import type {
     DashboardRailActionSelection,
 } from './dashboard-rail.component';
 import type { PlaylistMeta } from '@iptvnator/shared/interfaces';
-import type { DashboardHeroModel } from './dashboard-hero.utils';
-import { resolveDashboardHeroArtwork } from './dashboard-hero.utils';
+import type {
+    DashboardHeroModel,
+    DashboardHeroUpNextCard,
+} from './dashboard-hero.utils';
+import {
+    HERO_CANDIDATE_LIMIT,
+    resolveDashboardHeroAmbient,
+    resolveDashboardHeroArtwork,
+    selectDashboardHeroItem,
+} from './dashboard-hero.utils';
 import {
     buildDashboardLiveEpgDetails,
     buildLiveEpgCardsForEnabledRails,
@@ -98,9 +106,11 @@ import {
     buildDashboardRailSeeAllState,
     buildDashboardSourceActions,
     curateDashboardContentItems,
+    excludeDashboardCards,
     isDashboardHighRated,
     liveRailTitleKeyForSource,
     RAIL_ITEM_LIMIT,
+    rankDashboardCards,
     shouldShowLiveFavoritesSkeleton,
     shouldShowRecentContentSkeleton,
     SKELETON_CARDS_PER_RAIL,
@@ -304,9 +314,63 @@ export class WorkspaceDashboardRailsComponent {
         );
     }
 
-    private readonly heroRecentItem = computed(
-        () => this.data.globalRecentItems()[0] ?? null
+    // The newest few recent items compete for the banner. The user can
+    // feature any of them from the up-next stack; a selection that leaves
+    // the recent list falls back to the newest item.
+    private readonly selectedHeroKey = signal<string | null>(null);
+    private readonly heroCandidates = computed(() =>
+        this.data.globalRecentItems().slice(0, HERO_CANDIDATE_LIMIT)
     );
+    private readonly heroRecentItem = computed(() =>
+        selectDashboardHeroItem(
+            this.heroCandidates(),
+            this.selectedHeroKey(),
+            (item) => this.recentCardId(item)
+        )
+    );
+
+    readonly heroUpNext = computed<DashboardHeroUpNextCard[]>(() => {
+        const candidates = this.heroCandidates();
+        if (candidates.length < 2) {
+            return [];
+        }
+        const current = this.heroRecentItem();
+        const failed = this.failedHeroImages();
+        return candidates.map((item) => {
+            const artwork = resolveDashboardHeroArtwork(
+                {
+                    backdropUrl: item.backdrop_url,
+                    posterUrl: item.poster_url,
+                    title: item.title,
+                },
+                failed
+            );
+            return {
+                key: this.recentCardId(item),
+                title: item.title,
+                imageUrl: artwork.backdropUrl,
+                fallbackBackground: artwork.fallbackBackdropBackground,
+                isCurrent: item === current,
+                isLive: item.type === 'live',
+                watchProgress:
+                    item.type === 'live'
+                        ? null
+                        : playbackProgressPercent(
+                              this.data.getPlaybackPositionForItem(item)
+                          ),
+            };
+        });
+    });
+
+    /** Page tint behind the banner, derived from the featured title. */
+    readonly heroAmbient = computed(() => {
+        const item = this.heroRecentItem();
+        return item ? resolveDashboardHeroAmbient(item.title) : null;
+    });
+
+    featureHeroItem(key: string): void {
+        this.selectedHeroKey.set(key);
+    }
 
     /** TMDB extras for the current hero item, patched in after first paint */
     private readonly heroTmdbExtras = signal<{
@@ -366,6 +430,16 @@ export class WorkspaceDashboardRailsComponent {
             icon: this.typeIcon(item.type),
             link: this.data.getRecentItemLink(item),
             state: this.data.getRecentItemNavigationState(item),
+            // Details is the detail-only handoff; live channels have no
+            // detail page, so the banner offers only the play action.
+            detailState:
+                item.type === 'live'
+                    ? undefined
+                    : this.data.getRecentItemDetailNavigationState(item),
+            ctaLabelKey:
+                item.type === 'live'
+                    ? 'WORKSPACE.DASHBOARD.HERO_WATCH_LIVE'
+                    : 'WORKSPACE.DASHBOARD.CONTINUE_WATCHING',
             subtitle: this.buildHeroSubtitle(item),
             title: item.title,
             rating: extras?.rating ?? null,
@@ -494,34 +568,38 @@ export class WorkspaceDashboardRailsComponent {
             .map((item) => this.toRecentlyAddedCard(item))
     );
 
-    readonly trendingCards = computed<DashboardRailCard[]>(() => {
+    // Top 10: TMDB's weekly trending order (popularity), cut to the titles
+    // the user can play, numbered 1–10. Rating does not re-rank it — that is
+    // what the Top rated rail below is for.
+    readonly topTenCards = computed<DashboardRailCard[]>(() => {
         this.languageTick();
         // isAvailable reads the TMDB settings signal — flipping the
         // opt-in off mid-session hides the rail immediately
         if (!this.trendingService.isAvailable) {
             return [];
         }
-        return this.trendingService
-            .items()
-            .filter(
-                (item) =>
-                    item.match !== null && !isDashboardHighRated(item.rating)
-            )
-            .filter((item) => this.isVisibleTrendingCandidate(item))
-            .map((item) => this.toTrendingCard(item));
+        return rankDashboardCards(
+            this.trendingService
+                .items()
+                .filter((item) => item.match !== null)
+                .filter((item) => this.isVisibleTrendingCandidate(item))
+                .map((item) => this.toTrendingCard(item))
+        );
     });
 
     readonly highRatedCards = computed<DashboardRailCard[]>(() =>
-        this.trendingService
-            .items()
-            .filter(
-                (item) =>
-                    item.match !== null && isDashboardHighRated(item.rating)
-            )
-            .filter((item) => this.isVisibleTrendingCandidate(item))
-            .sort((a, b) => Number(b.rating) - Number(a.rating))
-            .slice(0, RAIL_ITEM_LIMIT)
-            .map((item) => this.toTrendingCard(item))
+        excludeDashboardCards(
+            this.trendingService
+                .items()
+                .filter(
+                    (item) =>
+                        item.match !== null && isDashboardHighRated(item.rating)
+                )
+                .filter((item) => this.isVisibleTrendingCandidate(item))
+                .sort((a, b) => Number(b.rating) - Number(a.rating))
+                .map((item) => this.toTrendingCard(item)),
+            this.topTenCards()
+        ).slice(0, RAIL_ITEM_LIMIT)
     );
 
     readonly recommendationCards = computed<DashboardRailCard[]>(() => {
@@ -1006,6 +1084,7 @@ export class WorkspaceDashboardRailsComponent {
             title: item.title,
             subtitle: `${this.data.getRecentItemProviderLabel(item)} · ${this.data.getRecentItemTypeLabel(item)}`,
             imageUrl: item.poster_url,
+            backdropUrl: item.backdrop_url || undefined,
             icon: this.typeIcon(item.type),
             contentType: item.type,
             epgLookupKey: item.epg_lookup_key,
@@ -1015,6 +1094,8 @@ export class WorkspaceDashboardRailsComponent {
             // moved to the ⋮ menu below. The hero CTA keeps the resume state.
             state: this.data.getRecentItemDetailNavigationState(item),
             watchProgress,
+            remainingLabel:
+                item.type === 'live' ? null : formatRemainingLabel(position),
             episodeBadge,
             ...(item.type === 'movie' || item.type === 'series'
                 ? {

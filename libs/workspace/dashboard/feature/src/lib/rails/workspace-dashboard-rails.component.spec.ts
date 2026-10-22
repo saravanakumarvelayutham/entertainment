@@ -6,10 +6,13 @@ import {
     buildDashboardRailSeeAllState,
     buildDashboardSourceActions,
     curateDashboardContentItems,
+    excludeDashboardCards,
     isDashboardHighRated,
     liveRailTitleKeyForSource,
+    rankDashboardCards,
     shouldShowLiveFavoritesSkeleton,
     shouldShowRecentContentSkeleton,
+    TOP_TEN_LIMIT,
 } from './dashboard-rail.utils';
 import {
     buildDashboardLiveEpgDetails,
@@ -25,7 +28,12 @@ import {
     isContinueWatchingRecentItem,
     playbackProgressPercent,
 } from './dashboard-playback.utils';
-import { resolveDashboardHeroArtwork } from './dashboard-hero.utils';
+import {
+    HERO_CANDIDATE_LIMIT,
+    resolveDashboardHeroAmbient,
+    resolveDashboardHeroArtwork,
+    selectDashboardHeroItem,
+} from './dashboard-hero.utils';
 import type { DashboardRailCard } from './dashboard-rail.component';
 import { COLLECTION_VIEW_STATE_KEY } from '@iptvnator/portal/shared/util';
 
@@ -166,6 +174,83 @@ describe('curateDashboardContentItems', () => {
         ];
 
         expect(curateDashboardContentItems(items)).toEqual(items.slice(1));
+    });
+});
+
+describe('Top 10 rail helpers', () => {
+    const card = (id: string): DashboardRailCard => ({
+        id,
+        title: id,
+        icon: 'movie',
+        link: ['/workspace'],
+    });
+
+    it('numbers the first ten cards in input order and drops the rest', () => {
+        const cards = Array.from({ length: 14 }, (_, index) =>
+            card(`trending-${index}`)
+        );
+
+        const ranked = rankDashboardCards(cards);
+
+        expect(ranked).toHaveLength(TOP_TEN_LIMIT);
+        expect(ranked.map((item) => item.rank)).toEqual([
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        ]);
+        expect(ranked[0].id).toBe('trending-0');
+        expect(ranked[9].id).toBe('trending-9');
+        // The input list is never mutated with rank fields.
+        expect(cards[0].rank).toBeUndefined();
+    });
+
+    it('keeps a shorter list intact and ranks what is there', () => {
+        expect(
+            rankDashboardCards([card('a'), card('b')]).map(
+                (item) => item.rank
+            )
+        ).toEqual([1, 2]);
+    });
+
+    it('removes cards already shown by the Top 10 from the Top rated rail', () => {
+        const topTen = rankDashboardCards([card('a'), card('b')]);
+        const highRated = [card('b'), card('c'), card('a'), card('d')];
+
+        expect(
+            excludeDashboardCards(highRated, topTen).map((item) => item.id)
+        ).toEqual(['c', 'd']);
+        expect(excludeDashboardCards(highRated, [])).toEqual(highRated);
+    });
+});
+
+describe('hero selection helpers', () => {
+    const items = [
+        { key: 'newest', title: 'Newest' },
+        { key: 'second', title: 'Second' },
+        { key: 'third', title: 'Third' },
+    ];
+    const keyOf = (item: { key: string }) => item.key;
+
+    it('features the newest item until the user picks another', () => {
+        expect(selectDashboardHeroItem(items, null, keyOf)).toBe(items[0]);
+        expect(selectDashboardHeroItem(items, 'third', keyOf)).toBe(items[2]);
+    });
+
+    it('falls back to the newest item when the selection left the list', () => {
+        expect(selectDashboardHeroItem(items, 'gone', keyOf)).toBe(items[0]);
+        expect(selectDashboardHeroItem([], 'gone', keyOf)).toBeNull();
+    });
+
+    it('limits the up-next stack to a handful of recent items', () => {
+        expect(HERO_CANDIDATE_LIMIT).toBe(5);
+    });
+
+    it('derives a stable ambient tint from the featured title', () => {
+        const tint = resolveDashboardHeroAmbient('Skyline Sentinels');
+
+        expect(tint).toMatch(/^hsl\(\d+, 45%, 38%\)$/);
+        expect(resolveDashboardHeroAmbient('Skyline Sentinels')).toBe(tint);
+        expect(resolveDashboardHeroAmbient('Black Harbor')).not.toBe(tint);
+        // An empty title still yields a valid colour instead of hsl(NaN).
+        expect(resolveDashboardHeroAmbient('')).toMatch(/^hsl\(\d+/);
     });
 });
 
