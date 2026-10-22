@@ -339,21 +339,6 @@
                             </div>
 
                             <div class="rail__meta">
-                                @if (layout() === 'recommendation') {
-                                    @for (
-                                        action of card.actions ?? [];
-                                        track action.id
-                                    ) {
-                                        @if (
-                                            action.id ===
-                                            'recommendation-explanation'
-                                        ) {
-                                            <span class="rail__reason">{{
-                                                action.label
-                                            }}</span>
-                                        }
-                                    }
-                                }
                                 <span class="rail__card-title">{{
                                     cardTitle(card)
                                 }}</span>
@@ -383,10 +368,31 @@
                                         >
                                     }
                                 </span>
+                                <!-- Recommendation reason: a quiet accent
+                                     caption under the title, the same place
+                                     a streaming app says why it picked it. -->
+                                @if (layout() === 'recommendation') {
+                                    @for (
+                                        action of card.actions ?? [];
+                                        track action.id
+                                    ) {
+                                        @if (
+                                            action.id ===
+                                            'recommendation-explanation'
+                                        ) {
+                                            <span class="rail__reason">{{
+                                                action.label
+                                            }}</span>
+                                        }
+                                    }
+                                }
                             </div>
                         </a>
 
                         @if (layout() === 'recommendation') {
+                            <!-- Inline taste feedback: two icon buttons under
+                                 the caption. The label stays in the DOM for
+                                 assistive tech and as the native tooltip. -->
                             <div class="rail__taste-actions">
                                 @for (
                                     action of card.actions ?? [];
@@ -401,6 +407,11 @@
                                             "
                                             [attr.aria-pressed]="
                                                 action.pressed ?? null
+                                            "
+                                            [attr.title]="
+                                                action.label ??
+                                                (action.labelKey ?? ''
+                                                    | translate)
                                             "
                                             [attr.aria-label]="
                                                 (action.label ??
@@ -420,11 +431,14 @@
                                             <mat-icon aria-hidden="true">{{
                                                 action.icon
                                             }}</mat-icon>
-                                            <span>{{
-                                                action.label ??
-                                                    (action.labelKey ?? ''
-                                                        | translate)
-                                            }}</span>
+                                            <span
+                                                class="rail__taste-action-label"
+                                                >{{
+                                                    action.label ??
+                                                        (action.labelKey ?? ''
+                                                            | translate)
+                                                }}</span
+                                            >
                                         </button>
                                     }
                                 }

@@ -329,6 +329,23 @@ describe('DashboardRailComponent', () => {
             expect(buttons).toHaveLength(2);
             expect(buttons[0].getAttribute('aria-pressed')).toBe('true');
             expect(buttons[0].getAttribute('aria-label')).toContain('Arrival');
+            // Icon-only buttons keep their label as a tooltip and in the DOM.
+            expect(buttons[0].getAttribute('title')).toBe(
+                'Undo more like this'
+            );
+            expect(
+                buttons[1].querySelector('.rail__taste-action-label')
+                    ?.textContent
+            ).toContain('Not for me');
+            // The reason is a caption under the title, inside the card link.
+            const meta = element.querySelector('.rail__meta') as HTMLElement;
+            const title = meta.querySelector('.rail__card-title') as Node;
+            const reason = meta.querySelector('.rail__reason') as Node;
+            expect(reason).not.toBeNull();
+            expect(
+                title.compareDocumentPosition(reason) &
+                    Node.DOCUMENT_POSITION_FOLLOWING
+            ).toBeTruthy();
             const selected = jest.fn();
             fixture.componentInstance.actionSelected.subscribe(selected);
             buttons[1].click();

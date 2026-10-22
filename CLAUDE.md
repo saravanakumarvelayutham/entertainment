@@ -1647,10 +1647,13 @@ Contract: `docs/architecture/workspace-dashboard.md`.
 
 **Personalized Dashboard Cards**:
 
-- Dashboard recommendation and personalized genre rails use landscape cards
-  with visible taste explanations and inline, persistent `More like this` /
-  `Not for me` feedback. The like button exposes its saved state and undo.
-  Contract: `docs/architecture/workspace-dashboard.md`.
+- Dashboard recommendation and personalized genre rails use the same poster
+  card as every other rail, with the taste explanation as an accent caption
+  under the title and inline, persistent `More like this` / `Not for me`
+  feedback as two icon buttons (labels stay in the DOM for assistive tech
+  and as tooltips). The like button exposes its saved state and undo. The AI
+  picks block is one `.ai-panel`: taste-summary card with Refresh, then the
+  rail or an empty-state card. Contract: `docs/architecture/workspace-dashboard.md`.
 
 - Desktop Settings → Dashboard optionally reranks available recommendation
   candidates through the fixed SaravLabs gateway (default model `security`).

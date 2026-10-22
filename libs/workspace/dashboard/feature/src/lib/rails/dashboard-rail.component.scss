@@ -11,106 +11,84 @@
     gap: 12px;
 }
 
+// ── Recommendation layout ───────────────────────────────────────────────────
+// The same poster card as every other rail, so a recommendation sits beside
+// Top 10 and favorites without a boxed treatment of its own. What makes it a
+// recommendation is the accent caption under the title ("Because you watched
+// X") and two quiet thumb buttons for persistent taste feedback.
 .rail--recommendation {
-    --rail-card-width: min(360px, 82vw);
-
     .rail__title > mat-icon {
         color: var(--app-selection-color);
         align-self: center;
-    }
-
-    .rail__track {
-        align-items: stretch;
-    }
-
-    .rail__card {
-        overflow: hidden;
-        border: 1px solid var(--app-widget-header-border);
-        box-shadow: var(--app-widget-shadow);
-        background:
-            linear-gradient(
-                135deg,
-                var(--app-selection-surface),
-                transparent 65%
-            ),
-            var(--app-widget-bg);
-    }
-
-    .rail__card-link {
-        flex: 1;
-        flex-direction: row;
-        gap: 16px;
-        padding: 14px;
-    }
-
-    .rail__art {
-        width: 104px;
-        flex-shrink: 0;
-        align-self: flex-start;
-    }
-
-    .rail__meta {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 10px;
-        min-width: 0;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
     }
 
     .rail__card-title {
         white-space: normal;
-        font-size: 1.05rem;
-        line-height: 1.35;
-    }
-
-    .rail__card-meta-row,
-    .rail__card-subtitle {
-        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
 }
 
 .rail__reason {
+    margin-top: 3px;
     color: var(--app-selection-color);
-    font-size: 0.75rem;
-    line-height: 1.5;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.4;
+    overflow: hidden;
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .rail__taste-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px 14px 14px;
-    border-top: 1px solid var(--app-widget-border);
+    gap: 6px;
+    padding: 8px 2px 0;
 }
 
 .rail__taste-action {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    min-height: 34px;
-    padding: 6px 10px;
-    border: 1px solid var(--app-widget-border);
-    border-radius: 999px;
-    background: var(--app-widget-bg);
-    color: var(--app-on-surface);
-    font: inherit;
-    font-size: 0.72rem;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--app-on-surface, #e6e1e5) 8%, transparent);
+    color: var(--app-body-color, #8b93a8);
     cursor: pointer;
     app-region: no-drag;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
 
     mat-icon {
         width: 16px;
         height: 16px;
         font-size: 16px;
+        line-height: 16px;
         flex-shrink: 0;
     }
 
     &:hover {
-        background: var(--app-card-hover-bg);
+        background: color-mix(
+            in srgb,
+            var(--app-on-surface, #e6e1e5) 14%,
+            transparent
+        );
+        color: var(--app-heading-color, #1a1d23);
     }
 
-    &--selected {
+    &--selected,
+    &--selected:hover {
         color: var(--app-selection-color);
         border-color: var(--app-selection-border);
         background: var(--app-selection-surface);
@@ -120,6 +98,17 @@
         outline: 2px solid var(--app-selection-color);
         outline-offset: 2px;
     }
+}
+
+// Keeps the label for assistive technology and text search; the button
+// itself is icon-only, since a 172px poster has no room for two pills.
+.rail__taste-action-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 // Quiet section header: no rule, no pill. The title carries the weight, the
