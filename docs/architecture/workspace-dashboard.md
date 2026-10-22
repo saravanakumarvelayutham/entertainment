@@ -35,18 +35,27 @@ Core implementation:
 
 ## Page Structure
 
+The page is a lean-back surface: artwork carries it and chrome recedes. The
+hero bleeds to the content pane's edges, its bottom fades into the page
+background, and the first rail starts inside that fade (negative top margin on
+`.rails-page__rails`). A title-derived ambient tint
+(`resolveDashboardHeroAmbient`, written to the `--hero-ambient` custom
+property on `.rails-page`) sits behind the banner so it never rests on a flat
+surface.
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  Hero — Continue Watching (most recent item)                        │
-├─────────────────────────────────────────────────────────────────────┤
+│  Hero — full-bleed artwork, copy bottom-left, "Up next for you"     │
+│  thumbnail stack bottom-right (the other newest recent items)       │
+│  ░░░░░░░░░░░░░░░░ bottom fade into the page ░░░░░░░░░░░░░░░░░░░░░░ │
 │  Continue Watching · See all →                                      │
-│  [poster][poster][poster][poster] →→                                │
+│  [16:9 still ▬▬▬▬▭][16:9 still ▬▭][16:9 still ▬▬▬▭] →→             │
 ├─────────────────────────────────────────────────────────────────────┤
 │  Live now on your favorites · See all →                             │
-│  [channel][channel][channel][channel] →→                            │
+│  [logo · channel / time · LIVE | programme | ▬▬▬▭] →→              │
 ├─────────────────────────────────────────────────────────────────────┤
 │  Recently watched live TV · See all →                               │
-│  [channel][channel][channel][channel] →→                            │
+│  [programme-first live card] →→                                     │
 ├─────────────────────────────────────────────────────────────────────┤
 │  Favorite movies & series · See all →                               │
 │  [poster][poster][poster][poster] →→                                │
@@ -60,7 +69,10 @@ Core implementation:
 │  Because you watched X (TMDB, opt-in, Electron-only)                │
 │  [poster][poster][poster] →→                                        │
 ├─────────────────────────────────────────────────────────────────────┤
-│  Trending this week (TMDB, opt-in, Electron-only)                   │
+│  Top 10 this week (TMDB, opt-in, Electron-only)                     │
+│  1[poster] 2[poster] 3[poster] … →→                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│  Top rated (TMDB, same toggle; excludes the Top 10 titles)          │
 │  [poster][poster][poster] →→                                        │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -73,12 +85,34 @@ Render rules:
    slow rail does not hide already available content.
 2. `hasPlaylists() === false` → render `<app-empty-state [type]="'welcome-dashboard'">`
    full-bleed. All rails and the hero are skipped.
-3. `hero()` = `globalRecentItems()[0]`. If present, render the hero panel.
+3. The hero features one of the newest `HERO_CANDIDATE_LIMIT` (5) global
+   recent items. The newest is featured by default; the up-next stack
+   (`heroUpNext()`, `data-test-id="dashboard-hero-up-next"`) renders every
+   candidate as a thumbnail button and `featureHeroItem(key)` swaps the
+   banner without navigating. The selection is session-only; a selected item
+   that leaves the recent list falls back to the newest one
+   (`selectDashboardHeroItem`). The stack renders only when there are at
+   least two candidates. The TMDB extras effect follows the featured item.
 4. Each rail is emitted via `@if (cards.length > 0)`. Empty rails are hidden
    — there is no "empty widget" placeholder.
-5. The continue-watching hero prefers a stored Xtream `backdrop_url`; when it
-   is missing the UI falls back to a blurred poster treatment instead of
-   showing a flat panel.
+5. The hero prefers a stored Xtream `backdrop_url` (or the TMDB backdrop
+   extra). With a real backdrop the poster is not shown. Without one the
+   banner falls back to a blurred poster wash with the sharp poster beside the
+   copy, then to the title-derived fallback gradient. The banner surface is
+   always dark, so the copy is light in both app themes.
+6. The hero's primary action keeps the resume navigation state (series
+   resume the saved episode); `Details` (`dashboard-hero-details`, movies and
+   series only) carries the detail-only state. A live hero offers only
+   "Watch live".
+7. Continue Watching uses the rail's `landscape` layout: a 16:9 still from
+   `backdrop_url` (poster contained over its own blurred copy when absent), an
+   episode chip, the progress bar on the art and a `remainingLabel` ("17m
+   left") caption, with the same ⋮ actions as before.
+8. The Trending rail is the `ranked` layout labelled "Top 10 this week":
+   TMDB's weekly trending order (popularity), cut to playable matches, numbered
+   1–10 by `rankDashboardCards`. It is not re-ranked by rating. The Top rated
+   rail (same `tmdbTrending` toggle, rating ≥ 7.5) excludes the titles already
+   in the Top 10 (`excludeDashboardCards`) so no title appears twice.
 6. Live favorites are promoted into their own live rail; movie/series
    favorites render in a separate `Favorite movies & series` rail
    (`favoriteMoviesAndSeriesCards`, `data-test-id="dashboard-favorite-vod-rail"`,
@@ -94,22 +128,37 @@ Render rules:
 `DashboardRailComponent` is purely presentational:
 
 1. Inputs: `label`, `items: DashboardRailCard[]`, optional `seeAllLink`,
-   optional `aspectRatio` (default `'2 / 3'`), optional `testId`.
-2. Behavior: horizontal flex track with `scroll-snap-type: x mandatory`.
-3. Chevron buttons fade in on hover (desktop only via `@media (hover: none)`).
-4. Cards are keyboard-focusable router links; `scroll-snap-align: start`
+   optional `aspectRatio` (default `'2 / 3'`), optional `layout`, optional
+   `testId`.
+2. Layouts (`DashboardRailLayout`): `cover` (2:3 poster), `landscape` (16:9
+   still with `backdropUrl`/poster fallback, `episodeBadge` chip, progress and
+   `remainingLabel`), `ranked` (poster plus the outlined `rank` numeral),
+   `channel` (programme-first live card: logo + channel name / time range +
+   LIVE chip, the current programme as the headline, progress bar) and
+   `recommendation` (landscape explanation card with inline taste feedback).
+3. Section headers are quiet: no rule under the title, the count renders as
+   plain muted text and "See all" is a text link. The artwork, not the header,
+   should draw the eye.
+4. Behavior: horizontal flex track with `scroll-snap-type: x mandatory`.
+5. Chevron buttons fade in on hover (desktop only via `@media (hover: none)`).
+6. Cards are keyboard-focusable router links; `scroll-snap-align: start`
    means arrow-key nav lands on card boundaries.
-5. Image handling: `loading="lazy"`, `decoding="async"`, fallback icon tile
-   when `imageUrl` is missing or `error` fires.
-6. Dashboard hero, rail containers, rail cards, and "Manage all" links expose
-   stable `data-test-id` hooks. Treat these as the supported Electron E2E
+7. Image handling: `loading="lazy"`, `decoding="async"`, fallback icon tile
+   when `imageUrl` is missing or `error` fires. A landscape card whose
+   backdrop fails demotes to the contained-poster treatment before the icon.
+8. Dashboard hero, rail containers, rail cards, and "Manage all" links expose
+   stable `data-test-id` hooks (`<railTestId>-card`, `-card-actions`,
+   `-card-remaining`, `-card-rank`, `-card-expiry`, `-manage-all`; hero:
+   `dashboard-hero`, `dashboard-hero-cta`, `dashboard-hero-details`,
+   `dashboard-hero-up-next`). Treat these as the supported Electron E2E
    selector surface; do not target internal CSS class names.
 
 ## Data Flow
 
 1. `WorkspaceDashboardRailsComponent` injects `DashboardDataService`.
 2. It derives the dashboard surface via `computed()`:
-    1. `hero` — first item of `globalRecentItems()`.
+    1. `hero` — the featured one of the newest five `globalRecentItems()`
+       (`heroCandidates` / `selectedHeroKey`, see Page Structure).
     2. `continueWatchingCards` — maps `globalRecentVodItems()` to movie/series
        cover cards. Portal playback positions are bulk-loaded per playlist so
        hero and cards can show progress, remaining time, and series season/
@@ -142,7 +191,7 @@ Render rules:
        first run waits for `globalFavoritesLoaded()` so the slower
        recently-added DB query does not block the live favorites rail on
        startup.
-    5. `recommendationCards` / `trendingCards` — the two TMDB rails. Both
+    5. `recommendationCards` / `topTenCards` — the two TMDB rails. Both
        need the TMDB opt-in AND the Electron DB worker that answers
        `DB_MATCH_TITLES` (each is hidden in the PWA), and both load after
        `globalFavoritesLoaded()` so the batched title match never competes
@@ -150,8 +199,9 @@ Render rules:
        recently watched movies/series and only shows titles present in an
        imported library, hiding itself below five matched cards; its rail
        label names the seed ("Because you watched X") when exactly one
-       seed contributed. `trendingCards` shows TMDB's weekly trending and
-       falls back to a prefilled global search for unmatched titles.
+       seed contributed. `topTenCards` shows TMDB's weekly trending as a
+       numbered Top 10 of playable matches; `highRatedCards` is the ≥ 7.5
+       remainder with the Top 10 titles removed.
        Contracts: `docs/architecture/tmdb-metadata-enrichment.md`
        ("Dashboard Integration").
        Recommendation and personalized genre rails use the shared rail's

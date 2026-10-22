@@ -1,6 +1,8 @@
 <section
     class="rail"
     [class.rail--recommendation]="layout() === 'recommendation'"
+    [class.rail--landscape]="layout() === 'landscape'"
+    [class.rail--ranked]="layout() === 'ranked'"
     [attr.data-test-id]="testId()"
 >
     <header class="rail__header">
@@ -61,6 +63,9 @@
         >
             @for (card of items(); track card.id) {
                 @if (layout() === 'channel') {
+                    <!-- Programme-first live card: the channel identifies the
+                         row, the current programme is the headline, and the
+                         progress bar says how far into it we are. -->
                     <div
                         class="rail__card rail__card--channel"
                         role="listitem"
@@ -102,49 +107,184 @@
                                     <span class="rail__channel-name">{{
                                         cardTitle(card)
                                     }}</span>
-                                    <span class="rail__channel-now">
-                                        @if (card.nowPlayingTitle) {
-                                            {{ card.nowPlayingTitle }}
+                                    <span class="rail__channel-time">
+                                        @if (card.nowPlayingTimeRange) {
+                                            {{ card.nowPlayingTimeRange }}
                                         } @else if (card.subtitle) {
                                             {{ card.subtitle }}
                                         }
                                     </span>
                                 </div>
-                            </div>
-                            <div class="rail__channel-progress-row">
                                 <span class="rail__channel-live-chip"
                                     >LIVE</span
                                 >
-                                <span
-                                    class="rail__channel-progress"
-                                    [class.rail__channel-progress--idle]="
-                                        card.nowPlayingProgress === null ||
-                                        card.nowPlayingProgress === undefined
-                                    "
-                                >
-                                    <i
-                                        [style.width.%]="
-                                            card.nowPlayingProgress ?? 0
-                                        "
-                                    ></i>
-                                </span>
-                                @if (card.nowPlayingTimeRange) {
-                                    <span class="rail__channel-time">{{
-                                        card.nowPlayingTimeRange
-                                    }}</span>
-                                }
                             </div>
+                            <span
+                                class="rail__channel-now"
+                                [class.rail__channel-now--empty]="
+                                    !card.nowPlayingTitle
+                                "
+                            >
+                                @if (card.nowPlayingTitle) {
+                                    {{ card.nowPlayingTitle }}
+                                } @else {
+                                    {{ card.subtitle }}
+                                }
+                            </span>
+                            <span
+                                class="rail__channel-progress"
+                                [class.rail__channel-progress--idle]="
+                                    card.nowPlayingProgress === null ||
+                                    card.nowPlayingProgress === undefined
+                                "
+                                aria-hidden="true"
+                            >
+                                <i
+                                    [style.width.%]="
+                                        card.nowPlayingProgress ?? 0
+                                    "
+                                ></i>
+                            </span>
                         </a>
                     </div>
-                } @else {
+                } @else if (layout() === 'landscape') {
+                    <!-- Continue Watching still: 16:9 art, episode chip,
+                         progress bar, then title + remaining time. -->
                     <div
-                        class="rail__card"
+                        class="rail__card rail__card--landscape"
                         role="listitem"
                         [attr.title]="cardTitle(card)"
                         [attr.data-test-id]="
                             testId() ? testId() + '-card' : null
                         "
                     >
+                        <a
+                            class="rail__card-link"
+                            [routerLink]="card.link"
+                            [queryParams]="card.queryParams ?? null"
+                            [state]="card.state"
+                        >
+                            <div
+                                class="rail__art rail__art--landscape"
+                                [class.rail__art--contained]="
+                                    landscapeArt(card)?.contained
+                                "
+                            >
+                                @if (landscapeArt(card); as art) {
+                                    @if (art.contained) {
+                                        <span
+                                            class="rail__art-bg"
+                                            aria-hidden="true"
+                                            [style.background-image]="
+                                                'url(' + art.url + ')'
+                                            "
+                                        ></span>
+                                    }
+                                    <img
+                                        [src]="art.url"
+                                        [alt]="cardTitle(card)"
+                                        loading="lazy"
+                                        decoding="async"
+                                        (error)="
+                                            markLandscapeFailed(
+                                                card,
+                                                art.contained
+                                            )
+                                        "
+                                    />
+                                } @else {
+                                    <div class="rail__art-fallback">
+                                        <mat-icon>{{ card.icon }}</mat-icon>
+                                    </div>
+                                }
+
+                                @if (card.episodeBadge) {
+                                    <span class="rail__art-chip">{{
+                                        card.episodeBadge
+                                    }}</span>
+                                }
+
+                                @if (
+                                    card.watchProgress !== null &&
+                                    card.watchProgress !== undefined
+                                ) {
+                                    <span
+                                        class="rail__art-progress"
+                                        aria-hidden="true"
+                                    >
+                                        <i
+                                            [style.width.%]="card.watchProgress"
+                                        ></i>
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="rail__meta">
+                                <span class="rail__card-title">{{
+                                    cardTitle(card)
+                                }}</span>
+                                <span class="rail__card-meta-row">
+                                    @if (card.remainingLabel; as remaining) {
+                                        <span
+                                            class="rail__card-remaining"
+                                            [attr.data-test-id]="
+                                                testId()
+                                                    ? testId() +
+                                                      '-card-remaining'
+                                                    : null
+                                            "
+                                            >{{
+                                                remaining.key
+                                                    | translate
+                                                        : remaining.params
+                                            }}</span
+                                        >
+                                    } @else if (card.subtitle) {
+                                        <span class="rail__card-subtitle">{{
+                                            card.subtitle
+                                        }}</span>
+                                    }
+                                </span>
+                            </div>
+                        </a>
+
+                        @if (card.actions && card.actions.length > 0) {
+                            <button
+                                type="button"
+                                mat-icon-button
+                                class="rail__action-trigger"
+                                [matMenuTriggerFor]="cardActionMenu"
+                                [matMenuTriggerData]="{ card: card }"
+                                [attr.aria-label]="'SHOW_MORE' | translate"
+                                [attr.data-test-id]="
+                                    testId() ? testId() + '-card-actions' : null
+                                "
+                                (click)="stopActionEvent($event)"
+                            >
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                        }
+                    </div>
+                } @else {
+                    <div
+                        class="rail__card"
+                        [class.rail__card--ranked]="layout() === 'ranked'"
+                        role="listitem"
+                        [attr.title]="cardTitle(card)"
+                        [attr.data-test-id]="
+                            testId() ? testId() + '-card' : null
+                        "
+                    >
+                        @if (layout() === 'ranked' && card.rank) {
+                            <span
+                                class="rail__rank"
+                                aria-hidden="true"
+                                [attr.data-test-id]="
+                                    testId() ? testId() + '-card-rank' : null
+                                "
+                                >{{ card.rank }}</span
+                            >
+                        }
                         <a
                             class="rail__card-link"
                             [routerLink]="card.link"

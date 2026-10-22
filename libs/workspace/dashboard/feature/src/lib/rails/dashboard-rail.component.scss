@@ -122,13 +122,15 @@
     }
 }
 
+// Quiet section header: no rule, no pill. The title carries the weight, the
+// count sits beside it as plain muted text, and "See all" is a text link —
+// the artwork below is what should draw the eye.
 .rail__header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    padding: 0 2px 12px;
-    border-bottom: 1px solid var(--app-widget-header-border);
+    padding: 0 2px 14px;
     min-height: 28px;
 }
 
@@ -136,16 +138,25 @@
     margin: 0;
     display: inline-flex;
     align-items: baseline;
-    gap: 8px;
-    font-size: 1.25rem;
+    gap: 10px;
+    font-size: 1.35rem;
     font-weight: 700;
     line-height: 1.2;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.015em;
     color: var(--app-heading-color, #1a1d23);
     min-width: 0;
 
     .rail__label {
         overflow-wrap: anywhere;
+    }
+
+    // Override the shared pill: a count next to a cinematic rail title reads
+    // as a caption, not a badge.
+    .rail__count {
+        padding: 0;
+        background: transparent;
+        font-size: 0.85rem;
+        font-weight: 500;
     }
 }
 
@@ -153,36 +164,27 @@
     display: inline-flex;
     align-items: center;
     gap: 2px;
-    padding: 4px 8px 4px 10px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 500;
+    padding: 4px 0 4px 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
     line-height: 1;
     letter-spacing: 0.005em;
-    color: var(--app-selection-color);
-    background: var(--app-selection-surface);
+    color: var(--app-body-color, #8b93a8);
     flex-shrink: 0;
     min-height: 28px;
     app-region: no-drag;
     text-decoration: none;
-    transition:
-        color 0.15s ease,
-        background-color 0.15s ease;
+    transition: color 0.15s ease;
 
     mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
         transition: transform 0.15s ease;
     }
 
     &:hover {
         color: var(--app-selection-color, #2f7bff);
-        background: color-mix(
-            in srgb,
-            var(--app-selection-color, #2f7bff) 12%,
-            transparent
-        );
 
         mat-icon {
             transform: translateX(2px);
@@ -192,6 +194,7 @@
     &:focus-visible {
         outline: 2px solid var(--app-selection-color, #2f7bff);
         outline-offset: 2px;
+        border-radius: 6px;
     }
 }
 
@@ -403,6 +406,113 @@
     opacity: 0.55;
     z-index: 0;
     pointer-events: none;
+}
+
+// ── Landscape layout (Continue Watching) ───────────────────────────────────
+// A 16:9 still answers "where was I" better than a poster: the progress bar
+// spans a wide edge, the episode chip sits in the corner, and the caption
+// says how much is left. Without a backdrop the poster is contained over its
+// own blurred copy, so a portrait never gets cropped into a letterbox.
+.rail--landscape {
+    --rail-card-width: var(--landscape-rail-width, 304px);
+}
+
+.rail__art--landscape {
+    aspect-ratio: 16 / 9;
+
+    img {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.rail__art--contained img {
+    object-fit: contain;
+    padding: 6%;
+    box-sizing: border-box;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+}
+
+.rail__art-chip {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: #d8f5dc;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    pointer-events: none;
+}
+
+.rail__card--landscape .rail__art-progress {
+    height: 4px;
+}
+
+.rail__card-remaining {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.74rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--app-muted-color, #8891a4);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+}
+
+// ── Ranked layout (Top 10) ──────────────────────────────────────────────────
+// The numeral is drawn behind the poster's left edge as an outlined glyph in
+// the content background colour, so it reads against any artwork and the
+// poster stays the thing you click.
+.rail--ranked {
+    .rail__track {
+        gap: calc(var(--rail-gap) + 30px);
+        padding-left: 52px;
+        scroll-padding-inline-start: 52px;
+    }
+
+    .rail__card {
+        overflow: visible;
+    }
+}
+
+.rail__rank {
+    position: absolute;
+    left: -8px;
+    bottom: calc(1.3em + 1.4em + 18px);
+    z-index: 0;
+    transform: translateX(-72%);
+    font-size: clamp(96px, 9vw, 150px);
+    font-weight: 800;
+    line-height: 0.8;
+    letter-spacing: -0.07em;
+    font-variant-numeric: tabular-nums;
+    color: var(--app-content-bg, #161a22);
+    -webkit-text-stroke: 3px
+        color-mix(in srgb, var(--app-heading-color, #1a1d23) 55%, transparent);
+    pointer-events: none;
+    user-select: none;
+    transition: -webkit-text-stroke-color 0.2s ease;
+}
+
+.rail__card--ranked {
+    .rail__art {
+        position: relative;
+        z-index: 1;
+    }
+
+    &:hover .rail__rank,
+    &:focus-within .rail__rank {
+        -webkit-text-stroke-color: var(--app-selection-color, #78adff);
+    }
 }
 
 .rail__action-trigger {
@@ -627,18 +737,32 @@
     :host {
         --rail-card-width: min(var(--cover-rail-width, 172px), 140px);
     }
+
+    .rail--landscape {
+        --rail-card-width: min(var(--landscape-rail-width, 304px), 240px);
+    }
+
+    .rail--ranked .rail__track {
+        padding-left: 36px;
+        scroll-padding-inline-start: 36px;
+    }
+
+    .rail__rank {
+        font-size: 84px;
+    }
 }
 
-// ── Channel layout (compact horizontal info row) ────────────────────────────
-// Used by the "Live now on your favorites" rail. Two stacked rows:
-//   1. logo + channel name + current programme title
-//   2. LIVE chip + progress bar + time range
-// Card is wider but much shorter than the 2:3 poster — TV station logos are
-// small (100–256px square) so a poster card wastes most of its height on
-// padding. Mirrors the live strip in the v0.22 mockup.
+// ── Channel layout (programme-first live card) ─────────────────────────────
+// Used by the live favorites and recently watched live rails. Three rows:
+//   1. logo + channel name / time range + LIVE chip
+//   2. the current programme title (the headline)
+//   3. progress through that programme
+// TV station logos are small (100–256px square), so a 2:3 poster would be
+// mostly padding; a card that names the programme is what makes a live rail
+// worth scanning.
 .rail__track[data-layout='channel'] {
-    --rail-card-width: var(--channel-rail-width, 280px);
-    --rail-gap: 10px;
+    --rail-card-width: var(--channel-rail-width, 268px);
+    --rail-gap: 12px;
     scroll-snap-type: x mandatory;
 }
 
@@ -646,7 +770,7 @@
     background: var(--app-widget-bg, #1e2330);
     border: 1px solid var(--app-widget-header-border, rgba(255, 255, 255, 0.05));
     border-radius: var(--rail-radius);
-    padding: 10px 12px;
+    padding: 14px;
     transition:
         transform 0.2s ease,
         border-color 0.2s ease,
@@ -654,10 +778,10 @@
 
     &:hover,
     &:focus-within {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
         border-color: var(--app-selection-border, rgba(47, 123, 255, 0.4));
         box-shadow:
-            0 6px 16px -10px rgba(0, 0, 0, 0.45),
+            0 12px 22px -12px rgba(0, 0, 0, 0.45),
             0 0 0 1px var(--app-selection-border, rgba(47, 123, 255, 0.3));
 
         .rail__channel-name {
@@ -669,7 +793,7 @@
 .rail__channel-link {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     color: inherit;
     text-decoration: none;
     border-radius: inherit;
@@ -683,15 +807,15 @@
 .rail__channel-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-width: 0;
 }
 
 .rail__channel-logo {
     flex: 0 0 auto;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     background: var(--app-content-bg, #161a22);
     display: flex;
     align-items: center;
@@ -725,7 +849,7 @@
 }
 
 .rail__channel-name {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 600;
     line-height: 1.2;
     color: var(--app-heading-color, #1a1d23);
@@ -735,29 +859,40 @@
     transition: color 0.15s ease;
 }
 
-.rail__channel-now {
+.rail__channel-time {
     font-size: 0.72rem;
     font-weight: 500;
     line-height: 1.35;
+    min-height: 1.35em;
     color: var(--app-muted-color, #8891a4);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 1.35em;
+    font-variant-numeric: tabular-nums;
 }
 
-.rail__channel-progress-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.65rem;
-    color: var(--app-muted-color, #8891a4);
+.rail__channel-now {
+    font-size: 0.98rem;
+    font-weight: 650;
+    line-height: 1.3;
+    min-height: 1.3em;
+    color: var(--app-heading-color, #1a1d23);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--empty {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--app-muted-color, #8891a4);
+    }
 }
 
 .rail__channel-live-chip {
+    flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     font-family: var(
         --font-mono,
         ui-monospace,
@@ -766,27 +901,27 @@
         Menlo,
         monospace
     );
-    font-size: 0.6rem;
-    font-weight: 700;
+    font-size: 0.62rem;
+    font-weight: 800;
     letter-spacing: 0.08em;
     color: var(--app-live-color, #ff8f8f);
     text-transform: uppercase;
 
     &::before {
         content: '';
-        width: 5px;
-        height: 5px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         background: var(--app-live-color, #ff8f8f);
-        box-shadow: 0 0 5px var(--app-live-color, #ff8f8f);
+        box-shadow: 0 0 6px var(--app-live-color, #ff8f8f);
     }
 }
 
 .rail__channel-progress {
     position: relative;
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
+    display: block;
+    height: 4px;
+    border-radius: 999px;
     background: color-mix(
         in srgb,
         var(--app-on-surface, #e6e1e5) 12%,
@@ -798,7 +933,7 @@
         display: block;
         height: 100%;
         background: var(--app-live-color, #ff8f8f);
-        border-radius: 2px;
+        border-radius: 999px;
         transition: width 0.4s ease;
     }
 
@@ -811,11 +946,6 @@
             transparent
         );
     }
-}
-
-.rail__channel-time {
-    flex: 0 0 auto;
-    font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

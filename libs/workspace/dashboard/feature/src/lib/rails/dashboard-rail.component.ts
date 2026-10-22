@@ -76,17 +76,53 @@ export interface DashboardRailCard {
      * The chip is passive — account details stay behind ⋮ → Account info.
      */
     expiryBadge?: { kind: 'expiring' | 'expired'; label: string } | null;
+
+    /**
+     * Landscape artwork for the 'landscape' layout (Continue Watching). When
+     * absent the card falls back to a blurred copy of the poster behind the
+     * sharp, contained poster so the still never shows a stretched portrait.
+     */
+    backdropUrl?: string;
+
+    /**
+     * Translation key + params for the "17m left" caption under a landscape
+     * card. Pre-computed from the playback position, like `watchProgress`.
+     */
+    remainingLabel?: DashboardRailTranslatedLabel | null;
+
+    /**
+     * 1-based position for the 'ranked' layout (Top 10). Rendered as the
+     * large outlined numeral beside the poster; absent cards render unranked.
+     */
+    rank?: number | null;
+}
+
+export interface DashboardRailTranslatedLabel {
+    readonly key: string;
+    readonly params: Record<string, number>;
 }
 
 /**
  * Visual layout of the rail's cards.
  *  - 'cover': portrait poster (Netflix-style), used for movies/series and
  *    recently-added catalog items.
- *  - 'channel': compact horizontal info row (logo + channel name + current
- *    program + progress), used for live TV. TV station logos are small, so
- *    inflating them into 2:3 posters wastes space the cards never use.
+ *  - 'landscape': 16:9 still with a progress bar and a remaining-time
+ *    caption, used for Continue Watching, where "where was I" matters more
+ *    than the poster.
+ *  - 'ranked': portrait poster with a large outlined rank numeral, used for
+ *    the Top 10 rail.
+ *  - 'channel': programme-first live card (logo + channel row, the current
+ *    programme as the headline, progress), used for live TV. TV station
+ *    logos are small, so inflating them into 2:3 posters wastes space the
+ *    cards never use.
+ *  - 'recommendation': landscape explanation card with inline taste feedback.
  */
-export type DashboardRailLayout = 'cover' | 'channel' | 'recommendation';
+export type DashboardRailLayout =
+    | 'cover'
+    | 'landscape'
+    | 'ranked'
+    | 'channel'
+    | 'recommendation';
 
 export interface DashboardRailActionSelection {
     action: DashboardRailAction;
@@ -177,6 +213,30 @@ export class DashboardRailComponent implements AfterViewInit, OnDestroy {
 
     stopActionEvent(event: Event): void {
         event.stopPropagation();
+    }
+
+    /**
+     * Landscape cards prefer real backdrop artwork; without one the poster
+     * is shown contained over its own blurred copy (`rail__art-bg`).
+     */
+    protected landscapeArt(
+        card: DashboardRailCard
+    ): { url: string; contained: boolean } | null {
+        if (card.backdropUrl && !this.failedImages()[card.id]) {
+            return { url: card.backdropUrl, contained: false };
+        }
+        if (card.imageUrl && !this.failedImages()[`${card.id}:poster`]) {
+            return { url: card.imageUrl, contained: true };
+        }
+        return null;
+    }
+
+    /**
+     * A failed backdrop demotes the card to the poster treatment instead of
+     * hiding the art outright; a failed poster then reaches the icon tile.
+     */
+    markLandscapeFailed(card: DashboardRailCard, contained: boolean): void {
+        this.markFailed(contained ? `${card.id}:poster` : card.id);
     }
 
     /** Prefix stripping applies to live-channel cards only, never VOD/series. */

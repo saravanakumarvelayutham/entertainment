@@ -134,6 +134,144 @@ describe('DashboardRailComponent', () => {
             ).toBe(true);
         });
     });
+    describe('landscape and ranked layouts', () => {
+        const mountRail = async (
+            layout: 'landscape' | 'ranked',
+            items: DashboardRailCard[]
+        ) => {
+            (
+                globalThis as unknown as { ResizeObserver: unknown }
+            ).ResizeObserver = class {
+                observe = jest.fn();
+                disconnect = jest.fn();
+            };
+            await TestBed.configureTestingModule({
+                imports: [DashboardRailComponent, TranslateModule.forRoot()],
+                providers: [
+                    provideRouter([]),
+                    {
+                        provide: SettingsStore,
+                        useValue: { stripCountryPrefix: signal(false) },
+                    },
+                ],
+            }).compileComponents();
+            const fixture = TestBed.createComponent(DashboardRailComponent);
+            fixture.componentRef.setInput('label', 'Rail');
+            fixture.componentRef.setInput('layout', layout);
+            fixture.componentRef.setInput('testId', 'rail');
+            fixture.componentRef.setInput('items', items);
+            fixture.detectChanges();
+            return fixture;
+        };
+
+        it('renders a landscape still with progress, episode chip and time left', async () => {
+            const fixture = await mountRail('landscape', [
+                card({
+                    id: 'cw-1',
+                    title: 'Skyline Sentinels',
+                    contentType: 'series',
+                    imageUrl: 'https://img.test/poster.jpg',
+                    backdropUrl: 'https://img.test/backdrop.jpg',
+                    watchProgress: 62,
+                    episodeBadge: 'S2·E4',
+                    remainingLabel: {
+                        key: 'WORKSPACE.DASHBOARD.REMAINING_MINUTES',
+                        params: { minutes: 17 },
+                    },
+                    actions: [
+                        {
+                            id: 'remove-from-history',
+                            icon: 'delete',
+                            labelKey: 'X',
+                        },
+                    ],
+                }),
+            ]);
+            const element = fixture.nativeElement as HTMLElement;
+
+            const art = element.querySelector('.rail__art--landscape');
+            expect(art).not.toBeNull();
+            expect(art?.classList.contains('rail__art--contained')).toBe(
+                false
+            );
+            expect(
+                art?.querySelector('img')?.getAttribute('src')
+            ).toBe('https://img.test/backdrop.jpg');
+            expect(
+                art?.querySelector<HTMLElement>('.rail__art-progress i')?.style
+                    .width
+            ).toBe('62%');
+            expect(
+                art?.querySelector('.rail__art-chip')?.textContent?.trim()
+            ).toBe('S2·E4');
+            expect(
+                element
+                    .querySelector('[data-test-id="rail-card-remaining"]')
+                    ?.textContent?.trim()
+            ).toBe('WORKSPACE.DASHBOARD.REMAINING_MINUTES');
+            expect(
+                element.querySelector('[data-test-id="rail-card-actions"]')
+            ).not.toBeNull();
+            fixture.destroy();
+        });
+
+        it('contains the poster over its blurred copy when no backdrop exists, and falls back to the icon after a failure', async () => {
+            const fixture = await mountRail('landscape', [
+                card({
+                    id: 'cw-2',
+                    title: 'The Paper Astronaut',
+                    contentType: 'movie',
+                    imageUrl: 'https://img.test/poster.jpg',
+                }),
+            ]);
+            const element = fixture.nativeElement as HTMLElement;
+
+            const art = element.querySelector('.rail__art--landscape');
+            expect(art?.classList.contains('rail__art--contained')).toBe(true);
+            expect(art?.querySelector('.rail__art-bg')).not.toBeNull();
+            expect(art?.querySelector('img')?.getAttribute('src')).toBe(
+                'https://img.test/poster.jpg'
+            );
+
+            art?.querySelector('img')?.dispatchEvent(new Event('error'));
+            fixture.detectChanges();
+            expect(
+                element.querySelector('.rail__art--landscape img')
+            ).toBeNull();
+            expect(
+                element.querySelector('.rail__art--landscape .rail__art-fallback')
+            ).not.toBeNull();
+            fixture.destroy();
+        });
+
+        it('renders the rank numeral beside ranked posters only', async () => {
+            const fixture = await mountRail('ranked', [
+                card({
+                    id: 't-1',
+                    title: 'Black Harbor',
+                    contentType: 'movie',
+                    rank: 1,
+                }),
+                card({
+                    id: 't-2',
+                    title: 'Unranked',
+                    contentType: 'movie',
+                }),
+            ]);
+            const element = fixture.nativeElement as HTMLElement;
+
+            const ranks = element.querySelectorAll(
+                '[data-test-id="rail-card-rank"]'
+            );
+            expect(ranks).toHaveLength(1);
+            expect(ranks[0].textContent?.trim()).toBe('1');
+            expect(
+                element.querySelectorAll('.rail__card--ranked')
+            ).toHaveLength(2);
+            fixture.destroy();
+        });
+    });
+
     describe('recommendation cards', () => {
         it('shows the taste reason and accessible feedback without opening a menu', async () => {
             (

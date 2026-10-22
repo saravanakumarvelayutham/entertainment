@@ -12,6 +12,10 @@ export interface DashboardHeroModel {
     readonly link: string[];
     readonly posterUrl?: string;
     readonly state?: Record<string, unknown>;
+    /** Detail-only handoff for the secondary action; absent for live. */
+    readonly detailState?: Record<string, unknown>;
+    /** Translation key of the primary call to action. */
+    readonly ctaLabelKey: string;
     readonly subtitle: string;
     readonly title: string;
     /** TMDB vote average ("8.1"), patched in async when available */
@@ -29,6 +33,58 @@ export interface DashboardHeroModel {
 }
 
 export type DashboardHeroBackdropSource = 'backdrop' | 'poster' | 'fallback';
+
+/**
+ * How many recent items compete for the hero. The featured one fills the
+ * banner; the rest render as the "up next" thumbnail stack so the hero can
+ * change without hiding what it replaced.
+ */
+export const HERO_CANDIDATE_LIMIT = 5;
+
+/**
+ * Resolves which candidate the hero features. A stale selection (the item
+ * left the recent list, or the list is empty) falls back to the newest item
+ * instead of leaving the banner blank.
+ */
+export function selectDashboardHeroItem<T>(
+    candidates: readonly T[],
+    selectedKey: string | null,
+    keyOf: (item: T) => string
+): T | null {
+    if (candidates.length === 0) {
+        return null;
+    }
+    if (selectedKey !== null) {
+        const selected = candidates.find(
+            (item) => keyOf(item) === selectedKey
+        );
+        if (selected) {
+            return selected;
+        }
+    }
+    return candidates[0];
+}
+
+export interface DashboardHeroUpNextCard {
+    readonly key: string;
+    readonly title: string;
+    readonly imageUrl?: string;
+    readonly fallbackBackground: string;
+    readonly isCurrent: boolean;
+    readonly isLive: boolean;
+    readonly watchProgress: number | null;
+}
+
+/**
+ * The page tint behind the hero. Without colour extraction from artwork,
+ * the title-derived hue (the same one the fallback artwork uses) gives each
+ * featured item its own ambient wash, so the banner never sits on a flat
+ * background and the fallback artwork always matches it.
+ */
+export function resolveDashboardHeroAmbient(title: string): string {
+    const hue = calculateHue(title || 'placeholder');
+    return `hsl(${hue}, 45%, 38%)`;
+}
 
 export interface DashboardHeroArtworkInput {
     readonly backdropUrl?: string | null;
