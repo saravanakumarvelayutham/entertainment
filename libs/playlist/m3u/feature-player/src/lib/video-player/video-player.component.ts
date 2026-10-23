@@ -99,7 +99,6 @@ import {
 import {
     ChannelListHiddenStateComponent,
     LiveOnNowStageComponent,
-    PortalEmptyStateComponent,
 } from '@iptvnator/portal/shared/ui';
 import {
     AudioPlayerComponent,
@@ -213,7 +212,6 @@ function isInsideScrollableRegion(
         MatTooltipModule,
         ChannelListHiddenStateComponent,
         LiveOnNowStageComponent,
-        PortalEmptyStateComponent,
         ResizableDirective,
         SidebarComponent,
         TranslatePipe,

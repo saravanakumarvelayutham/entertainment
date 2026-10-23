@@ -21,6 +21,7 @@ import { XtreamStore } from '@iptvnator/portal/xtream/data-access';
 export interface XtreamLiveChannelItem {
     readonly added?: string;
     readonly category_id?: string | number;
+    readonly epg_channel_id?: string | null;
     readonly last_modified?: string;
     readonly name?: string;
     readonly poster_url?: string;
