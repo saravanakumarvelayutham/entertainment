@@ -1061,6 +1061,23 @@ attachment/projection helpers. Video.js uses its dedicated bridge directly.
 HTML5 and ArtPlayer share the neutral source bridge and HLS/native-track
 collaborators under `web-video-support/`.
 
+`WebPlayerTransportRecovery` captures media events at the shared player host for
+Video.js, HTML5 and ArtPlayer. After successful playback, VOD seeks snapshot the
+latest requested position before a failure can reset the media element. Network
+or decode failures within ten seconds of an active seek reopen the current
+player through the existing retry lifecycle, at most once per thirty seconds
+across remounts. A failed replacement follows normal diagnostic handling.
+Startup, live, authorization and unsupported-media errors retain their existing
+handling. Source/application tokens reject stale interaction evidence.
+
+VOD network failures while intentionally paused remain deferred until explicit
+resume. Resume intent is recorded from `play`, since an engine error can set
+`paused` again before its diagnostic arrives. Resuming a pause of at least sixty
+seconds refreshes the connection proactively through the same retry lifecycle,
+even if the expired connection never emitted an error. The pause/seek position
+is retained; short pauses resume normally. No work runs merely because a player
+has been left paused.
+
 The rollout symbols and setting are:
 
 | Symbol / setting                     |          Default | Current effect                                                           |

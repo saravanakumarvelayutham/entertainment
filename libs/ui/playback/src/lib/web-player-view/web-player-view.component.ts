@@ -69,7 +69,7 @@ import {
     toVideoPlayer,
 } from './web-player-recovery-policy';
 import { resolveWebPlayerSharedControls } from './web-player-shared-controls';
-import { WebPlayerPauseRecovery } from './web-player-pause-recovery';
+import { WebPlayerTransportRecovery } from './web-player-transport-recovery';
 
 @Component({
     selector: 'app-web-player-view',
@@ -246,16 +246,18 @@ export class WebPlayerViewComponent implements OnDestroy {
             this.externalFallbackRequested.emit(request),
     });
     readonly playbackDiagnostic = this.recovery.playbackDiagnostic;
-    private readonly pauseRecovery = new WebPlayerPauseRecovery(
+    private readonly transportRecovery = new WebPlayerTransportRecovery(
         this.fullscreenSurface,
         () => this.playbackApplicationToken(),
         (video) =>
             this.recoverySession.recordTimeUpdate(
                 { currentTime: video.currentTime, duration: video.duration },
                 this.resolvedIsLive()
-            )
+            ),
+        () => this.resolvedIsLive(),
+        () => this.retryPlayback()
     );
-    readonly pausedRecoveryPending = this.pauseRecovery.pending;
+    readonly pausedRecoveryPending = this.transportRecovery.pending;
     readonly visiblePlaybackDiagnostic =
         this.recovery.visiblePlaybackDiagnostic;
     readonly recommendations = this.recovery.recommendations;
@@ -325,7 +327,7 @@ export class WebPlayerViewComponent implements OnDestroy {
             this.channel.set(undefined);
             this.vjsOptions.set(undefined);
             this.recovery.clearDiagnostic();
-            this.pauseRecovery.clear();
+            this.transportRecovery.clear();
             if (target === null) {
                 this.applicationHandoff.release();
                 this.recoverySession.clearPlaybackBinding();
@@ -350,7 +352,7 @@ export class WebPlayerViewComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.pauseRecovery.destroy();
+        this.transportRecovery.destroy();
         this.liveAutoFormat.destroy();
         this.externalRecovery.destroy();
         this.applicationHandoff.destroy();
@@ -367,11 +369,16 @@ export class WebPlayerViewComponent implements OnDestroy {
                 this.playbackApplicationToken()
             )
         ) {
-            if (this.pauseRecovery.defer(issue, this.resolvedIsLive())) {
-                if (this.pauseRecovery.resumeRequested()) this.retryPlayback();
+            if (
+                this.transportRecovery.recoverSeek(issue, this.resolvedIsLive())
+            )
+                return;
+            if (this.transportRecovery.defer(issue, this.resolvedIsLive())) {
+                if (this.transportRecovery.resumeRequested())
+                    this.retryPlayback();
                 return;
             }
-            this.pauseRecovery.clear();
+            this.transportRecovery.clear();
         }
         this.recovery.handlePlaybackIssue(issue, binding);
     }
@@ -419,7 +426,7 @@ export class WebPlayerViewComponent implements OnDestroy {
     }
 
     retryPlayback(): void {
-        this.pauseRecovery.clear();
+        this.transportRecovery.clear();
         this.recovery.retryPlayback();
     }
 }

@@ -88,7 +88,7 @@ async function selectPlayer(
 ): Promise<void> {
     await page.goto('/workspace/settings/playback');
     const select = page.locator('[data-test-id="select-video-player"]');
-    await expect(select).toBeVisible();
+    await expect(select).toBeVisible({ timeout: 15_000 });
     const previous = await select.innerText();
     await select.click();
     await page.getByRole('option', { name: player, exact: true }).click();
@@ -352,6 +352,66 @@ for (const [player, selector] of [
             .getByRole('menuitemradio', { name: 'Fit (original)' })
             .click();
         await expect(video).toHaveCSS('object-fit', 'contain');
+    });
+
+    test(`@web @m3u VOD rapid seeking and long pause resume (${player})`, async ({
+        page,
+    }) => {
+        test.setTimeout(90_000);
+        await serveSeekableClip(page);
+        await selectPlayer(page, player);
+        await importPlaylist(page);
+        await sidebarEntry(page, 'Dune (2021) 1080p').click();
+        const view = page.locator('app-web-player-view');
+        await expect(view.locator(selector)).toHaveCount(1);
+        await seekUsingControls(page);
+        const controls = view.locator('app-player-controls');
+        const position = controls.getByRole('slider', {
+            name: 'Playback position',
+            exact: true,
+        });
+        await position.focus();
+        for (let index = 0; index < 5; index++) {
+            await position.press('Home');
+            await position.press('ArrowRight');
+            await position.press('ArrowRight');
+        }
+        const video = view.locator('video');
+        await expect
+            .poll(() =>
+                video.evaluate((el: HTMLVideoElement) => el.currentTime)
+            )
+            .toBeGreaterThan(2.2);
+        await page.clock.setFixedTime(new Date('2026-10-23T12:00:00Z'));
+        await view.hover();
+        await controls
+            .getByRole('button', { name: 'Pause', exact: true })
+            .click();
+        const pausedAt = await video.evaluate(
+            (el: HTMLVideoElement) => el.currentTime
+        );
+        const oldVideo = await video.elementHandle();
+        if (!oldVideo)
+            throw new Error('Expected an active video before resume');
+        await page.clock.setFixedTime(new Date('2026-10-23T12:01:01Z'));
+        await controls
+            .getByRole('button', { name: 'Play', exact: true })
+            .click();
+        await expect
+            .poll(() => oldVideo.evaluate((el) => el.isConnected))
+            .toBe(false);
+        await expect
+            .poll(() =>
+                video.evaluate(
+                    (el: HTMLVideoElement, position: number) =>
+                        !el.paused && el.currentTime > position,
+                    pausedAt
+                )
+            )
+            .toBe(true);
+        await expect(
+            view.locator('[data-test-id="playback-diagnostic-banner"]')
+        ).toHaveCount(0);
     });
 
     for (const metadata of [

@@ -37,6 +37,7 @@ import {
     StubVjsPlayerComponent,
 } from './web-player-view.spec-stubs';
 import { ElectronStreamHeadersService } from './electron-stream-headers.service';
+import { registerTransportRecoveryCases } from './web-player-transport-recovery.spec-data';
 import type { WebPlayerViewComponent as WebPlayerViewComponentInstance } from './web-player-view.component';
 
 jest.unstable_mockModule('video.js', () => ({ default: jest.fn() }));
@@ -155,6 +156,8 @@ describe('WebPlayerViewComponent recovery integration', () => {
     });
 
     afterEach(() => fixture.destroy());
+
+    registerTransportRecoveryCases(() => ({ fixture, component }));
 
     it('ranks HTML5, MPV, then VLC for a fatal Video.js HLS media failure', async () => {
         await render();
