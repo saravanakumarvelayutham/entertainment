@@ -209,6 +209,7 @@
                 [playback]="playback"
                 [episodeMetadata]="inlineEpisodeMetadata()"
                 [seriesTitle]="serial.info.name"
+                [releaseYear]="serial.info.releasedate?.slice(0, 4) ?? null"
                 [seriesNavigation]="inlineSeriesNavigation()"
                 [upNextEpisodes]="upNextEpisodes()"
                 (timeUpdate)="handleInlineTimeUpdate($event)"

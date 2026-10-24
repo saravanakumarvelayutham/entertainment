@@ -125,6 +125,67 @@ describe('PlayerControlsComponent capability contract', () => {
         );
     });
 
+    it('offers opt-in generated captions without embedded tracks and renders text inside the player', () => {
+        const originalWorker = globalThis.Worker;
+        const originalContext = globalThis.AudioContext;
+        globalThis.Worker = jest.fn() as unknown as typeof Worker;
+        globalThis.AudioContext = jest.fn() as unknown as typeof AudioContext;
+        try {
+            const surface = createSurface();
+            const video = document.createElement('video');
+            Object.defineProperty(video, 'captureStream', { value: jest.fn() });
+            surface.append(video);
+            const fixture = createControls(createFakeController(), surface);
+            const button = fixture.nativeElement.querySelector(
+                '[data-test-id="player-generated-captions-button"]'
+            ) as HTMLButtonElement;
+            expect(button).not.toBeNull();
+            expect(button.getAttribute('aria-pressed')).toBe('false');
+            button.click();
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector(
+                    '[data-test-id="player-generated-captions-panel"]'
+                )
+            ).not.toBeNull();
+            fixture.componentInstance.generatedCaptions.caption.set(
+                '<script>caption text</script>'
+            );
+            fixture.detectChanges();
+            const caption: HTMLElement = fixture.nativeElement.querySelector(
+                '[data-test-id="player-generated-caption"]'
+            );
+            expect(caption.textContent).toBe('<script>caption text</script>');
+            expect(caption.querySelector('script')).toBeNull();
+            const action = fixture.nativeElement.querySelector(
+                '[data-test-id="player-generated-captions-start"]'
+            ) as HTMLButtonElement;
+            action.focus();
+            fixture.componentInstance.generatedCaptions.status.set('loading');
+            fixture.detectChanges();
+            expect(document.activeElement).toBe(action);
+            expect(
+                fixture.nativeElement.querySelector(
+                    '[data-test-id="player-generated-captions-stop"]'
+                )
+            ).toBe(action);
+            fixture.componentInstance.generatedCaptions.panelOpen.set(false);
+            fixture.componentInstance.onGeneratedCaptionsReady();
+            fixture.detectChanges();
+            expect(document.activeElement).toBe(button);
+            fixture.componentRef.setInput('showControls', false);
+            fixture.detectChanges();
+            expect(
+                fixture.nativeElement.querySelector(
+                    '[data-test-id="player-generated-caption"]'
+                )
+            ).not.toBeNull();
+        } finally {
+            globalThis.Worker = originalWorker;
+            globalThis.AudioContext = originalContext;
+        }
+    });
+
     it('routes shortcuts to the player the user interacted with most recently', () => {
         const first = createFakeController();
         const second = createFakeController();

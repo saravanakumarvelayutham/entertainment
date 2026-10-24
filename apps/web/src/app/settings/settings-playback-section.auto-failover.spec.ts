@@ -72,6 +72,7 @@ function createForm(player: VideoPlayer): FormGroup {
     return new FormGroup({
         player: new FormControl(player),
         webPlayerSharedControls: new FormControl(false),
+        autoEnglishSubtitles: new FormControl(true),
         playerAmbientMode: new FormControl(false),
         playerUpNextRail: new FormControl(true),
         fullscreenChannelPanel: new FormControl(true),

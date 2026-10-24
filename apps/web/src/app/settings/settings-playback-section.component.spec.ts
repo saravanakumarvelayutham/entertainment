@@ -64,6 +64,25 @@ describe('SettingsPlaybackSectionComponent', () => {
         fixture.componentRef.setInput('streamFormatEnum', StreamFormat);
     });
 
+    it('shows a default-on automatic English subtitle toggle for web players and updates the form', () => {
+        const form = createForm();
+        fixture.componentRef.setInput('form', form);
+        fixture.detectChanges();
+        const checkbox = queryByTestId('auto-english-subtitles-toggle')?.querySelector('input');
+        expect(checkbox?.checked).toBe(true);
+        checkbox?.click();
+        fixture.detectChanges();
+        expect(form.get('autoEnglishSubtitles')?.value).toBe(false);
+    });
+
+    it.each([VideoPlayer.MPV, VideoPlayer.VLC, VideoPlayer.EmbeddedMpv])(
+        'hides automatic web subtitle matching for %s', (player) => {
+            fixture.componentRef.setInput('form', createForm(player));
+            fixture.detectChanges();
+            expect(queryByTestId('auto-english-subtitles-setting')).toBeNull();
+        }
+    );
+
     it('hides the external-player double-click option when managed external players are unsupported', () => {
         fixture.componentRef.setInput('form', createForm(VideoPlayer.MPV));
         fixture.componentRef.setInput('isDesktop', true);
@@ -435,6 +454,7 @@ function createForm(player = VideoPlayer.VideoJs): FormGroup {
     return new FormGroup({
         player: new FormControl(player),
         webPlayerSharedControls: new FormControl(false),
+        autoEnglishSubtitles: new FormControl(true),
         playerAmbientMode: new FormControl(false),
         playerUpNextRail: new FormControl(true),
         fullscreenChannelPanel: new FormControl(true),

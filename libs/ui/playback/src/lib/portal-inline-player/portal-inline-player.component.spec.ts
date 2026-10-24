@@ -241,6 +241,31 @@ describe('PortalInlinePlayerComponent', () => {
             });
         });
 
+        it('passes the detail year to subtitles without replacing playback', () => {
+            const playback = {
+                streamUrl: 'https://example.test/vod/1.mp4',
+                title: 'Weapons',
+            };
+            fixture.componentRef.setInput('playback', playback);
+            fixture.detectChanges();
+            fixture.componentRef.setInput('releaseYear', '2025');
+            fixture.detectChanges();
+            expect(component.playback()).toBe(playback);
+            expect(component.playerMediaTitle()).toEqual({
+                primary: 'Weapons',
+                secondary: null,
+                year: 2025,
+            });
+            const webPlayer = fixture.debugElement.query(
+                By.directive(StubWebPlayerViewComponent)
+            ).componentInstance as StubWebPlayerViewComponent;
+            expect(webPlayer.mediaTitle()).toEqual({
+                primary: 'Weapons',
+                secondary: null,
+                year: 2025,
+            });
+        });
+
         it('is null without a playback title', () => {
             fixture.componentRef.setInput('playback', {
                 streamUrl: 'https://example.test/vod/1.mp4',

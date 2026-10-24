@@ -59,6 +59,24 @@ describe('VjsPlayerControlsBridge', () => {
         expect(textTracks[0].mode).toBe('disabled');
     });
 
+    it('refreshes the emulated subtitle display after a timing adjustment while paused', () => {
+        const player = createPlayer();
+        const updateDisplay = jest.fn();
+        player.getChild = jest.fn().mockReturnValue({ updateDisplay });
+        const adapter = createAdapter();
+        const bridge = new VjsPlayerControlsBridge({
+            player,
+            adapter: adapter.value,
+            isLive: () => false,
+            showCaptions: () => true,
+        });
+        bridge.attach(document.createElement('video'));
+        adapter.options?.setSubtitleDelay?.(-3);
+        expect(player.getChild).toHaveBeenCalledWith('textTrackDisplay');
+        expect(updateDisplay).toHaveBeenCalledTimes(1);
+        expect(adapter.options?.getSubtitleDelay?.()).toBe(-3);
+    });
+
     it('reattaches only when Video.js replaces the Tech video', () => {
         const adapter = createAdapter();
         const bridge = new VjsPlayerControlsBridge({

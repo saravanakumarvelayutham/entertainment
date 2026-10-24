@@ -1,0 +1,129 @@
+@if (!expanded()) {
+    <button
+        type="button"
+        class="search-action"
+        data-test-id="player-find-subtitles"
+        (click)="open()"
+    >
+        {{ 'SUBTITLE_SEARCH.OPEN' | translate }}
+    </button>
+} @else {
+    <section
+        data-test-id="player-subtitle-search"
+        [attr.aria-label]="'SUBTITLE_SEARCH.OPEN' | translate"
+    >
+        <p>{{ 'SUBTITLE_SEARCH.PROVIDER' | translate }}</p>
+        @if (editing()) {
+            <form (submit)="search($event)">
+                <label
+                    >{{ 'SUBTITLE_SEARCH.TITLE' | translate }}
+                    <input
+                        data-test-id="subtitle-search-title"
+                        [value]="title()"
+                        (input)="title.set($any($event.target).value)"
+                        maxlength="200"
+                        autocomplete="off"
+                    />
+                </label>
+                <div class="fields">
+                    <label
+                        >{{ 'SUBTITLE_SEARCH.TYPE' | translate }}
+                        <select
+                            [value]="type()"
+                            (change)="type.set($any($event.target).value)"
+                        >
+                            <option value="movie">
+                                {{ 'SUBTITLE_SEARCH.MOVIE' | translate }}
+                            </option>
+                            <option value="series">
+                                {{ 'SUBTITLE_SEARCH.SERIES' | translate }}
+                            </option>
+                        </select>
+                    </label>
+                    <label
+                        >{{ 'SUBTITLE_SEARCH.YEAR' | translate }}
+                        <input
+                            type="number"
+                            min="1888"
+                            max="2100"
+                            [value]="year()"
+                            (input)="year.set($any($event.target).value)"
+                        />
+                    </label>
+                </div>
+                @if (type() === 'series') {
+                    <div class="fields">
+                        <label
+                            >{{ 'SUBTITLE_SEARCH.SEASON' | translate }}
+                            <input
+                                type="number"
+                                min="0"
+                                max="999"
+                                [value]="season()"
+                                (input)="season.set($any($event.target).value)"
+                            />
+                        </label>
+                        <label
+                            >{{ 'SUBTITLE_SEARCH.EPISODE' | translate }}
+                            <input
+                                type="number"
+                                min="1"
+                                max="9999"
+                                [value]="episode()"
+                                (input)="episode.set($any($event.target).value)"
+                            />
+                        </label>
+                    </div>
+                }
+                <button type="submit" class="search-action" [disabled]="busy()">
+                    {{ 'SUBTITLE_SEARCH.SEARCH' | translate }}
+                </button>
+            </form>
+        } @else {
+            <button
+                type="button"
+                class="search-action"
+                (click)="editing.set(true)"
+            >
+                {{ 'SUBTITLE_SEARCH.EDIT' | translate }}
+            </button>
+        }
+        @if (busy()) {
+            <p role="status">{{ 'SUBTITLE_SEARCH.WORKING' | translate }}</p>
+        }
+        @if (message()) {
+            <p role="status">
+                {{ 'SUBTITLE_SEARCH.' + message() | translate }}
+            </p>
+        }
+        @if (matchedTitle()) {
+            <p class="matched">{{ matchedTitle() }}</p>
+        }
+        @if (!matchedTitle()) {
+            @for (match of titles(); track match.imdbId) {
+                <button
+                    type="button"
+                    class="result"
+                    [disabled]="busy()"
+                    (click)="chooseTitle(match)"
+                >
+                    {{ match.title }}
+                    @if (match.year) {
+                        ({{ match.year }})
+                    }
+                </button>
+            }
+        }
+        @for (match of subtitles(); track match.id) {
+            <button
+                type="button"
+                class="result"
+                [disabled]="busy()"
+                data-test-id="subtitle-search-result"
+                (click)="load(match)"
+            >
+                {{ match.label }}
+            </button>
+        }
+    </section>
+}

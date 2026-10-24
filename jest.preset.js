@@ -14,6 +14,14 @@ const collectCoverageFrom = [
 
 module.exports = {
     ...nxPreset,
+    // Keep browser-only import.meta URL handling out of CommonJS consumers.
+    // The client/protocol stay real; their own ESM tests inject fake workers.
+    moduleNameMapper: {
+        '^\\./caption-worker-factory$': require('node:path').join(
+            __dirname,
+            'apps/web/src/test-stubs/caption-worker-factory.ts'
+        ),
+    },
     coverageReporters,
     collectCoverageFrom,
 };

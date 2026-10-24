@@ -202,6 +202,25 @@ nx run electron-backend:make
 
 ### Electron CDP Debugging
 
+Shared web players offer opt-in, in-player generated English captions via a local
+Whisper worker. Desktop captures only its own app audio through a trusted,
+gesture-gated main-frame grant; browser capture uses the current video and can
+be blocked by non-CORS media. Model weights download on first use; source changes stop capture.
+Contract: `docs/architecture/player-controls-contract.md` (Generated English captions).
+
+VOD Subtitles → Find English subtitles uses fixed Cinemeta/OpenSubtitles Stremio
+services and source-bound `getSubtitleTarget()` loaders for timed SRT/VTT tracks.
+Search sends only public title/episode metadata. Video.js creates its own tracks;
+HTML5/ArtPlayer use DOM tracks. Contract: the same document (English subtitle matching).
+Default-on `Settings.autoEnglishSubtitles` loads ranked English releases on VOD
+start. The playback-owned matcher tracks stable target keys, preserves manual
+choices, cancels stale requests and never retries on ordinary playback ticks.
+Explicit On (best English match) retries for the current video even while paused
+or with startup automation disabled; subtitle Earlier/Later controls stay first
+in the menu. Detail hosts pass their release year separately through
+`PortalInlinePlayerComponent.releaseYear` into `PlayerMediaTitle.year`, so matching
+retains remake identity without changing the playback source.
+
 - Start Electron in dev mode with: `nx serve electron-backend`
 - Package-script equivalent: `pnpm run serve:backend`
 - The workspace is configured to always launch Electron with: `--remote-debugging-port=9222`

@@ -65,6 +65,20 @@
     </div>
 
     @if (isWebPlayerSelected()) {
+        <div class="setting-item" data-test-id="auto-english-subtitles-setting">
+            <div class="setting-item__meta">
+                <h4>{{ 'SETTINGS.AUTO_ENGLISH_SUBTITLES' | translate }}</h4>
+                <p>{{ 'SETTINGS.AUTO_ENGLISH_SUBTITLES_DESCRIPTION' | translate }}</p>
+            </div>
+            <div class="setting-item__control setting-item__toggle">
+                <mat-checkbox
+                    [aria-label]="'SETTINGS.AUTO_ENGLISH_SUBTITLES' | translate"
+                    formControlName="autoEnglishSubtitles"
+                    data-test-id="auto-english-subtitles-toggle"
+                ></mat-checkbox>
+            </div>
+        </div>
+
         <div
             class="setting-item"
             data-test-id="web-player-shared-controls-setting"

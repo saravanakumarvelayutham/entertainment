@@ -43,6 +43,7 @@ import { createPlaybackSessionKey } from '@iptvnator/playback/util';
 })
 class StubPortalInlinePlayerComponent {
     readonly playbackSessionKey = input.required<string>();
+    readonly releaseYear = input<string | number | null>(null);
     readonly playback = input<unknown>(null);
     // Multi-source wiring: the real player takes these, so the stub has to
     // accept them or the template binding fails to compile.

@@ -1101,6 +1101,157 @@ regressions:
 
 ## Advanced subtitle support
 
+### English subtitle matching
+
+Shared Video.js, HTML5 and ArtPlayer controls expose **Subtitles → Find English
+subtitles** during VOD playback, including when the source supplies no subtitle
+tracks. `SubtitleSearchComponent` owns the manual search/pick workflow;
+`SubtitleMatchService` (`@iptvnator/services`) owns fixed-provider requests.
+Default-on `Settings.autoEnglishSubtitles` additionally enables playback-owned
+`AutoEnglishSubtitlesComponent`, mounted independently of the popover. It starts
+once a supported VOD source is playing with a title and no selected subtitle
+track; live TV, external players and unavailable source identities are excluded.
+Only explicit false disables the persisted preference in Settings → Playback.
+Settings load, update and form saves preserve that opt-out. Automatic loading
+never opens a panel, moves focus, or changes playback state.
+
+Cinemeta resolves title/year to IMDb;
+the official Stremio OpenSubtitles v3 addon resolves IMDb plus numeric season and
+episode to English releases. An explicit IMDb ID bypasses title search. The
+player's primary/secondary display title seeds movie/year and SxxExx or NxNN
+episode fields. Incomplete metadata remains editable. The detail page passes its release year through the independent
+`PortalInlinePlayerComponent.releaseYear` input into `PlayerMediaTitle.year`.
+Structured years take precedence over display-title parsing. Late metadata
+updates retry an unmatched lookup without changing playback identity or position;
+manual Off is retained. Only a unique exact title/year match is selected;
+unknown-year remakes still require manual selection.
+Automatic matching requires that confident title result. Release ranking uses
+explicit release group/source/resolution/codec hints when the display title has
+them, penalizes CAM/telesync/screener and forced/incomplete files, and excludes
+explicitly wrong episode markers. Provider order breaks ties; title words,
+display labels and URLs do not manufacture ranking evidence. The first ranked
+track is downloaded and loaded, with at most three candidates tried when a
+download or cue parse fails. This is best available metadata matching, without a
+file hash or guarantee of the exact cut. Display title cleanup separates common
+release tags from title/year while preserving numeric titles such as 1917.
+Series navigation with missing episode identity never falls back to movie search.
+
+Users can still choose a release because neither title identity nor provider order
+proves the streamed cut matches. Empty, failed, cancelled and loaded states are
+visible. The third-party hosted service requires no bundled API key, but has no
+promised availability, unlimited quota, or complete English coverage.
+
+Only public title/year/IMDb/episode data is sent; media URLs, provider headers,
+credentials and audio never enter subtitle requests. Requests omit credentials
+and referrers, reject redirects, and enforce a 20-second total deadline including
+body reads. JSON is bounded to 1 MiB, subtitle files to 2 MiB, and title/release
+lists to 20 validated distinct entries. Downloads accept only HTTPS
+`subs<digits>.strem.io/en/download/subencoding-stremio-utf8/src-api/file/<digits>`
+without credentials, ports, query, or fragments. The existing SRT/VTT parser
+rejects unusable content and renders timed cues rather than HTML.
+
+`PlayerController.getSubtitleTarget()` returns an optional, source-bound loader.
+Its stable `key` combines adapter attachment and engine source generations, so
+automatic matching detects even successive sources with the same display title.
+Ordinary playback ticks, pause/resume and seeking never repeat a lookup. Source
+or title changes abort obsolete work; end, destruction, opt-out, manual subtitle
+selection, Off, local-file loading, manual search and speech captions cancel
+in-flight automatic work. A manual choice suppresses automation for that source.
+Selected embedded/local tracks also win. Errors do not trigger a retry loop;
+status in the Subtitles menu directs the user to manual search.
+The adapter and engine bridge each guard their attachment/source generation so
+late results cannot attach to a replacement, detached or destroyed player.
+`WebVideoExternalSubtitles` owns parsed cues and exact offsets; Video.js creates
+tracks through `player.addTextTrack()` for its emulated renderer, while HTML5 and
+ArtPlayer use DOM TextTracks. Downloaded tracks share selection, Off and source
+cleanup with local files. Selecting a matched release stops generated speech
+captions. Timed tracks follow media time across pauses, seeking and fullscreen;
+different release cuts can still require another file or manual subtitle offset.
+Native Embedded MPV/external players do not advertise the matching target.
+
+Regression coverage includes provider validation/cancellation, matching UI,
+ranking and automatic lifecycle/opt-out behavior, source-bound loaders across
+engines, and `subtitle-matching.e2e.ts`, which drives
+real VOD/player controls with deterministic provider responses, checks native
+Video.js cue rendering before and after seeking, and checks fullscreen.
+Its automatic mode loads before any menu opens, skips the initial CAM candidate,
+respects manual Off on resume and performs a fresh episode-specific lookup.
+Set `IPTVNATOR_E2E_REAL_SUBTITLES=1` for an opt-in live search/download smoke
+using public Inception metadata with a local test clip; it requires network
+access and does not assert release timing against that unrelated clip.
+`IPTVNATOR_E2E_COLOR_SCHEME=dark` exercises the system dark-theme preference.
+
+### Generated English captions
+
+Shared HTML5, Video.js and ArtPlayer controls can generate English captions over
+their own video surface. This is opt-in per playback source. It does not open
+Windows Live Captions, record a microphone, capture other applications, or send
+audio to a speech service. Native-view/frame-copy MPV and external players expose
+no DOM video capture source and do not offer the action.
+
+`GeneratedCaptionsController` in `libs/ui/playback/src/lib/generated-captions/`
+owns the source lifetime. It observes the current video and uses a 16 kHz Web Audio
+processing graph, downmixes to mono, and passes bounded
+five-second PCM chunks to a dedicated worker. Near-silence is skipped, one
+inference runs at a time, and a slow engine drops chunks rather than accumulating
+audio. Pause, seek, buffering and playback-rate changes clear buffered audio and
+invalidate pending text. Source changes, end, Stop, replacement and destruction
+release the capture graph and terminate the worker. Late results never cross
+source/timeline generations; results more than 15 media seconds behind are dropped.
+
+First use explicitly downloads pinned `Xenova/whisper-tiny.en` weights and
+configuration from Hugging Face; Cache API reuses them when supported. Only
+public model requests leave the device. Transformers.js is a build dependency;
+the exact matching `onnxruntime-web` is a direct build dependency to expose its
+runtime assets at a stable path. Angular packages the asyncify `.mjs`/`.wasm`
+files under `assets/caption-runtime/`; runtime code is never loaded from a CDN.
+CSP permits `wasm-unsafe-eval` while retaining the prohibition on arbitrary JS
+eval. Inference uses one WASM CPU thread, no nested proxy worker, a pinned model
+revision, bounded inputs/output and a 64-token generation limit. Model loading
+has a 180-second deadline and inference a 30-second deadline; failures terminate
+the worker and offer an explicit retry. No download starts before audio capture
+succeeds and the user enables the feature.
+
+Desktop obtains audio from its own Electron WebContents through
+`getDisplayMedia()`, so native cross-origin VOD does not depend on
+`video.captureStream()` origin access. Main grants only the current trusted
+main frame (including its Angular routes), with a user gesture and both audio/video requested. It supplies
+that frame for both sources and `enableLocalEcho: true` to preserve playback.
+Display capture requires video; the renderer stops/removes that track immediately.
+The remaining audio track contains only SaravTV window audio. No desktop source,
+system loopback, microphone, or other application's audio is requested. Stop
+also disposes tracks from an acquisition that completes after cancellation.
+The browser version retains `video.captureStream()` and its origin restrictions.
+
+Generated text is escaped by Angular and remains visible inside the fullscreen
+surface when controls auto-hide. It follows the shared subtitle color/size;
+enabling generation deselects embedded tracks, while choosing a track or external
+file stops generation. The browser’s capture security restrictions remain intact:
+protected media and non-CORS native media in the browser can fail with a capture error. No system-audio
+or microphone fallback is attempted. English-only transcription does not translate
+foreign-language audio. Transcription may be delayed/inaccurate, especially on
+slow CPUs; it is not guaranteed to reproduce a prepared subtitle track.
+
+Regression coverage includes capture, lifecycle and worker unit tests plus
+`apps/electron-backend-e2e/src/generated-captions.e2e.ts`. Its default mode mocks
+inference while exercising real app audio capture and rendering from an HTTP
+fixture without CORS headers, with direct element capture deliberately blocked.
+It first asserts that the blocked element capture fails,
+then verifies app audio, in-player/fullscreen captions, and Stop. Set
+`IPTVNATOR_E2E_REAL_CAPTIONS=1` for an opt-in real-model run using the public-domain
+speech fixture from the model’s official example; this requires network access
+and downloads the model. Screenshots contain only test content.
+
+Browser worker construction lives in `caption-worker-factory.ts`, keeping its
+bundler-owned `import.meta.url` separate from the caption client and protocol.
+The shared CommonJS Jest preset maps only that factory to a fail-fast test
+substitute; portal tests still import the real playback components. Worker/client
+tests use the ESM runner and injected workers, with a separate test of the real
+browser factory. The substitute is an explicit Nx Jest input so edits invalidate
+cached portal test results.
+
+### Player subtitle tracks
+
 The subtitle popover carries three capability-gated extensions beyond track
 selection (#1408): loading an external subtitle file, adjusting the subtitle
 timing offset, and styling subtitle text (size + color). Each is honest per
@@ -1125,6 +1276,15 @@ interactions); the load action closes it because a file dialog opens on top.
 Persistence: the style (size/color) is a cross-engine preference stored under
 the `subtitleStyle` localStorage key (`subtitle-style.ts`), the same mechanism
 as the shared `volume` key, and is normalized/clamped on every read and write.
+Subtitle timing controls appear first in the subtitle menu, above matching and
+track selection. Visible Earlier/Later buttons step the offset by 0.5 seconds;
+the signed value and Reset remain available while the menu stays open. Positive
+offsets show dialogue later; negative offsets show it earlier. Automatic matches
+use the same owned-cue timing path as manually loaded subtitle files. The explicit
+On (best English match) action retries matching after Off or an unsuccessful
+startup lookup, including while paused and when startup automation is disabled.
+It does not change the saved startup preference.
+
 The delay and any loaded file are deliberately per-session/per-source — they
 correct one specific stream.
 

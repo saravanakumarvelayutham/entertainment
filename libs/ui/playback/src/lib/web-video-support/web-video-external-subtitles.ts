@@ -25,7 +25,7 @@ interface ExternalSubtitleEntry {
 }
 
 export interface WebVideoExternalSubtitlesConfig {
-    getVideo: () => HTMLVideoElement | null;
+    getVideo: () => Pick<HTMLVideoElement, 'addTextTrack'> | null;
     /** Turns the engine-owned subtitle selection off when an external track is chosen. */
     deselectEngineSubtitles: () => void;
     refresh: () => void;

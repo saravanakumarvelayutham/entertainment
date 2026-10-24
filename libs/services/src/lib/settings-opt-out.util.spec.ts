@@ -12,6 +12,7 @@ describe('default-on settings coercion', () => {
             })
         ).toEqual({
             webPlayerSharedControls: false,
+            autoEnglishSubtitles: true,
             portalConnectivityGuard: true,
             embeddedMpvAutoReconnect: true,
             showCoverTitles: true,

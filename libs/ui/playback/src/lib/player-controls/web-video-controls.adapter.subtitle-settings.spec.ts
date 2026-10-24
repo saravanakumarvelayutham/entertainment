@@ -104,4 +104,29 @@ describe('WebVideoControlsAdapter subtitle settings', () => {
 
         expect(() => adapter.commands.addExternalSubtitleFile()).not.toThrow();
     });
+
+    it('binds programmatic subtitle loads to the current video attachment', () => {
+        const load = jest.fn().mockReturnValue(true);
+        const file = {
+            name: 'English.srt',
+            format: 'srt' as const,
+            content: '',
+        };
+        expect(adapter.getSubtitleTarget()).toBeNull();
+        adapter.attach(video, { getSubtitleTarget: () => ({ load }) });
+        const target = adapter.getSubtitleTarget();
+        expect(target?.load(file)).toBe(true);
+        expect(load).toHaveBeenCalledWith(file);
+        adapter.detach();
+        expect(target?.load(file)).toBe(false);
+        adapter.attach(video, { getSubtitleTarget: () => ({ load }) });
+        expect(target?.load(file)).toBe(false);
+        expect(adapter.getSubtitleTarget()?.load(file)).toBe(true);
+        expect(load).toHaveBeenCalledTimes(2);
+    });
+
+    it('reports no target when the engine cannot receive subtitle content', () => {
+        adapter.attach(video);
+        expect(adapter.getSubtitleTarget()).toBeNull();
+    });
 });

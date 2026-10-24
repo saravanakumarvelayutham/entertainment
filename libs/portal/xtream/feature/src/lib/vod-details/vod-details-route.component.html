@@ -277,6 +277,7 @@
             <app-portal-inline-player
                 [playbackSessionKey]="playbackSessionKey()"
                 [playback]="playback"
+                [releaseYear]="selectedVodInfo()?.releasedate?.slice(0, 4) ?? null"
                 [alternativeSources]="multiSource.alternatives()"
                 [allSources]="multiSource.sources()"
                 [sourcesMatchKind]="multiSource.matchKind()"

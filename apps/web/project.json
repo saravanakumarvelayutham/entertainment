@@ -21,11 +21,17 @@
                 },
                 "polyfills": ["zone.js"],
                 "tsConfig": "apps/web/tsconfig.app.json",
+                "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
                 "inlineStyleLanguage": "scss",
                 "serviceWorker": "ngsw-config.json",
                 "assets": [
                     "apps/web/src/favicon.ico",
                     "apps/web/src/assets",
+                    {
+                        "glob": "ort-wasm-simd-threaded.asyncify.{mjs,wasm}",
+                        "input": "node_modules/onnxruntime-web/dist",
+                        "output": "assets/caption-runtime"
+                    },
                     "apps/web/src/manifest.webmanifest"
                 ],
                 "styles": [

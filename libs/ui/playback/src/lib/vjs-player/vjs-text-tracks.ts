@@ -21,6 +21,7 @@ export interface VjsTextTracksConfig {
     player: Pick<VideoJsPlayer, 'textTracks'>;
     showCaptions: () => boolean;
     refresh: () => void;
+    excludeTrack?: (track: VideoJsTextTrack) => boolean;
     /**
      * Vendor-chrome hosts pass a "playback started" probe. Its presence
      * switches the caption preference from authoritative (shared controls, the
@@ -150,6 +151,7 @@ export class VjsTextTracks {
                 const track = tracks[index];
                 if (
                     !track ||
+                    this.config.excludeTrack?.(track) ||
                     (track.kind !== 'captions' && track.kind !== 'subtitles')
                 ) {
                     continue;

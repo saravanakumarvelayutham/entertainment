@@ -101,6 +101,7 @@ export function createSettingsForm(
         openStreamOnDoubleClick: false,
         language: Language.ENGLISH,
         showCaptions: false,
+        autoEnglishSubtitles: true,
         showDashboard: true,
         dashboardRails: formBuilder.group({
             hero: DEFAULT_DASHBOARD_RAILS_SETTINGS.hero,
@@ -215,6 +216,7 @@ export function createSettingsFromFormValue(
         openStreamOnDoubleClick: value.openStreamOnDoubleClick ?? false,
         language: value.language ?? Language.ENGLISH,
         showCaptions: value.showCaptions ?? false,
+        autoEnglishSubtitles: value.autoEnglishSubtitles !== false,
         showDashboard: value.showDashboard ?? true,
         dashboardRails: normalizeDashboardRailsSettings(value.dashboardRails),
         aiRecommendations: normalizeAiRecommendationSettings(

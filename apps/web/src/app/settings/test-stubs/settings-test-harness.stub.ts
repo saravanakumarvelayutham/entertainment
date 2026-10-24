@@ -38,6 +38,7 @@ import {
     PlaylistsService,
 } from '@iptvnator/services';
 import {
+    DEFAULT_AI_RECOMMENDATION_SETTINGS,
     ELECTRON_BRIDGE_APP_UPDATE_STATUSES,
     ElectronBridgeAppUpdateStatus,
     Language,
@@ -58,6 +59,7 @@ import { SettingsStorageFailure } from '@iptvnator/services';
 import { SettingsStore } from '../../services/settings-store.service';
 import { SettingsService } from '../../services/settings.service';
 import { SettingsComponent } from '../settings.component';
+import { DashboardGenreRecommendationsService } from '@iptvnator/workspace/dashboard/data-access';
 
 /**
  * Shared fixtures for the settings specs.
@@ -94,6 +96,7 @@ export const DEFAULT_SETTINGS = {
     openStreamOnDoubleClick: false,
     language: Language.ENGLISH,
     showCaptions: false,
+    autoEnglishSubtitles: true,
     showDashboard: true,
     startupBehavior: StartupBehavior.FirstView,
     startupWindowMode: 'normal',
@@ -118,6 +121,7 @@ export const DEFAULT_SETTINGS = {
     coverSize: 'medium',
     showCoverTitles: true,
     dashboardRails: DEFAULT_DASHBOARD_RAILS,
+    aiRecommendations: DEFAULT_AI_RECOMMENDATION_SETTINGS,
     preferUploadedEpgOverXtream: false,
     epgViewMode: 'timeline',
     epgOffsetMinutes: 0,
@@ -317,6 +321,7 @@ export function settingsTestProviders(
 ) {
     return [
         UntypedFormBuilder,
+        MockProvider(DashboardGenreRecommendationsService),
         { provide: SettingsStore, useClass: MockSettingsStore },
         MockProvider(EpgService, { fetchEpg: jest.fn() }),
         { provide: EpgRuntimeBridgeService, useValue: epgBridge },

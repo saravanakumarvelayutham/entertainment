@@ -51,6 +51,7 @@ jest.unstable_mockModule('videojs-quality-selector-hls', () => ({}));
 })
 class StubPortalInlinePlayerComponent {
     readonly playbackSessionKey = input<string>('');
+    readonly releaseYear = input<string | number | null>(null);
     readonly playback = input<unknown>(null);
     readonly timeUpdate = output<{ currentTime: number; duration: number }>();
     readonly closed = output<void>();
@@ -184,6 +185,7 @@ describe('VodDetailsComponent offline playback', () => {
             By.css('app-portal-inline-player')
         ).componentInstance as {
             playbackSessionKey(): string;
+            releaseYear(): string | number | null;
         };
         expect(inlinePlayer.playbackSessionKey()).toBe(
             'stalker-host-owned-key'

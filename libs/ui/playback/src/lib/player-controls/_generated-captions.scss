@@ -1,0 +1,22 @@
+.player-controls__generated-caption {
+    position: absolute;
+    inset: auto 6% 8%;
+    text-align: center;
+    font-size: calc(clamp(16px, 3.5cqh, 30px) * var(--caption-scale, 1));
+    pointer-events: none;
+
+    span {
+        padding: 0.1em 0.3em;
+        background: var(--pc-panel-bg);
+        box-decoration-break: clone;
+    }
+
+    &--raised {
+        bottom: clamp(90px, 22cqh, 150px);
+    }
+}
+
+.player-controls__caption-help {
+    margin: 4px 8px 10px;
+    color: var(--pc-text-dim);
+}

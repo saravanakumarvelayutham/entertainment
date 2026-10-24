@@ -51,7 +51,8 @@
             "inputs": [
                 "default",
                 "^production",
-                "{workspaceRoot}/jest.preset.js"
+                "{workspaceRoot}/jest.preset.js",
+                "{workspaceRoot}/apps/web/src/test-stubs/caption-worker-factory.ts"
             ],
             "options": {
                 "passWithNoTests": true

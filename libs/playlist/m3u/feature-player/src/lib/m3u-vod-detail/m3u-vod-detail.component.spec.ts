@@ -44,6 +44,7 @@ class StubPortalDetailShellComponent {
 })
 class StubPortalInlinePlayerComponent {
     readonly playbackSessionKey = input.required<string>();
+    readonly releaseYear = input<string | number | null>(null);
     readonly playback = input<ResolvedPortalPlayback | null>(null);
     readonly volume = input(1);
     readonly playerOverride = input<unknown>(null);
@@ -249,6 +250,11 @@ describe('M3uVodDetailComponent', () => {
         expect(component.posterUrl()).toContain('/p.jpg');
         expect(component.backdropUrl()).toContain('/b.jpg');
         expect(component.year()).toBe('2021');
+        expect(
+            fixture.debugElement
+                .query(By.directive(StubPortalInlinePlayerComponent))
+                .componentInstance.releaseYear()
+        ).toBe('2021');
         expect(component.genres()).toBe('Sci-Fi');
         expect(component.runtimeLabel()).toBe('2h 35m');
         expect(component.rating()).toBe('8.0');

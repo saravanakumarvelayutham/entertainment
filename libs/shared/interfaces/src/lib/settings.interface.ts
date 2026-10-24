@@ -183,6 +183,8 @@ export interface Settings {
     openStreamOnDoubleClick: boolean;
     language: Language;
     showCaptions: boolean;
+    /** Automatically download matched English movie/episode subtitles; only false opts out. */
+    autoEnglishSubtitles?: boolean;
     showDashboard: boolean;
     startupBehavior: StartupBehavior;
     /**

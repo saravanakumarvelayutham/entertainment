@@ -27,6 +27,7 @@ import {
     requestFullScreen,
     trackNativeFullScreen,
 } from './services/native-fullscreen-transitions';
+import { installPlayerCaptionCapture } from './services/player-caption-capture';
 
 const externalBrowserProtocols = new Set(['http:', 'https:']);
 const trustedDevRendererHosts = new Set([
@@ -491,6 +492,7 @@ export default class App {
             ...App.getPlatformTitleBarOptions(),
         });
         App.mainWindow.setMenu(null);
+        installPlayerCaptionCapture(App.mainWindow);
         attachWindowTrace(App.mainWindow);
         App.attachWindowStateEvents(App.mainWindow);
         // Seeds the F11 tracker's fullscreen state now, while no transition

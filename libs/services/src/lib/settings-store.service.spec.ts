@@ -259,6 +259,36 @@ describe('SettingsStore dashboard rail settings', () => {
         expect(reconcile).toHaveBeenCalledTimes(2);
     });
 
+    it.each([undefined, true, null, 'false'])(
+        'defaults automatic English subtitles on for historical or malformed value %s',
+        async (value) => {
+            storedSettings = { language: Language.FRENCH, autoEnglishSubtitles: value as boolean };
+            const store = injector.get(SettingsStore);
+            await store.loadSettings();
+            expect(store.autoEnglishSubtitles?.()).toBe(true);
+            expect(store.getSettings().autoEnglishSubtitles).toBe(true);
+            expect(store.getSettings().language).toBe(Language.FRENCH);
+        }
+    );
+
+    it('persists and restores an automatic English subtitle opt-out through unrelated updates', async () => {
+        storedSettings = { autoEnglishSubtitles: false, showCaptions: true };
+        const store = injector.get(SettingsStore);
+        await store.loadSettings();
+        expect(store.autoEnglishSubtitles?.()).toBe(false);
+        await store.updateSettings({ language: Language.FRENCH });
+        expect(storage.set).toHaveBeenLastCalledWith(
+            STORE_KEY.Settings,
+            expect.objectContaining({ autoEnglishSubtitles: false, showCaptions: true })
+        );
+        await store.updateSettings({ autoEnglishSubtitles: true });
+        expect(store.autoEnglishSubtitles?.()).toBe(true);
+        expect(storage.set).toHaveBeenLastCalledWith(
+            STORE_KEY.Settings,
+            expect.objectContaining({ autoEnglishSubtitles: true, language: Language.FRENCH })
+        );
+    });
+
     it('defaults portal request pauses on and persists an explicit opt-out', async () => {
         const store = injector.get(SettingsStore);
         expect(store.getSettings().portalConnectivityGuard).toBe(true);

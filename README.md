@@ -39,10 +39,40 @@ environment variables remain internal compatibility contracts.
 **Playback**
 
 - Built-in HTML5 player (HLS.js or Video.js) with a resizable, resumable inline view
-- Optional unified SaravTV controls for HTML5, Video.js, and ArtPlayer, enabled in **Settings → Playback** _(experimental)_
+- Shared SaravTV controls for HTML5, Video.js, and ArtPlayer, enabled by default and configurable in **Settings → Playback**
 - External players — MPV, VLC, and IINA on macOS (`mpv.app` / `VLC.app` bundle paths supported) _(desktop)_
 - Embedded MPV — native mpv rendered inside the app window on macOS, Windows & Linux 🖥️ _(experimental · desktop)_
 - Dedicated radio player for `radio="true"` streams 📻
+
+Movies and episodes automatically look for English subtitles when playback starts.
+The app loads its best available release match without opening a menu. Turn this
+off under **Settings → Playback → Automatically load English subtitles**. Existing
+selected tracks and your manual subtitle choice are preserved for the current video.
+Subtitle matching uses the release year from the movie/series detail page, even
+when it is absent from the player title. Ambiguous titles or unavailable English
+tracks remain available for manual search.
+
+To turn subtitles back on or retry matching, choose **Subtitles > On (best English match)**.
+The app picks and loads a release automatically, including while paused.
+
+To choose a different release, open **Subtitles → Find English subtitles**
+in Video.js, HTML5, or ArtPlayer. The app searches OpenSubtitles through Stremio,
+using the title/year or series season and episode. Choose an English release to
+load it inside the player; cues follow playback time, pause, seek, and fullscreen.
+Correct the search title or use an IMDb ID when metadata is incomplete. Different
+cuts may need another release or the **Subtitle delay** adjustment at the top of the player subtitle menu
+(**Earlier** / **Later**, in 0.5-second steps, or Reset). This uses a
+third-party service with no account setup; availability and coverage can vary.
+Search sends public title/episode details, never playback URLs or playlist credentials.
+
+The shared web players also offer **Generate English captions** from the player’s
+sparkle button. Start playback, open the menu, and select **Start generated
+captions**. English speech is transcribed on your device and shown directly over
+the video, including fullscreen. First use downloads a speech model; audio is
+never uploaded. Captions may lag or be inaccurate. Desktop captures SaravTV's own
+window audio, including cross-origin streams. Protected streams and browser streams
+without CORS access can prevent capture. Embedded MPV and external
+players do not support this feature.
 
 **Live TV & EPG**
 

@@ -9,6 +9,7 @@ import { Settings } from '@iptvnator/shared/interfaces';
  */
 export const DEFAULT_ON_SETTINGS = [
     'webPlayerSharedControls',
+    'autoEnglishSubtitles',
     'portalConnectivityGuard',
     'embeddedMpvAutoReconnect',
     'showCoverTitles',

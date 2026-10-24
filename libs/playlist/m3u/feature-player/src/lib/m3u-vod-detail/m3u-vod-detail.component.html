@@ -91,6 +91,7 @@
             detail-player
             [playbackSessionKey]="playbackSessionKey()"
             [playback]="playback"
+            [releaseYear]="year() || null"
             [volume]="volume()"
             [playerOverride]="playerOverride()"
             (closed)="closeInlinePlayback()"

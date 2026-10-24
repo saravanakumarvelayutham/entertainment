@@ -30,3 +30,6 @@ export * from './lib/xtream-connection-test-state';
 export * from './lib/source-health-evidence.service';
 
 export * from './lib/source-activity.service';
+export * from './lib/subtitles/subtitle-contracts';
+export * from './lib/subtitles/subtitle-match.service';
+export * from './lib/subtitles/subtitle-release-ranking';

@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
     openStreamOnDoubleClick: false,
     language: Language.ENGLISH,
     showCaptions: false,
+    autoEnglishSubtitles: true,
     showDashboard: true,
     startupBehavior: StartupBehavior.FirstView,
     startupWindowMode: 'normal',

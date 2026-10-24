@@ -318,6 +318,7 @@
             detail-player
             [playbackSessionKey]="playbackSessionKey()"
             [playback]="playback"
+            [releaseYear]="meta.year ?? null"
             (timeUpdate)="onInlineTimeUpdate($event)"
             (closed)="closeInlinePlayback()"
             (backClicked)="goBack()"

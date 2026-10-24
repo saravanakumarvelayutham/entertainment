@@ -88,6 +88,7 @@ export type VideoJsControlChild = {
     ) => VideoJsControlChild | null;
     show?: () => void;
     update?: () => void;
+    updateDisplay?: () => void;
 };
 
 export type VideoJsPlayer = Omit<

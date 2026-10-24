@@ -1,4 +1,4 @@
-import { signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import {
     persistVolume,
     readStoredVolume,
@@ -29,6 +29,7 @@ export interface ControlsVolumeDeps {
  */
 export class ControlsVolume {
     readonly value = signal(readStoredVolume());
+    readonly percent = computed(() => Math.round(this.value() * 100));
 
     private mutedVolume = 0;
     private closeTimer: number | null = null;

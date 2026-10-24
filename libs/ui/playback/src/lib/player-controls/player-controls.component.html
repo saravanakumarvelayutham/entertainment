@@ -1,3 +1,7 @@
+<app-auto-english-subtitles #automaticSubtitles
+    [controller]="controller()" [mediaTitle]="mediaTitle()"
+    [disabled]="!showControls() || generatedCaptions.enabled()"
+    (selected)="generatedCaptions.stop()" />
 @if (feedback.current(); as fb) {
     <div
         class="player-controls__feedback"
@@ -6,6 +10,22 @@
     >
         <mat-icon>{{ fb.icon }}</mat-icon>
         <span>{{ fb.label }}</span>
+    </div>
+}
+
+@if (generatedCaptions.caption(); as caption) {
+    <div
+        class="player-controls__generated-caption"
+        [class.player-controls__generated-caption--raised]="
+            controlsAreVisible()
+        "
+        [style.--caption-scale]="state().subtitleStyle.sizePercent / 100"
+        [style.color]="state().subtitleStyle.color || 'var(--pc-text)'"
+        data-test-id="player-generated-caption"
+        role="status"
+        aria-live="polite"
+    >
+        <span>{{ caption }}</span>
     </div>
 }
 
@@ -369,6 +389,7 @@
                                 }}
                             </div>
                             <div class="player-controls__track-list">
+
                                 @for (
                                     track of state().audioTracks;
                                     track track.id
@@ -391,6 +412,87 @@
                                         }
                                     </button>
                                 }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (generatedCaptions.available()) {
+                <div class="player-controls__popover-anchor">
+                    <button
+                        mat-icon-button
+                        type="button"
+                        class="player-controls__button"
+                        data-test-id="player-generated-captions-button"
+                        [attr.aria-expanded]="generatedCaptions.panelOpen()"
+                        [attr.aria-pressed]="generatedCaptions.enabled()"
+                        [attr.aria-label]="'GENERATED_CAPTIONS.TITLE' | translate"
+                        [matTooltip]="'GENERATED_CAPTIONS.TITLE' | translate"
+                        matTooltipPosition="above"
+                        (click)="
+                            menus.closeAll();
+                            generatedCaptions.panelOpen.set(!generatedCaptions.panelOpen());
+                            reveal({ scheduleHide: false })
+                        "
+                    >
+                        <mat-icon>auto_awesome</mat-icon>
+                    </button>
+                    @if (generatedCaptions.panelOpen()) {
+                        <div
+                            class="player-controls__panel player-controls__track-popover"
+                            role="dialog"
+                            [attr.aria-label]="'GENERATED_CAPTIONS.TITLE' | translate"
+                            data-test-id="player-generated-captions-panel"
+                        >
+                            <div class="player-controls__menu-title">
+                                {{ "GENERATED_CAPTIONS.TITLE" | translate }}
+                            </div>
+                            <div class="player-controls__track-list">
+                                <p class="player-controls__caption-help">
+                                    {{ "GENERATED_CAPTIONS.DESCRIPTION" | translate }}
+                                </p>
+                                @if (generatedCaptions.status() === "loading") {
+                                    <p class="player-controls__caption-help" role="status">
+                                        {{ "GENERATED_CAPTIONS.LOADING" | translate }}
+                                        @if (generatedCaptions.progress(); as progress) {
+                                            {{ progress }}%
+                                        }
+                                    </p>
+                                } @else if (generatedCaptions.status() === "listening") {
+                                    <p class="player-controls__caption-help" role="status">
+                                        {{ "GENERATED_CAPTIONS.LISTENING" | translate }}
+                                    </p>
+                                } @else if (generatedCaptions.status() === "error") {
+                                    <p class="player-controls__caption-help" role="alert">
+                                        {{
+                                            "GENERATED_CAPTIONS.ERROR_" +
+                                                generatedCaptions.failurePhase() | translate
+                                        }}
+                                    </p>
+                                }
+                                <button
+                                    type="button"
+                                    class="player-controls__track"
+                                    [attr.data-test-id]="
+                                        generatedCaptions.enabled()
+                                            ? 'player-generated-captions-stop'
+                                            : 'player-generated-captions-start'
+                                    "
+                                    (click)="
+                                        automaticSubtitles.override();
+                                        generatedCaptions.enabled()
+                                            ? generatedCaptions.stop()
+                                            : generatedCaptions.start()
+                                    "
+                                >
+                                    {{
+                                        (generatedCaptions.enabled()
+                                            ? "GENERATED_CAPTIONS.STOP"
+                                            : "GENERATED_CAPTIONS.START"
+                                        ) | translate
+                                    }}
+                                </button>
                             </div>
                         </div>
                     }
@@ -437,74 +539,6 @@
                                  popover height cap must scroll everything, not
                                  clip the sections outside the list. -->
                             <div class="player-controls__subtitle-body">
-                            <div class="player-controls__track-list">
-                                @if (
-                                    capabilities().subtitles &&
-                                    state().subtitleTracks.length > 0
-                                ) {
-                                    <button
-                                        type="button"
-                                        role="menuitemradio"
-                                        [attr.aria-checked]="
-                                            !state().subtitlesEnabled
-                                        "
-                                        class="player-controls__track"
-                                        [class.player-controls__track--selected]="
-                                            !state().subtitlesEnabled
-                                        "
-                                        (click)="
-                                            menuSelection.subtitleTrack(-1)
-                                        "
-                                    >
-                                        <span>{{
-                                            'EMBEDDED_MPV.PLAYER.SUBTITLES_OFF'
-                                                | translate
-                                        }}</span>
-                                        @if (!state().subtitlesEnabled) {
-                                            <mat-icon>check</mat-icon>
-                                        }
-                                    </button>
-                                }
-                                @for (
-                                    track of state().subtitleTracks;
-                                    track track.id
-                                ) {
-                                    <button
-                                        type="button"
-                                        role="menuitemradio"
-                                        [attr.aria-checked]="track.selected"
-                                        class="player-controls__track"
-                                        [class.player-controls__track--selected]="
-                                            track.selected
-                                        "
-                                        (click)="
-                                            menuSelection.subtitleTrack(
-                                                track.id
-                                            )
-                                        "
-                                    >
-                                        <span>{{ track.label }}</span>
-                                        @if (track.selected) {
-                                            <mat-icon>check</mat-icon>
-                                        }
-                                    </button>
-                                }
-                                @if (capabilities().externalSubtitles) {
-                                    <button
-                                        type="button"
-                                        role="menuitem"
-                                        class="player-controls__track player-controls__load-subtitle"
-                                        data-test-id="player-controls-load-subtitle"
-                                        (click)="loadExternalSubtitle()"
-                                    >
-                                        <span>{{
-                                            'EMBEDDED_MPV.PLAYER.LOAD_SUBTITLE_FILE'
-                                                | translate
-                                        }}</span>
-                                        <mat-icon>upload_file</mat-icon>
-                                    </button>
-                                }
-                            </div>
                             @if (capabilities().subtitleDelay) {
                                 <div
                                     class="player-controls__subtitle-section"
@@ -522,9 +556,8 @@
                                         class="player-controls__subtitle-delay-row"
                                     >
                                         <button
-                                            mat-icon-button
                                             type="button"
-                                            class="player-controls__button"
+                                            class="player-controls__subtitle-chip"
                                             (click)="
                                                 subtitleSettings.adjustDelay(
                                                     -subtitleDelayStep
@@ -539,7 +572,7 @@
                                                     | translate
                                             "
                                         >
-                                            <mat-icon>remove</mat-icon>
+                                            {{ 'EMBEDDED_MPV.PLAYER.SUBTITLE_SYNC_EARLIER' | translate }}
                                         </button>
                                         <span
                                             class="player-controls__subtitle-delay-value"
@@ -552,9 +585,8 @@
                                             }}</span
                                         >
                                         <button
-                                            mat-icon-button
                                             type="button"
-                                            class="player-controls__button"
+                                            class="player-controls__subtitle-chip"
                                             (click)="
                                                 subtitleSettings.adjustDelay(
                                                     subtitleDelayStep
@@ -569,7 +601,7 @@
                                                     | translate
                                             "
                                         >
-                                            <mat-icon>add</mat-icon>
+                                            {{ 'EMBEDDED_MPV.PLAYER.SUBTITLE_SYNC_LATER' | translate }}
                                         </button>
                                         <button
                                             mat-icon-button
@@ -594,6 +626,99 @@
                                     </div>
                                 </div>
                             }
+                            @if (controller().getSubtitleTarget && !state().isLive) {
+                                <p class="player-controls__caption-help" role="status" data-test-id="player-auto-subtitles-status">{{ 'SUBTITLE_SEARCH.AUTO_' + automaticSubtitles.status() | translate }}</p>
+                            }
+                            @if (controller().getSubtitleTarget && !state().isLive) {
+                                <app-subtitle-search
+                                    [controller]="controller()"
+                                    [mediaTitle]="mediaTitle()"
+                                    (started)="automaticSubtitles.override()"
+                                    (selected)="generatedCaptions.stop()"
+                                />
+                            }
+                            <div class="player-controls__track-list">
+                                @if (controller().getSubtitleTarget && !state().isLive) {
+                                    <button type="button" role="menuitemradio"
+                                        class="player-controls__track"
+                                        data-test-id="player-subtitles-on"
+                                        [attr.aria-checked]="automaticSubtitles.status() === 'LOADED' && state().subtitlesEnabled"
+                                        (click)="generatedCaptions.stop(); automaticSubtitles.enable()"
+                                    >
+                                        <span>{{ 'SUBTITLE_SEARCH.AUTO_ON' | translate }}</span>
+                                        @if (automaticSubtitles.status() === 'LOADED' && state().subtitlesEnabled) {
+                                            <mat-icon>check</mat-icon>
+                                        }
+                                    </button>
+                                }
+                                @if (
+                                    (capabilities().subtitles &&
+                                    state().subtitleTracks.length > 0) ||
+                                    (controller().getSubtitleTarget && !state().isLive)
+                                ) {
+                                    <button
+                                        type="button"
+                                        role="menuitemradio"
+                                        [attr.aria-checked]="
+                                            !state().subtitlesEnabled
+                                        "
+                                        class="player-controls__track"
+                                        [class.player-controls__track--selected]="
+                                            !state().subtitlesEnabled
+                                        "
+                                        (click)="
+                                            automaticSubtitles.override(); generatedCaptions.stop(); menuSelection.subtitleTrack(-1)
+                                        "
+                                    >
+                                        <span>{{
+                                            'EMBEDDED_MPV.PLAYER.SUBTITLES_OFF'
+                                                | translate
+                                        }}</span>
+                                        @if (!state().subtitlesEnabled) {
+                                            <mat-icon>check</mat-icon>
+                                        }
+                                    </button>
+                                }
+                                @for (
+                                    track of state().subtitleTracks;
+                                    track track.id
+                                ) {
+                                    <button
+                                        type="button"
+                                        role="menuitemradio"
+                                        [attr.aria-checked]="track.selected"
+                                        class="player-controls__track"
+                                        [class.player-controls__track--selected]="
+                                            track.selected
+                                        "
+                                        (click)="
+                                            automaticSubtitles.override(); generatedCaptions.stop(); menuSelection.subtitleTrack(
+                                                track.id
+                                            )
+                                        "
+                                    >
+                                        <span>{{ track.label }}</span>
+                                        @if (track.selected) {
+                                            <mat-icon>check</mat-icon>
+                                        }
+                                    </button>
+                                }
+                                @if (capabilities().externalSubtitles) {
+                                    <button
+                                        type="button"
+                                        role="menuitem"
+                                        class="player-controls__track player-controls__load-subtitle"
+                                        data-test-id="player-controls-load-subtitle"
+                                        (click)="automaticSubtitles.override(); loadExternalSubtitle()"
+                                    >
+                                        <span>{{
+                                            'EMBEDDED_MPV.PLAYER.LOAD_SUBTITLE_FILE'
+                                                | translate
+                                        }}</span>
+                                        <mat-icon>upload_file</mat-icon>
+                                    </button>
+                                }
+                            </div>
                             @if (capabilities().subtitleStyle) {
                                 <div
                                     class="player-controls__subtitle-section"

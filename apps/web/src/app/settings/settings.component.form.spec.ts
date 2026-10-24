@@ -59,6 +59,29 @@ describe('SettingsComponent form', () => {
         window.electron = originalElectron;
     });
 
+    it('stages automatic English subtitles until Save and restores the saved opt-out', async () => {
+        settingsStore.updateSettings.mockImplementationOnce(async (settings) => {
+            settingsStore._setSettings(settings);
+        });
+        setSettingsSection('playback');
+        fixture.detectChanges();
+        const checkbox = (fixture.nativeElement as HTMLElement).querySelector(
+            '[data-test-id="auto-english-subtitles-toggle"] input'
+        ) as HTMLInputElement;
+        expect(checkbox.checked).toBe(true);
+        checkbox.click();
+        fixture.detectChanges();
+        expect(component.settingsForm.get('autoEnglishSubtitles')?.value).toBe(false);
+        expect(settingsStore.updateSettings).not.toHaveBeenCalled();
+        await component.form.save(() => undefined);
+        expect(settingsStore.updateSettings).toHaveBeenCalledWith(
+            expect.objectContaining({ autoEnglishSubtitles: false }),
+            expect.anything()
+        );
+        component.form.hydrateFromStore();
+        expect(component.settingsForm.get('autoEnglishSubtitles')?.value).toBe(false);
+    });
+
     it('stages the desktop portal pause setting until Save', async () => {
         const checkbox = (fixture.nativeElement as HTMLElement).querySelector(
             '[data-test-id="portal-connectivity-toggle"] input'

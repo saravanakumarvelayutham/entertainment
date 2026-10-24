@@ -1,4 +1,6 @@
 import { WritableSignal, signal } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { AutoEnglishSubtitlesComponent } from '../subtitle-search/auto-english-subtitles.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
@@ -77,6 +79,8 @@ describe('PlayerControlsComponent subtitle settings', () => {
                     SUBTITLES_OFF: 'Off',
                     LOAD_SUBTITLE_FILE: 'Load subtitle file…',
                     SUBTITLE_DELAY: 'Subtitle delay',
+                    SUBTITLE_SYNC_EARLIER: 'Earlier',
+                    SUBTITLE_SYNC_LATER: 'Later',
                     SUBTITLE_DELAY_DECREASE: 'Show subtitles earlier',
                     SUBTITLE_DELAY_INCREASE: 'Show subtitles later',
                     SUBTITLE_DELAY_RESET: 'Reset subtitle delay',
@@ -152,6 +156,10 @@ describe('PlayerControlsComponent subtitle settings', () => {
             '[data-test-id="player-controls-subtitle-delay"]'
         );
         expect(section).not.toBeNull();
+        const body = query('.player-controls__subtitle-body');
+        expect(body?.firstElementChild).toBe(section);
+        expect(section?.textContent).toContain('Earlier');
+        expect(section?.textContent).toContain('Later');
         expect(
             section?.querySelector('.player-controls__subtitle-delay-value')
                 ?.textContent
@@ -184,6 +192,31 @@ describe('PlayerControlsComponent subtitle settings', () => {
         ).not.toBeNull();
     });
 
+    it('offers automatic On in the subtitle menu even before any tracks are loaded', () => {
+        fixture.componentRef.setInput('controller', {
+            ...fake.controller,
+            getSubtitleTarget: () => ({ load: () => true }),
+        });
+        setCapabilities({ externalSubtitles: true });
+        setState({ isLive: false, status: 'paused' });
+        fixture.detectChanges();
+        const automatic = fixture.debugElement.query(
+            By.directive(AutoEnglishSubtitlesComponent)
+        ).componentInstance as AutoEnglishSubtitlesComponent;
+        const enable = jest
+            .spyOn(automatic, 'enable')
+            .mockImplementation(() => undefined);
+        expect(query('[data-test-id="player-subtitles-on"]')).toBeNull();
+        openSubtitleMenu();
+        const on = query('[data-test-id="player-subtitles-on"]');
+        expect(on).not.toBeNull();
+        on?.click();
+        expect(enable).toHaveBeenCalledTimes(1);
+        expect(query('.player-controls__track-list')?.textContent).toContain(
+            'Off'
+        );
+    });
+
     it('applies size and color presets through setSubtitleStyle', () => {
         setCapabilities({ subtitles: true, subtitleStyle: true });
         setState({
@@ -211,9 +244,7 @@ describe('PlayerControlsComponent subtitle settings', () => {
         });
 
         (
-            style.querySelector(
-                '[aria-label="Yellow"]'
-            ) as HTMLButtonElement
+            style.querySelector('[aria-label="Yellow"]') as HTMLButtonElement
         ).click();
         expect(fake.commands.setSubtitleStyle).toHaveBeenLastCalledWith({
             sizePercent: 100,

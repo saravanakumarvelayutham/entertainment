@@ -11,6 +11,7 @@ import type {
     PlayerControlsCommands,
     PlayerControlsState,
     PlayerSubtitleStyle,
+    PlayerSubtitleTarget,
     PlayerTrack,
 } from './player-controls.model';
 import { DEFAULT_SUBTITLE_STYLE } from './subtitle-style';
@@ -48,6 +49,7 @@ export interface WebVideoControlsOptions extends WebVideoMetadataOptions {
     setSubtitleTrack?: (id: number) => void | Promise<void>;
     /** Opens the engine's subtitle file picker; loads + selects the pick. */
     addExternalSubtitleFile?: () => void;
+    getSubtitleTarget?: () => PlayerSubtitleTarget | null;
     getSubtitleDelay?: () => number;
     setSubtitleDelay?: (seconds: number) => void | Promise<void>;
     /** Runtime gate for the delay UI (e.g. only once a file is loaded). */
@@ -294,6 +296,21 @@ export class WebVideoControlsAdapter implements PlayerController {
         this.streamStats.reset();
         this.pictureInPicture.release(previousVideo);
         this.refresh();
+    }
+
+    getSubtitleTarget(): PlayerSubtitleTarget | null {
+        const video = this.video;
+        const generation = this.bindingGeneration;
+        const target = video ? this.opts.getSubtitleTarget?.() : null;
+        return target
+            ? {
+                  key: target.key === undefined ? undefined : `${generation}:${target.key}`,
+                  load: (file) =>
+                      this.video === video &&
+                      this.bindingGeneration === generation &&
+                      target.load(file),
+              }
+            : null;
     }
 
     /** Pushes reactive context (series navigation) used for capability gating. */

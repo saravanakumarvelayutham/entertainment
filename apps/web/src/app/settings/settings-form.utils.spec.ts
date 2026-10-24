@@ -46,6 +46,27 @@ describe('settings form utils — strip country prefix', () => {
     });
 });
 
+describe('settings form utils — automatic English subtitles', () => {
+    it('defaults on for historical settings and preserves the unrelated caption preference', () => {
+        const form = createSettingsForm(new FormBuilder(), true);
+        expect(form.get('autoEnglishSubtitles')?.value).toBe(true);
+        form.patchValue({ showCaptions: false });
+        const settings = createSettingsFromFormValue(form, {} as Settings);
+        expect(settings.autoEnglishSubtitles).toBe(true);
+        expect(settings.showCaptions).toBe(false);
+    });
+
+    it.each([false, true, null, 'false'])(
+        'serializes only explicit false as an opt-out (%s)',
+        (value) => {
+            const form = createSettingsForm(new FormBuilder(), true);
+            form.get('autoEnglishSubtitles')?.setValue(value as boolean);
+            expect(createSettingsFromFormValue(form, {} as Settings).autoEnglishSubtitles)
+                .toBe(value !== false);
+        }
+    );
+});
+
 describe('settings form utils — startup window mode', () => {
     const formBuilder = new FormBuilder();
 

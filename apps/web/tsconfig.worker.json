@@ -2,9 +2,12 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "outDir": "./out-tsc/worker",
-        "lib": ["es2018", "webworker", "dom"],
+        "outDir": "../../dist/out-tsc/worker",
+        "lib": ["es2022", "webworker"],
         "types": []
     },
-    "include": ["src/**/*.worker.ts"]
+    "include": [
+        "src/**/*.worker.ts",
+        "../../libs/ui/playback/src/lib/generated-captions/**/*.worker.ts"
+    ]
 }

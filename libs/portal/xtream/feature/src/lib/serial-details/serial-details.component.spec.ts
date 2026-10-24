@@ -66,6 +66,7 @@ class StubSeasonContainerComponent {
 })
 class StubPortalInlinePlayerComponent {
     readonly playbackSessionKey = input.required<string>();
+    readonly releaseYear = input<string | number | null>(null);
     readonly playback = input<unknown>(null);
     readonly episodeMetadata = input<unknown>(null);
     readonly seriesTitle = input<string | null>(null);

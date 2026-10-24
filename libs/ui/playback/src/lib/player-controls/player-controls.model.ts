@@ -44,6 +44,19 @@ export interface PlayerTrack {
     selected: boolean;
 }
 
+export interface PlayerSubtitleFile {
+    name: string;
+    format: 'srt' | 'vtt';
+    content: string;
+}
+
+/** A source-bound destination: asynchronous downloads cannot affect its successor. */
+export interface PlayerSubtitleTarget {
+    /** Stable for one source/attachment; optional for controllers without automation. */
+    readonly key?: string;
+    load(file: PlayerSubtitleFile): boolean;
+}
+
 /**
  * `setQualityLevel(AUTO_QUALITY_LEVEL_ID)` re-enables the engine's adaptive
  * (ABR) selection, mirroring how `setSubtitleTrack(-1)` means "off".
@@ -58,6 +71,8 @@ export const AUTO_QUALITY_LEVEL_ID = -1;
 export interface PlayerMediaTitle {
     /** Movie title, channel name, or series name. */
     primary: string;
+    /** Release year supplied by the detail page, independently of display text. */
+    year?: number;
     /** Optional second line, e.g. the "S01E03" label for series episodes. */
     secondary?: string | null;
 }
@@ -142,6 +157,7 @@ export interface PlayerController {
     readonly capabilities: Signal<PlayerControlsCapabilities>;
     readonly state: Signal<PlayerControlsState>;
     readonly commands: PlayerControlsCommands;
+    getSubtitleTarget?(): PlayerSubtitleTarget | null;
     /**
      * Optional live stream diagnostics behind the controls' info popover.
      * Absent (or paired with a false `streamStats` capability) means the

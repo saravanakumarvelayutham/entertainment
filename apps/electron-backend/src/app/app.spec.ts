@@ -77,6 +77,7 @@ type MockMainWindow = {
     setMenu: jest.Mock<void, [unknown]>;
     show: jest.Mock<void, []>;
     webContents: {
+        session: { setDisplayMediaRequestHandler: jest.Mock };
         on: jest.Mock<void, [string, (...args: unknown[]) => void]>;
         openDevTools: jest.Mock<void, []>;
         setWindowOpenHandler: jest.Mock<void, [unknown]>;
@@ -99,6 +100,7 @@ function createMockMainWindow(): MockMainWindow {
         setMenu: jest.fn<void, [unknown]>(),
         show: jest.fn<void, []>(),
         webContents: {
+            session: { setDisplayMediaRequestHandler: jest.fn() },
             on: jest.fn<void, [string, (...args: unknown[]) => void]>(),
             openDevTools: jest.fn<void, []>(),
             setWindowOpenHandler: jest.fn<void, [unknown]>(),

@@ -264,6 +264,7 @@ export const SettingsStore = signalStore(
                     openStreamOnDoubleClick: store.openStreamOnDoubleClick(),
                     language: store.language(),
                     showCaptions: store.showCaptions(),
+                    autoEnglishSubtitles: store.autoEnglishSubtitles?.() !== false,
                     showDashboard: store.showDashboard(),
                     startupBehavior: store.startupBehavior(),
                     startupWindowMode: normalizeStartupWindowMode(

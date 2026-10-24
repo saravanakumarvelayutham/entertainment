@@ -6,6 +6,8 @@ import {
     computed,
     effect,
     inject,
+    Injector,
+    afterNextRender,
     input,
     output,
     untracked,
@@ -14,8 +16,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { SubtitleSearchComponent } from '../subtitle-search/subtitle-search.component';
+import { AutoEnglishSubtitlesComponent } from '../subtitle-search/auto-english-subtitles.component';
 import { ControlsChromeInteractions } from './controls-chrome-interactions';
 import { ControlsFeedback } from './controls-feedback';
+import { GeneratedCaptionsController } from '../generated-captions/generated-captions-controller';
+import { handoffGeneratedCaptionFocus } from '../generated-captions/generated-caption-focus';
 import { ControlsFullscreen } from './controls-fullscreen';
 import { ControlsMenuSelection } from './controls-menu-selection';
 import { type ControlsMenu, ControlsMenuState } from './controls-menu-state';
@@ -44,7 +50,7 @@ import {
     selector: 'app-player-controls',
     templateUrl: './player-controls.component.html',
     styleUrl: './player-controls.component.scss',
-    imports: [MatButtonModule, MatIconModule, MatTooltipModule, TranslatePipe],
+    imports: [MatButtonModule, MatIconModule, MatTooltipModule, TranslatePipe, SubtitleSearchComponent, AutoEnglishSubtitlesComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         class: 'player-controls-host',
@@ -52,7 +58,9 @@ import {
     },
 })
 export class PlayerControlsComponent implements OnDestroy {
-    private readonly host = inject(ElementRef<HTMLElement>).nativeElement;
+    private readonly host: HTMLElement = inject(ElementRef<HTMLElement>)
+        .nativeElement;
+    private readonly injector = inject(Injector);
     private readonly translate = inject(TranslateService);
     readonly controller = input.required<PlayerController>();
     readonly playerSurface = input<HTMLElement | null>(null);
@@ -72,7 +80,12 @@ export class PlayerControlsComponent implements OnDestroy {
     readonly nextEpisodeRequested = output<void>();
     readonly menus = new ControlsMenuState();
     readonly feedback = new ControlsFeedback();
-    readonly anyMenuOpen = this.menus.anyOpen;
+    readonly generatedCaptions = new GeneratedCaptionsController({
+        onStart: () => this.onGeneratedCaptionsReady(),
+    });
+    readonly anyMenuOpen = computed(
+        () => this.menus.anyOpen() || this.generatedCaptions.panelOpen()
+    );
     private readonly shortcuts = new ControlsShortcuts();
     private readonly visibility = new ControlsVisibility(() => this.canHide());
     private readonly fullscreen = new ControlsFullscreen(
@@ -83,7 +96,10 @@ export class PlayerControlsComponent implements OnDestroy {
         apply: (value) => this.controller().commands.setVolume(value),
         flash: (icon, label) => this.feedback.flash(icon, label),
         mutedLabel: () => this.translate.instant('EMBEDDED_MPV.PLAYER.MUTED'),
-        openPopover: () => this.menus.open('volume'),
+        openPopover: () => {
+            this.generatedCaptions.panelOpen.set(false);
+            this.menus.open('volume');
+        },
         closePopover: () => this.menus.close('volume'),
     });
     private readonly surface = new ControlsSurface(
@@ -93,7 +109,7 @@ export class PlayerControlsComponent implements OnDestroy {
             closePopovers: () => this.closePopovers(),
             togglePlay: () => this.togglePlay(),
             canTogglePlay: () => this.canTogglePlay(),
-            isMenuOpen: () => this.menus.anyOpen(),
+            isMenuOpen: () => this.anyMenuOpen(),
             controlsVisible: () => this.controlsAreVisible(),
             hideControls: () => this.visibility.hide(),
         },
@@ -168,7 +184,7 @@ export class PlayerControlsComponent implements OnDestroy {
         canFullscreenNative: () => this.fullscreen.canFullscreen(),
         showControls: this.showControls,
         autoHideVisible: this.visibility.visible,
-        anyMenuOpen: this.menus.anyOpen,
+        anyMenuOpen: this.anyMenuOpen,
     });
 
     readonly isLoading = this.vm.isLoading;
@@ -183,12 +199,11 @@ export class PlayerControlsComponent implements OnDestroy {
     readonly recordingStatusText = this.vm.recordingStatusText;
     readonly volumeIcon = this.vm.volumeIcon;
     readonly canFullscreen = this.vm.canFullscreen;
-    readonly volumePercent = computed(() =>
-        Math.round(this.displayVolume() * 100)
-    );
+    readonly volumePercent = this.volume.percent;
     readonly controlsAreVisible = this.vm.controlsAreVisible;
     readonly hideCursor = this.vm.hideCursor;
     constructor() {
+        effect(() => this.generatedCaptions.bind(this.playerSurface()));
         this.shortcuts.attach({
             isAvailable: () => this.shortcutsEnabled() && this.showControls(),
             hostElement: () => this.host,
@@ -261,6 +276,7 @@ export class PlayerControlsComponent implements OnDestroy {
             const showControls = this.showControls();
             const capabilities = this.capabilities();
             untracked(() => {
+                if (!showControls) this.generatedCaptions.panelOpen.set(false);
                 if (!capabilities.seek || !state.canSeek) {
                     this.scrubPosition.set(null);
                 }
@@ -282,6 +298,7 @@ export class PlayerControlsComponent implements OnDestroy {
         });
     }
     ngOnDestroy(): void {
+        this.generatedCaptions.destroy();
         this.shortcuts.detach();
         this.feedback.dispose();
         this.visibility.dispose();
@@ -346,7 +363,16 @@ export class PlayerControlsComponent implements OnDestroy {
         this.nextEpisodeRequested.emit();
     }
     toggleMenu(menu: ControlsMenu): void {
+        this.generatedCaptions.panelOpen.set(false);
         this.menus.toggle(menu);
+        this.reveal();
+    }
+
+    onGeneratedCaptionsReady(): void {
+        handoffGeneratedCaptionFocus(this.host, (callback) =>
+            afterNextRender(callback, { injector: this.injector })
+        );
+        this.controller().commands.setSubtitleTrack(-1);
         this.reveal();
     }
 
@@ -354,6 +380,7 @@ export class PlayerControlsComponent implements OnDestroy {
         if (!this.capabilities().externalSubtitles) {
             return;
         }
+        this.generatedCaptions.stop();
         this.menuSelection.externalSubtitle();
     }
     toggleRecording(): void {
@@ -379,10 +406,11 @@ export class PlayerControlsComponent implements OnDestroy {
         await this.fullscreen.toggle();
     }
     private closePopovers(): void {
-        if (!this.menus.anyOpen()) {
+        if (!this.anyMenuOpen()) {
             return;
         }
         this.menus.closeAll();
+        this.generatedCaptions.panelOpen.set(false);
         this.visibility.scheduleHide();
     }
 
@@ -395,7 +423,7 @@ export class PlayerControlsComponent implements OnDestroy {
         return (
             this.isPlaying() &&
             !this.chrome.engaged &&
-            !this.menus.anyOpen() &&
+            !this.anyMenuOpen() &&
             !this.state().statusMessage
         );
     }

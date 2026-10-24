@@ -78,6 +78,8 @@ export class PortalInlinePlayerComponent {
      * engines' own default, which is what this default preserves.
      */
     readonly volume = input(1);
+    /** Detail metadata must not become part of playback/source identity. */
+    readonly releaseYear = input<string | number | null>(null);
     /**
      * Engine the host already resolved. `WebPlayerViewComponent` otherwise
      * waits for its own asynchronous settings read and mounts Video.js
@@ -160,7 +162,14 @@ export class PortalInlinePlayerComponent {
             return null;
         }
 
-        return { primary, secondary: metadata?.label ?? null };
+        const year = Number(this.releaseYear());
+        return {
+            primary,
+            secondary: metadata?.label ?? null,
+            ...(Number.isInteger(year) && year >= 1800 && year <= 2200
+                ? { year }
+                : {}),
+        };
     });
 
     private readonly stageViewport =
