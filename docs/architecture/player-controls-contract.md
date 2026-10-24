@@ -7,6 +7,21 @@ Embedded MPV rendering and native-view bounds behavior remain documented in
 
 ## Current status
 
+### Web picture scaling
+
+With shared controls enabled, HTML5, Video.js and ArtPlayer expose the existing
+aspect-ratio menu with Fit (original), Fill screen (crop), and Stretch choices.
+Fit is the default; Fill uses `object-fit: cover` to preserve proportions while
+cropping overflow, and Stretch uses `fill` to occupy the viewport with distortion.
+`WebVideoScaling` applies the selection to the attached media element at full
+viewport width/height, including fullscreen. The `web-player-scaling` localStorage
+preference survives source, episode, and player-host replacement. Invalid stored
+values fall back to Fit; denied storage leaves session scaling functional.
+Detach restores the previous engine-owned inline styles. MPV retains its own
+aspect presets. Bars encoded into the video pixels are unaffected by these modes.
+
+### Shared controls
+
 The shared-controls foundation supports four runtime consumers and includes:
 
 - the `PlayerController` contract, default state, and capability presets;

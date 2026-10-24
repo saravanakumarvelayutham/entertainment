@@ -300,6 +300,60 @@ for (const [player, selector] of [
     ['Video.js player', 'app-vjs-player'],
     ['ArtPlayer', 'app-art-player'],
 ]) {
+    test(`@web @m3u screen scaling survives fullscreen and reload (${player})`, async ({
+        page,
+        browserName,
+    }) => {
+        test.skip(
+            browserName !== 'chromium',
+            'Fullscreen coverage uses Chromium'
+        );
+        await page.setViewportSize({ width: 1920, height: 1080 });
+        await serveSeekableClip(page);
+        await selectPlayer(page, player);
+        await importPlaylist(page);
+        await sidebarEntry(page, 'Dune (2021) 1080p').click();
+        const view = page.locator('app-web-player-view');
+        const video = view.locator(`${selector} video`);
+        await expect(video).toBeVisible();
+        await view.hover();
+        await view
+            .getByRole('button', { name: 'Aspect ratio', exact: true })
+            .click();
+        await view
+            .getByRole('menuitemradio', { name: 'Fill screen (crop)' })
+            .click();
+        await expect(video).toHaveCSS('object-fit', 'cover');
+        await view.getByRole('button', { name: 'Enter fullscreen' }).click();
+        await expect
+            .poll(() => page.evaluate(() => !!document.fullscreenElement))
+            .toBe(true);
+        await expect(video).toHaveCSS('object-fit', 'cover');
+        await view.hover();
+        await view
+            .getByRole('button', { name: 'Aspect ratio', exact: true })
+            .click();
+        await expect(
+            view.getByRole('menuitemradio', { name: 'Fill screen (crop)' })
+        ).toHaveAttribute('aria-checked', 'true');
+        await view
+            .getByRole('menuitemradio', { name: 'Stretch', exact: true })
+            .click();
+        await expect(video).toHaveCSS('object-fit', 'fill');
+        await view.getByRole('button', { name: 'Exit fullscreen' }).click();
+        await page.reload();
+        await sidebarEntry(page, 'Dune (2021) 1080p').click();
+        await expect(video).toHaveCSS('object-fit', 'fill');
+        await view.hover();
+        await view
+            .getByRole('button', { name: 'Aspect ratio', exact: true })
+            .click();
+        await view
+            .getByRole('menuitemradio', { name: 'Fit (original)' })
+            .click();
+        await expect(video).toHaveCSS('object-fit', 'contain');
+    });
+
     for (const metadata of [
         'disabled',
         'details-disabled',

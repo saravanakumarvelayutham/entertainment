@@ -49,10 +49,14 @@ describe('WebVideoControlsAdapter', () => {
     let adapter: WebVideoControlsAdapter;
 
     beforeEach(() => {
+        localStorage.removeItem('web-player-scaling');
         adapter = new WebVideoControlsAdapter();
     });
 
-    afterEach(() => adapter.detach());
+    afterEach(() => {
+        adapter.detach();
+        localStorage.removeItem('web-player-scaling');
+    });
 
     it('maps a playing VOD video to state with seek + finite duration', () => {
         const video = createVideo({
@@ -237,13 +241,13 @@ describe('WebVideoControlsAdapter', () => {
         expect(video.currentTime).toBe(0);
     });
 
-    it('gates capabilities: recording always false, aspectRatio false', () => {
+    it('offers scaling while keeping recording disabled', () => {
         adapter.attach(createVideo({ duration: 100 }), {
             isLive: () => false,
         });
         const caps = adapter.capabilities();
         expect(caps.recording).toBe(false);
-        expect(caps.aspectRatio).toBe(false);
+        expect(caps.aspectRatio).toBe(true);
         expect(caps.seek).toBe(true);
         expect(caps.volume).toBe(true);
         expect(caps.playbackSpeed).toBe(true);

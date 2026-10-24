@@ -1031,10 +1031,11 @@
                                         "
                                     >
                                         <span>{{
-                                            preset.value === 'no'
+                                            preset.value === 'no' &&
+                                            preset.label === 'Default'
                                                 ? ('EMBEDDED_MPV.PLAYER.ASPECT_DEFAULT'
                                                   | translate)
-                                                : preset.label
+                                                : (preset.label | translate)
                                         }}</span>
                                         @if (
                                             preset.value === state().aspectRatio

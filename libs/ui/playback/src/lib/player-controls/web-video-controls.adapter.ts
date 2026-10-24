@@ -1,7 +1,6 @@
 import { Injectable, type Signal, computed, signal } from '@angular/core';
 import {
     createEmptyControlsState,
-    DEFAULT_ASPECT_PRESETS,
     DEFAULT_PLAYER_CAPABILITIES,
     DEFAULT_SPEED_PRESETS,
 } from './player-controls-defaults';
@@ -33,6 +32,10 @@ import {
     WEB_VIDEO_EVENTS,
 } from './web-video-controls.media-helpers';
 import { WebVideoPictureInPictureController } from './web-video-picture-in-picture.controller';
+import {
+    WebVideoScaling,
+    WEB_VIDEO_SCALING_PRESETS,
+} from './web-video-scaling';
 import {
     type WebVideoEngineStats,
     WebVideoStreamStatsSampler,
@@ -81,6 +84,7 @@ export class WebVideoControlsAdapter implements PlayerController {
     private opts: WebVideoControlsOptions = {};
     private detachFn: (() => void) | null = null;
     private bindingGeneration = 0;
+    private readonly scaling = new WebVideoScaling();
 
     /** Bumped whenever DOM or engine-specific state must be re-read. */
     private readonly tick = signal(0);
@@ -144,7 +148,7 @@ export class WebVideoControlsAdapter implements PlayerController {
                 (this.opts.canAdjustSubtitleDelay?.() ?? true),
             subtitleStyle: typeof this.opts.setSubtitleStyle === 'function',
             qualityLevels: hasQualityLevels,
-            aspectRatio: false,
+            aspectRatio: true,
             recording: false,
             pictureInPicture: pictureInPicture.supported,
             seriesNavigation: !isLive && this.seriesNavigation() !== null,
@@ -192,8 +196,8 @@ export class WebVideoControlsAdapter implements PlayerController {
             qualityAutoEnabled: this.opts.isAutoQualityEnabled?.() ?? true,
             playbackSpeed: video?.playbackRate ?? 1,
             speedPresets: DEFAULT_SPEED_PRESETS,
-            aspectRatio: 'no',
-            aspectPresets: DEFAULT_ASPECT_PRESETS,
+            aspectRatio: this.scaling.mode,
+            aspectPresets: WEB_VIDEO_SCALING_PRESETS,
             recording: { active: false, elapsedSeconds: 0, message: null },
             pictureInPictureActive: pictureInPicture.active,
             canPictureInPicture: pictureInPicture.canToggle,
@@ -246,7 +250,10 @@ export class WebVideoControlsAdapter implements PlayerController {
                 this.refresh()
             ),
         setPlaybackSpeed: (speed) => applyVideoSpeed(this.video, speed),
-        setAspectRatio: () => undefined,
+        setAspectRatio: (value) => {
+            this.scaling.select(value);
+            this.refresh();
+        },
         toggleRecording: () => undefined,
         togglePictureInPicture: () => this.pictureInPicture.toggle(),
     };
@@ -257,6 +264,7 @@ export class WebVideoControlsAdapter implements PlayerController {
         const generation = this.bindingGeneration;
         this.video = video;
         this.opts = opts;
+        this.scaling.attach(video);
         this.streamStats.reset();
 
         const onEvent = () => {
@@ -291,6 +299,7 @@ export class WebVideoControlsAdapter implements PlayerController {
         this.bindingGeneration += 1;
         this.detachFn?.();
         this.detachFn = null;
+        this.scaling.detach();
         this.video = null;
         this.opts = {};
         this.streamStats.reset();
