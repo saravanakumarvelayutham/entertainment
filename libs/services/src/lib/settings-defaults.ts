@@ -46,6 +46,7 @@ export const DEFAULT_SETTINGS: Settings = {
     embeddedMpvAutoReconnect: true,
     portalConnectivityGuard: true,
     coverSize: 'medium',
+    workspaceMotion: 'system',
     showCoverTitles: true,
     epgViewMode: 'timeline',
     epgOffsetMinutes: 0,

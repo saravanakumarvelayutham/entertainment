@@ -119,6 +119,7 @@ export const DEFAULT_SETTINGS = {
     embeddedMpvAutoReconnect: true,
     portalConnectivityGuard: true,
     coverSize: 'medium',
+    workspaceMotion: 'system',
     showCoverTitles: true,
     dashboardRails: DEFAULT_DASHBOARD_RAILS,
     aiRecommendations: DEFAULT_AI_RECOMMENDATION_SETTINGS,

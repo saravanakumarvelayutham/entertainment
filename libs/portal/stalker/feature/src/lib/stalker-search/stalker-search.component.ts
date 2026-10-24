@@ -11,6 +11,7 @@ import {
     viewChild,
 } from '@angular/core';
 import { Location } from '@angular/common';
+import { SceneTransitionService } from '@iptvnator/ui/components';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -117,6 +118,7 @@ function dedupeSearchResults(items: StalkerVodSource[]): StalkerVodSource[] {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StalkerSearchComponent {
+    private readonly sceneTransition = inject(SceneTransitionService);
     private readonly activatedRoute = inject(ActivatedRoute);
     private readonly location = inject(Location);
     private readonly dataService = inject(DataService);
@@ -517,6 +519,10 @@ export class StalkerSearchComponent {
     }
 
     selectItem(item: StalkerVodSource) {
+        this.sceneTransition.run('detail-open', () => this.openDetail(item));
+    }
+
+    private openDetail(item: StalkerVodSource): void {
         this.savedResultsScrollTop =
             this.searchLayout()?.getResultsScrollTop() ?? 0;
         const filterType = this.selectedFilterType();
@@ -611,6 +617,10 @@ export class StalkerSearchComponent {
     }
 
     onVodBack(): void {
+        this.sceneTransition.run('detail-close', () => this.restoreResults());
+    }
+
+    private restoreResults(): void {
         const cleared = clearStalkerDetailViewState();
         this.itemDetails.set(cleared.itemDetails);
         this.vodDetailsItem.set(cleared.vodDetailsItem);

@@ -1,0 +1,198 @@
+// Composition is present in every motion mode; animation is owned separately.
+.workspace-shell {
+    .global-navigation {
+        background: color-mix(in srgb, var(--app-rail-bg) 88%, transparent);
+        border-bottom-color: color-mix(
+            in srgb,
+            var(--app-widget-border) 60%,
+            transparent
+        );
+    }
+    .global-links .rail-links {
+        position: relative;
+        isolation: isolate;
+        padding: 5px;
+        width: fit-content;
+        box-sizing: border-box;
+        border: 1px solid var(--app-widget-border);
+        border-radius: 18px;
+        background: color-mix(in srgb, var(--app-widget-bg) 64%, transparent);
+    }
+    .rail-links[data-workspace-nav-ready]::before {
+        content: '';
+        position: absolute;
+        pointer-events: none;
+        inset: 5px auto 5px 0;
+        width: var(--workspace-nav-width);
+        transform: translateX(var(--workspace-nav-x));
+        border-radius: 12px;
+        background: var(--app-widget-bg);
+        border: 1px solid var(--app-selection-border);
+        box-sizing: border-box;
+        box-shadow: 0 4px 16px
+            color-mix(in srgb, var(--app-on-surface) 10%, transparent);
+        z-index: 0;
+    }
+    .global-links .rail-links[data-workspace-nav-ready] .portal-rail-link {
+        position: relative;
+        z-index: 1;
+        border-color: transparent;
+        background: transparent;
+        box-shadow: none;
+    }
+    .search-field {
+        border-radius: 20px;
+        box-shadow: inset 0 1px
+            color-mix(in srgb, var(--app-on-surface) 6%, transparent);
+    }
+    .workspace-content {
+        border-radius: 24px;
+        background: linear-gradient(
+            150deg,
+            color-mix(
+                in srgb,
+                var(--app-selection-surface) 30%,
+                var(--app-content-bg)
+            ),
+            var(--app-content-bg) 45%
+        );
+    }
+}
+
+.workspace-content lib-workspace-dashboard-rails {
+    .dashboard-masthead {
+        padding: 28px 32px 0;
+    }
+    .dashboard-masthead h1 {
+        font-size: clamp(2rem, 3vw, 3rem);
+        letter-spacing: -0.06em;
+        font-weight: 700;
+    }
+    .dashboard-lead,
+    .dashboard-lead--with-queue {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        padding: 0 20px;
+    }
+    .hero {
+        min-height: clamp(440px, 57vh, 660px);
+        padding: clamp(28px, 4vw, 64px);
+        border-radius: 28px;
+        box-shadow: 0 28px 60px -36px
+            color-mix(in srgb, var(--app-on-surface) 45%, transparent);
+    }
+    .hero__backdrop {
+        inset-inline-start: 12%;
+    }
+    .hero__title {
+        max-width: 16ch;
+        font-size: clamp(2.2rem, 4.2vw, 4.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.055em;
+        text-wrap: balance;
+    }
+    .hero__body {
+        max-width: 640px;
+    }
+    .hero__vignette {
+        background:
+            linear-gradient(0deg, rgba(0, 0, 0, 0.82), transparent 80%),
+            linear-gradient(
+                90deg,
+                rgba(0, 0, 0, 0.88),
+                rgba(0, 0, 0, 0.22) 72%,
+                transparent
+            );
+    }
+    .hero__cta,
+    .hero__secondary {
+        min-height: 48px;
+        padding-inline: 24px;
+        border-radius: 16px;
+    }
+    .hero__up-next {
+        margin: -1px 12px 0;
+        padding: 20px 24px;
+        border-radius: 0 0 24px 24px;
+        background: color-mix(in srgb, var(--app-rail-bg) 88%, transparent);
+        backdrop-filter: blur(24px);
+    }
+    .hero__up-next-track {
+        display: flex;
+        overflow-x: auto;
+        gap: 14px;
+        scrollbar-width: thin;
+    }
+    .hero__up-next-item {
+        flex: 1 0 240px;
+        width: auto;
+    }
+    .rails-page__rails {
+        gap: 40px;
+        padding-inline: 32px;
+    }
+}
+
+.workspace-content lib-dashboard-rail {
+    --rail-card-width: calc(var(--cover-rail-width, 172px) + 20px);
+    --rail-gap: 20px;
+    .rail__title {
+        font-size: 1.3rem;
+        letter-spacing: -0.035em;
+    }
+    .rail__track {
+        // Space for the lifted/tilted artwork without clipping its top edge.
+        padding-block: 18px 12px;
+        margin-block: -6px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--app-widget-border) transparent;
+        scroll-snap-type: x proximity;
+    }
+    .rail__track:focus-visible {
+        outline: 2px solid var(--app-selection-color);
+        outline-offset: 4px;
+        border-radius: 12px;
+    }
+    .rail__chev--visible {
+        opacity: 1;
+        width: 48px;
+        height: 64px;
+        border-radius: 16px;
+    }
+    .rail__chev:not(.rail__chev--visible) {
+        visibility: hidden;
+    }
+}
+
+@media (max-width: 640px) {
+    .workspace-shell .global-links .rail-links {
+        border: 0;
+        padding: 2px;
+    }
+    .workspace-shell .rail-links[data-workspace-nav-ready]::before {
+        inset-block: 2px;
+    }
+    .workspace-content lib-workspace-dashboard-rails {
+        .dashboard-masthead {
+            padding: 22px 16px 0;
+        }
+        .dashboard-lead {
+            padding-inline: 8px;
+        }
+        .hero {
+            min-height: 450px;
+            padding: 24px;
+            border-radius: 22px;
+        }
+        .hero__title {
+            font-size: 2.4rem;
+        }
+        .hero__up-next {
+            margin-inline: 4px;
+            padding: 16px;
+        }
+        .rails-page__rails {
+            padding-inline: 16px;
+        }
+    }
+}

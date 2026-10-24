@@ -1,4 +1,6 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { WorkspacePointerMotionDirective } from './workspace-pointer-motion.directive';
+import { WorkspaceNavIndicatorDirective } from './workspace-nav-indicator.directive';
 import {
     Component,
     effect,
@@ -36,6 +38,8 @@ import { LIVE_CATEGORIES_POPOVER } from '@iptvnator/portal/shared/util';
 @Component({
     selector: 'app-workspace-shell',
     imports: [
+        WorkspacePointerMotionDirective,
+        WorkspaceNavIndicatorDirective,
         CdkTrapFocus,
         ExternalPlaybackDockComponent,
         TranslatePipe,

@@ -2,8 +2,10 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    computed,
     ElementRef,
     OnDestroy,
+    NgZone,
     effect,
     inject,
     input,
@@ -18,6 +20,7 @@ import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SettingsStore } from '@iptvnator/services';
 import { applyChannelNameStrip } from '@iptvnator/shared/m3u-utils';
+import { RailAutoRollDirective } from './rail-auto-roll.directive';
 
 export interface DashboardRailAction {
     id: string;
@@ -118,11 +121,7 @@ export interface DashboardRailTranslatedLabel {
  *  - 'recommendation': landscape explanation card with inline taste feedback.
  */
 export type DashboardRailLayout =
-    | 'cover'
-    | 'landscape'
-    | 'ranked'
-    | 'channel'
-    | 'recommendation';
+    'cover' | 'landscape' | 'ranked' | 'channel' | 'recommendation';
 
 export interface DashboardRailActionSelection {
     action: DashboardRailAction;
@@ -137,6 +136,7 @@ export interface DashboardRailActionSelection {
         MatMenuModule,
         RouterLink,
         TranslatePipe,
+        RailAutoRollDirective,
     ],
     templateUrl: './dashboard-rail.component.html',
     styleUrl: './dashboard-rail.component.scss',
@@ -144,15 +144,26 @@ export interface DashboardRailActionSelection {
 })
 export class DashboardRailComponent implements AfterViewInit, OnDestroy {
     private readonly settingsStore = inject(SettingsStore);
+    private readonly zone = inject(NgZone);
 
     readonly label = input.required<string>();
     readonly items = input.required<DashboardRailCard[]>();
+    readonly loopingItems = computed(() => [...this.items(), ...this.items()]);
     readonly seeAllLink = input<string[] | null>(null);
     readonly seeAllState = input<Record<string, unknown> | null>(null);
     readonly aspectRatio = input<string>('2 / 3');
     readonly layout = input<DashboardRailLayout>('cover');
     readonly testId = input<string | null>(null);
     readonly actionSelected = output<DashboardRailActionSelection>();
+    readonly autoRollEligible = computed(
+        () =>
+            this.layout() !== 'channel' &&
+            this.items().some(
+                (card) =>
+                    card.contentType === 'movie' ||
+                    card.contentType === 'series'
+            )
+    );
     /**
      * True total in the underlying dataset. Shown as a count badge next to
      * the rail label. Falls back to `items().length` when not supplied.
@@ -170,11 +181,16 @@ export class DashboardRailComponent implements AfterViewInit, OnDestroy {
     private resizeObserver?: ResizeObserver;
     private resetFrameId: number | null = null;
     private settleFrameId: number | null = null;
+    private itemOrder = '';
 
     constructor() {
         effect(() => {
-            this.items();
+            const order = this.items()
+                .map((card) => card.id)
+                .join('\0');
             if (!this.viewReady()) return;
+            if (order === this.itemOrder) return;
+            this.itemOrder = order;
             this.scheduleResetToStart();
         });
     }
@@ -186,23 +202,52 @@ export class DashboardRailComponent implements AfterViewInit, OnDestroy {
             this.updateScrollState()
         );
         this.resizeObserver.observe(this.track().nativeElement);
+        this.zone.runOutsideAngular(() =>
+            this.track().nativeElement.addEventListener(
+                'scroll',
+                this.trackScrolled,
+                { passive: true }
+            )
+        );
     }
 
     ngOnDestroy(): void {
         this.resizeObserver?.disconnect();
         this.cancelPendingReset();
+        if (this.viewReady()) {
+            this.track().nativeElement.removeEventListener(
+                'scroll',
+                this.trackScrolled
+            );
+        }
     }
 
     onScroll(): void {
         this.updateScrollState();
     }
+    private readonly trackScrolled = (): void => this.updateScrollState();
 
     scrollBy(direction: 1 | -1): void {
         const el = this.track().nativeElement;
+        const mode = this.settingsStore.workspaceMotion?.() ?? 'system';
+        const reduced =
+            mode === 'reduced' ||
+            (mode !== 'full' &&
+                window.matchMedia?.('(prefers-reduced-motion: reduce)')
+                    .matches);
         el.scrollBy({
             left: direction * el.clientWidth * 0.85,
-            behavior: 'smooth',
+            behavior: reduced ? 'auto' : 'smooth',
         });
+    }
+
+    onTrackKeydown(event: KeyboardEvent): void {
+        // Links keep their native Enter/Space behavior; only the track owns paging.
+        if (event.target !== event.currentTarget) return;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+            event.preventDefault();
+            this.scrollBy(event.key === 'ArrowRight' ? 1 : -1);
+        }
     }
 
     markFailed(id: string): void {

@@ -51,7 +51,8 @@ The workspace uses neutral charcoal layers in dark mode and near-white surfaces
 in light mode. Material controls retain the azure palette; provider identity
 colors remain separate. `--app-feature-accent` and `--app-feature-on-accent`
 form the fixed silver/dark pair for actions over artwork. The dashboard uses
-the app sans-serif stack and a Library masthead above a feature/history split;
+the app sans-serif stack and a Library masthead above a wide cinematic feature
+and horizontal history deck;
 content rails follow in normal flow. Global navigation is a horizontal top bar
 with labels above 640px and compact icons on phones. Provider/source tabs occupy
 a second row. Decorative surfaces must not introduce new scroll owners.
@@ -94,6 +95,71 @@ that proof or use hard-coded layout/selection colors. Treat those references
 as migration debt, not patterns to copy.
 
 Do not hardcode unrelated accent colors for selected state when these tokens already exist.
+
+## Workspace Motion
+
+Settings > General > Interface motion persists workspaceMotion as system
+(default), full or reduced. AppComponent mirrors the committed preference onto
+html[data-workspace-motion]. System follows prefers-reduced-motion; Full
+explicitly overrides it for workspace effects without changing the OS setting.
+Reduced suppresses these entrances and card/navigation feedback in either OS mode.
+Save applies immediately; unrelated saves and restarts retain the choice.
+
+App-owned apps/web/src/_workspace-motion.scss scopes motion to workspace
+components and emits it outside component style budgets. Browsers without native
+view transitions fall back to a 420 ms route fade without transforming player
+ancestors or reparenting playback. Dashboard
+and catalog cards arrive with bounded stagger delays (at most 300 ms). Feature
+artwork stays stationary, including blurred poster fallback artwork.
+WorkspaceShellComponent installs delegated WorkspacePointerMotionDirective and
+WorkspaceNavIndicatorDirective listeners outside Angular change detection.
+Pointer motion updates only the active poster's CSS properties once per frame:
+bounded tilt and reflection position. Hero backgrounds never receive cursor motion. Touch/coarse pointers
+keep native scrolling; leaving, scrolling, preference changes and destruction
+release the active surface and pending frame. Reduced motion suppresses tilt.
+The global navigation marker measures the active link after route, label and size
+changes; its movement and context-panel transitions follow the motion setting.
+Poster transforms stay on cards/artwork, never on a player ancestor.
+Shared detail heroes keep their backdrop stable and stagger poster/text entrances
+in the fallback path; native snapshots own the connected scene reveal.
+Detail posters, collection cards (favorites/recent), companion recommendations and legacy similar-title cards share
+the delegated pointer response; recommendation posters lift and reflect light.
+These effects obey the same Full/System/Reduced preference as the dashboard.
+
+The app-owned _workspace-cinematic.scss supplies the wide feature stage,
+horizontal history deck, glass navigation capsule and larger poster rails in all
+motion modes. Movie rails expose enabled left/right arrows and a focusable track
+with ArrowLeft/ArrowRight paging. Links retain their own keys; native touch and
+trackpad scrolling stay available. Smooth paging follows the motion preference.
+Movie/series rails also roll automatically in a seamless, constant-speed forward
+loop. A second rendered pass bridges the seam without repeating keyboard stops.
+Scrolling resets cursor effects only when that scroll owner contains the hovered
+card, so another rolling row cannot clear its tilt or lighting.
+Pause/Resume is available per row; hover, focus, manual interaction, offscreen/
+hidden state and scene transitions suspend rolling. Reduced motion disables it.
+Live/source rows remain stationary and artwork backgrounds never move.
+Animation never blocks navigation, loading or playback or introduces a scroll owner.
+
+### Connected scene transitions
+
+`SceneTransitionService` in shared UI components coordinates browser snapshots.
+`app.config.ts` enables Angular router view transitions (skipping initial startup);
+`workspace-route-transition.ts` distinguishes ordinary pages, detail reveals and
+returns by the nested route parameters. `_workspace-scenes.scss` animates the
+named workspace content snapshot independently of the stationary app chrome.
+Page handoffs recede/slide over 620 ms; details reveal over 760 ms and reverse
+into the library over 680 ms. Context-sidebar snapshot bounds interpolate too.
+After the first handoff, native scene motion replaces independent entry effects
+so the incoming snapshot always contains fully visible text and controls.
+
+Favorites/recent inline details and Stalker catalog selection call the same
+service around their existing state update. Angular's next render completes the
+snapshot transaction; history, focus, scroll restoration and player ownership
+remain with their existing components. Interrupted transitions keep their state
+updates and cannot clear a newer scene. Unsupported browsers update immediately.
+Reduced motion skips snapshots. Active visible playback also skips route snapshots;
+browse/watch shell morphs use grid/opacity, with no transformed native-player
+ancestor. Full motion overrides the OS preference consistently.
 
 ## Player And EPG Theme Boundaries
 

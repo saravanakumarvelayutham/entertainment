@@ -48,7 +48,7 @@ import {
     ],
     templateUrl: './portal-detail-shell.component.html',
     styleUrls: ['./portal-detail-shell.component.scss'],
-    // Preserve pre-Angular 22 eager checking during the framework upgrade.
+    // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection -- Preserve eager projection checks during the Angular 22 migration.
     changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         tabindex: '0',

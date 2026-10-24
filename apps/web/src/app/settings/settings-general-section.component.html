@@ -40,6 +40,40 @@
         </div>
     </div>
 
+    <div class="setting-item">
+        <div class="setting-item__meta">
+            <h4 id="workspace-motion-label">
+                {{ 'SETTINGS.WORKSPACE_MOTION' | translate }}
+            </h4>
+            <p id="workspace-motion-description">
+                {{ 'SETTINGS.WORKSPACE_MOTION_DESCRIPTION' | translate }}
+            </p>
+        </div>
+        <div class="setting-item__control">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{
+                    'SETTINGS.WORKSPACE_MOTION' | translate
+                }}</mat-label>
+                <mat-select
+                    formControlName="workspaceMotion"
+                    data-test-id="select-workspace-motion"
+                    aria-labelledby="workspace-motion-label"
+                    aria-describedby="workspace-motion-description"
+                >
+                    <mat-option value="system">{{
+                        'SETTINGS.WORKSPACE_MOTION_SYSTEM' | translate
+                    }}</mat-option>
+                    <mat-option value="full">{{
+                        'SETTINGS.WORKSPACE_MOTION_FULL' | translate
+                    }}</mat-option>
+                    <mat-option value="reduced">{{
+                        'SETTINGS.WORKSPACE_MOTION_REDUCED' | translate
+                    }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+
     <div class="setting-item setting-item--full-control">
         <div class="setting-item__meta">
             <h4>{{ 'SETTINGS.THEME' | translate }}</h4>

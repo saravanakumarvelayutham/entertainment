@@ -35,8 +35,8 @@ Core implementation:
 
 ## Page Structure
 
-The Library masthead introduces a feature card beside a separate 300px history
-deck. At 1100px and below, the deck becomes a horizontal row below the feature.
+The Library masthead introduces a wide feature card with a horizontal history
+deck beneath it. The deck scrolls sideways when its candidates do not fit.
 The feature uses a dark media
 surface, bold sans-serif title and silver actions. Desktop artwork occupies
 the right side under a copy scrim; phone artwork fills the card. Content rails
@@ -93,8 +93,8 @@ Render rules:
    candidate as a titled thumbnail button and `featureHeroItem(key)` swaps the
    banner without navigating. The selection is session-only; a selected item
    that leaves the recent list falls back to the newest one
-   (`selectDashboardHeroItem`). The deck renders only when there are at
-   least two candidates. The TMDB extras effect follows the featured item.
+   (`selectDashboardHeroItem`). The deck renders horizontally beneath the wide cinematic feature, with native
+   sideways scrolling when needed, and appears only with at least two candidates. The TMDB extras effect follows the featured item.
 4. Each rail is emitted via `@if (cards.length > 0)`. Empty rails are hidden
    — there is no "empty widget" placeholder.
 5. The hero prefers a stored Xtream `backdrop_url` (or the TMDB backdrop
@@ -142,7 +142,20 @@ Render rules:
 3. Section headers are quiet: no rule under the title, the count renders as
    plain muted text and "See all" is a text link. The artwork, not the header,
    should draw the eye.
-4. Behavior: horizontal flex track with `scroll-snap-type: x mandatory`.
+4. Behavior: native horizontal flex track. Movie/series rows automatically roll
+   at a constant 36 px/s in an endless forward loop. Angular renders a second
+   pass and the scroll offset wraps by the measured distance between passes,
+   preserving fractional overshoot with no visible reset. Repeated cards retain
+   working links/actions but are hidden from assistive navigation and Tab order.
+   Only overflowing movie/series rows render the second pass; resize and motion
+   preference changes restore a single pass when rolling is unavailable.
+   `RailAutoRollDirective` pauses on hover, keyboard focus, manual wheel/touch/key
+   input (an eight-second grace), hidden/offscreen state and scene transitions.
+   Each overflow row exposes Pause/Resume automatic scrolling. Reduced motion
+   disables automatic rolling; Full overrides the OS preference. Automatic rows
+   disable snapping even while paused, so interaction never snaps the artwork.
+   Other rows retain `scroll-snap-type: x mandatory`. Scroll listeners and rolling
+   frames run outside Angular; enrichment with unchanged card order preserves offset.
 5. Chevron buttons fade in on hover (desktop only via `@media (hover: none)`).
 6. Cards are keyboard-focusable router links; `scroll-snap-align: start`
    means arrow-key nav lands on card boundaries.
@@ -452,3 +465,16 @@ Intentionally out of scope:
 2. Freeform widget grid with collision management.
 3. External data rails such as RSS, sports, or news adapters.
 4. Per-user A/B variants of rail ordering.
+
+## Cinematic browsing and horizontal rails
+
+The app-owned cinematic stylesheet expands the feature stage and gives history
+its own horizontal deck. Global navigation has a measured sliding marker; poster
+artwork follows the cursor with bounded 3D tilt and reflected light. These effects
+follow Settings > General > Interface motion. Pointer frames run outside Angular
+and touch/coarse pointers retain native scrolling. No player ancestor transforms.
+
+Movie rails expose available left/right buttons at rest, reserve space around
+lifted artwork, and retain a thin native scrollbar. Focus the track to page with
+ArrowLeft/ArrowRight; card links retain native activation keys. Buttons disable at
+the boundary and smooth paging respects the motion preference.

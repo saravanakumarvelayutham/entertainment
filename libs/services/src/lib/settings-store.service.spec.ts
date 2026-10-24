@@ -38,6 +38,19 @@ describe('SettingsStore dashboard rail settings', () => {
         set: jest.Mock;
     };
 
+    it('persists full workspace motion across unrelated settings saves', async () => {
+        const store = injector.get(SettingsStore);
+        await store.loadSettings();
+        expect(store.getSettings().workspaceMotion).toBe('system');
+        await store.updateSettings({ workspaceMotion: 'full' });
+        await store.updateSettings({ theme: Theme.DarkTheme });
+        expect(store.getSettings().workspaceMotion).toBe('full');
+        expect(storage.set).toHaveBeenLastCalledWith(
+            STORE_KEY.Settings,
+            expect.objectContaining({ workspaceMotion: 'full' })
+        );
+    });
+
     it('defaults AI off and retains all fields through unrelated and partial updates', async () => {
         const store = injector.get(SettingsStore);
         await store.loadSettings();
@@ -262,7 +275,10 @@ describe('SettingsStore dashboard rail settings', () => {
     it.each([undefined, true, null, 'false'])(
         'defaults automatic English subtitles on for historical or malformed value %s',
         async (value) => {
-            storedSettings = { language: Language.FRENCH, autoEnglishSubtitles: value as boolean };
+            storedSettings = {
+                language: Language.FRENCH,
+                autoEnglishSubtitles: value as boolean,
+            };
             const store = injector.get(SettingsStore);
             await store.loadSettings();
             expect(store.autoEnglishSubtitles?.()).toBe(true);
@@ -279,13 +295,19 @@ describe('SettingsStore dashboard rail settings', () => {
         await store.updateSettings({ language: Language.FRENCH });
         expect(storage.set).toHaveBeenLastCalledWith(
             STORE_KEY.Settings,
-            expect.objectContaining({ autoEnglishSubtitles: false, showCaptions: true })
+            expect.objectContaining({
+                autoEnglishSubtitles: false,
+                showCaptions: true,
+            })
         );
         await store.updateSettings({ autoEnglishSubtitles: true });
         expect(store.autoEnglishSubtitles?.()).toBe(true);
         expect(storage.set).toHaveBeenLastCalledWith(
             STORE_KEY.Settings,
-            expect.objectContaining({ autoEnglishSubtitles: true, language: Language.FRENCH })
+            expect.objectContaining({
+                autoEnglishSubtitles: true,
+                language: Language.FRENCH,
+            })
         );
     });
 

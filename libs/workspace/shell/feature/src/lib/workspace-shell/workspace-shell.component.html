@@ -1,4 +1,10 @@
-<div class="workspace-shell" appPlaylistDropZone #dropZone="playlistDropZone">
+<div
+    class="workspace-shell"
+    appWorkspacePointerMotion
+    appWorkspaceNavIndicator
+    appPlaylistDropZone
+    #dropZone="playlistDropZone"
+>
     <app-playlist-drop-overlay [state]="dropZone.overlayState()" />
     @if (facade.showXtreamImportOverlay()) {
         <app-workspace-shell-import-overlay />

@@ -17,6 +17,30 @@
                 }}</span>
             }
         </h2>
+        @if (roller.available()) {
+            <button
+                type="button"
+                class="rail__auto-roll"
+                (click)="roller.toggle()"
+                [attr.aria-pressed]="roller.paused()"
+                [attr.aria-label]="
+                    (roller.paused()
+                        ? 'WORKSPACE.DASHBOARD.RESUME_ROLL'
+                        : 'WORKSPACE.DASHBOARD.PAUSE_ROLL'
+                    ) | translate
+                "
+                [title]="
+                    (roller.paused()
+                        ? 'WORKSPACE.DASHBOARD.RESUME_ROLL'
+                        : 'WORKSPACE.DASHBOARD.PAUSE_ROLL'
+                    ) | translate
+                "
+            >
+                <mat-icon>{{
+                    roller.paused() ? 'play_arrow' : 'pause'
+                }}</mat-icon>
+            </button>
+        }
         @if (seeAllLink(); as link) {
             <a
                 class="rail__see-all"
@@ -47,21 +71,29 @@
             type="button"
             class="rail__chev rail__chev--left"
             [class.rail__chev--visible]="canScrollLeft()"
+            [disabled]="!canScrollLeft()"
             (click)="scrollBy(-1)"
             aria-label="Scroll left"
-            tabindex="-1"
+            [tabIndex]="canScrollLeft() ? 0 : -1"
         >
             <mat-icon>chevron_left</mat-icon>
         </button>
 
         <div
             #track
+            #roller="railAutoRoll"
+            [libRailAutoRoll]="autoRollEligible()"
             class="rail__track"
             [attr.data-layout]="layout()"
-            (scroll)="onScroll()"
+            (keydown)="onTrackKeydown($event)"
+            [attr.aria-label]="label()"
+            tabindex="0"
             role="list"
         >
-            @for (card of items(); track card.id) {
+            @for (
+                card of roller.available() ? loopingItems() : items();
+                track card.id + ':' + $index
+            ) {
                 @if (layout() === 'channel') {
                     <!-- Programme-first live card: the channel identifies the
                          row, the current programme is the headline, and the
@@ -152,6 +184,12 @@
                          progress bar, then title + remaining time. -->
                     <div
                         class="rail__card rail__card--landscape"
+                        [attr.data-rail-copy]="
+                            $index >= items().length ? '' : null
+                        "
+                        [attr.aria-hidden]="
+                            $index >= items().length ? 'true' : null
+                        "
                         role="listitem"
                         [attr.title]="cardTitle(card)"
                         [attr.data-test-id]="
@@ -268,6 +306,12 @@
                 } @else {
                     <div
                         class="rail__card"
+                        [attr.data-rail-copy]="
+                            $index >= items().length ? '' : null
+                        "
+                        [attr.aria-hidden]="
+                            $index >= items().length ? 'true' : null
+                        "
                         [class.rail__card--ranked]="layout() === 'ranked'"
                         role="listitem"
                         [attr.title]="cardTitle(card)"
@@ -498,9 +542,10 @@
             type="button"
             class="rail__chev rail__chev--right"
             [class.rail__chev--visible]="canScrollRight()"
+            [disabled]="!canScrollRight()"
             (click)="scrollBy(1)"
             aria-label="Scroll right"
-            tabindex="-1"
+            [tabIndex]="canScrollRight() ? 0 : -1"
         >
             <mat-icon>chevron_right</mat-icon>
         </button>

@@ -8,9 +8,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Workspace chrome uses neutral charcoal/silver app tokens and the app sans-serif
 stack. Global navigation sits above provider/source tabs, with labels above
-640px. The dashboard pairs a feature card with a separate history deck; catalog,
+640px. The dashboard pairs a wide cinematic feature with a horizontal history deck; catalog,
 detail, live, Sources and Settings pages use distinct compositions.
 Canonical palette and interaction rules: `docs/architecture/iptvnator-ui-guidelines.md`.
+Workspace motion follows Settings > General > Interface motion (System, Full,
+or Reduced). Full overrides the OS animation preference for workspace effects;
+route fades preserve native player geometry. Workspace pointer motion tilts poster
+artwork and lights it at the pointer; a measured sliding marker follows global
+navigation. Movie rails expose scroll arrows and keyboard paging. See the same
+motion contract. Hero backgrounds stay stationary;
+detail posters and companion recommendations also respond to the cursor.
+Shared `SceneTransitionService` connects page navigation and inline detail
+open/return with native snapshots; active playback bypasses route snapshots.
+Movie/series rails loop endlessly forward with per-row pause/resume and interaction/visibility
+pauses; Reduced motion disables rolling. See the dashboard motion contract.
 
 Movie detail hosts project `MovieCompanionComponent` into the shell when existing
 TMDB enrichment supplies facts or recommendations. Watch layouts at an available

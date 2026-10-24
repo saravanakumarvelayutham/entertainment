@@ -152,6 +152,7 @@ export function createSettingsForm(
         embeddedMpvAutoReconnect: true,
         portalConnectivityGuard: true,
         coverSize: 'medium' as CoverSize,
+        workspaceMotion: 'system' as Settings['workspaceMotion'],
         showCoverTitles: true,
         ...(supportsEpg
             ? {
@@ -248,6 +249,11 @@ export function createSettingsFromFormValue(
         embeddedMpvAutoReconnect: value.embeddedMpvAutoReconnect ?? true,
         portalConnectivityGuard: value.portalConnectivityGuard !== false,
         coverSize: value.coverSize ?? 'medium',
+        workspaceMotion:
+            value.workspaceMotion === 'full' ||
+            value.workspaceMotion === 'reduced'
+                ? value.workspaceMotion
+                : 'system',
         showCoverTitles: value.showCoverTitles !== false,
         epgUrl,
         preferUploadedEpgOverXtream:

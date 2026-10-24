@@ -52,7 +52,8 @@
     padding: 8px 2px 0;
 }
 
-.rail__taste-action {
+.rail__taste-action,
+.rail__auto-roll {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -259,6 +260,14 @@
     &::-webkit-scrollbar {
         display: none;
     }
+}
+
+.rail__track.rail__track--auto-roll {
+    scroll-snap-type: none;
+}
+.rail__auto-roll {
+    flex-shrink: 0;
+    margin-inline-start: auto;
 }
 
 .rail__card {

@@ -1,6 +1,9 @@
 @use '../../../libs/ui/components/src/lib/resizable/resizable.scss';
 @use './settings-theme';
 @use './cover-size';
+@use './workspace-motion';
+@use './workspace-cinematic';
+@use './workspace-scenes';
 
 // ─── Tailwind CSS ─────────────────────────────────────────────────────────────
 // Preflight is disabled in tailwind.config.js to avoid conflicts with

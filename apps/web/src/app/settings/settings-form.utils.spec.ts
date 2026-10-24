@@ -9,6 +9,19 @@ import {
 describe('settings form utils — strip country prefix', () => {
     const formBuilder = new FormBuilder();
 
+    it.each(['system', 'full', 'reduced'] as const)(
+        'saves the %s workspace motion preference',
+        (motion) => {
+            const form = createSettingsForm(formBuilder, true);
+            expect(form.getRawValue().workspaceMotion).toBe('system');
+            form.patchValue({ workspaceMotion: motion });
+            expect(
+                createSettingsFromFormValue(form, {} as Settings)
+                    .workspaceMotion
+            ).toBe(motion);
+        }
+    );
+
     it('defaults portal request pauses on and preserves an explicit opt-out', () => {
         const form = createSettingsForm(new FormBuilder(), true);
         expect(form.get('portalConnectivityGuard')?.value).toBe(true);
@@ -61,8 +74,10 @@ describe('settings form utils — automatic English subtitles', () => {
         (value) => {
             const form = createSettingsForm(new FormBuilder(), true);
             form.get('autoEnglishSubtitles')?.setValue(value as boolean);
-            expect(createSettingsFromFormValue(form, {} as Settings).autoEnglishSubtitles)
-                .toBe(value !== false);
+            expect(
+                createSettingsFromFormValue(form, {} as Settings)
+                    .autoEnglishSubtitles
+            ).toBe(value !== false);
         }
     );
 });

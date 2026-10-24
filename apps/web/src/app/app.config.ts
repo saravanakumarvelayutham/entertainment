@@ -16,7 +16,11 @@ import {
 } from '@angular/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import {
+    provideRouter,
+    withComponentInputBinding,
+    withViewTransitions,
+} from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideEffects } from '@ngrx/effects';
 import { provideRouterStore, routerReducer } from '@ngrx/router-store';
@@ -37,6 +41,7 @@ import { DataService } from '@iptvnator/services';
 import { dbConfig } from '@iptvnator/shared/interfaces';
 import { AppConfig } from '../environments/environment';
 import { routes } from './app.routes';
+import { transitionWorkspaceRoute } from './services/workspace-route-transition';
 import { ElectronService } from './services/electron.service';
 import { ExternalPlaybackService } from './services/external-playback.service';
 import { PlayerService } from './services/player.service';
@@ -107,7 +112,14 @@ export function DataFactory() {
 export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
-        provideRouter(routes, withComponentInputBinding()),
+        provideRouter(
+            routes,
+            withComponentInputBinding(),
+            withViewTransitions({
+                skipInitialTransition: true,
+                onViewTransitionCreated: transitionWorkspaceRoute,
+            })
+        ),
         provideAnimations(),
         // CDK overlays (menus, tooltips, dialogs) live in a container under
         // <body>, which the browser hides behind an element in DOM fullscreen.

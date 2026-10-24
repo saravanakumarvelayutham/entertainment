@@ -107,6 +107,9 @@ export class AppComponent implements OnInit {
         effect(() => {
             const size = this.settingsStore.coverSize?.() ?? 'medium';
             document.documentElement.dataset.coverSize = size;
+            const motion = this.settingsStore.workspaceMotion?.();
+            document.documentElement.dataset.workspaceMotion =
+                motion === 'full' || motion === 'reduced' ? motion : 'system';
         });
 
         if (this.runtime.isElectron) {

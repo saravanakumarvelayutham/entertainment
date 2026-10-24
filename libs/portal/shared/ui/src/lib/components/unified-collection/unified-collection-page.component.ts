@@ -23,7 +23,11 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ChannelListSkeletonComponent, DialogService } from '@iptvnator/ui/components';
+import {
+    ChannelListSkeletonComponent,
+    DialogService,
+    SceneTransitionService,
+} from '@iptvnator/ui/components';
 import {
     buildGlobalCollectionDetailNavigationTarget,
     buildCollectionViewState,
@@ -59,7 +63,10 @@ import {
     UnifiedRecentDataService,
 } from '@iptvnator/portal/shared/data-access';
 import { RuntimeCapabilitiesService } from '@iptvnator/services';
-import { selectAllPlaylistsMeta, selectPlaylistsLoadingFlag } from '@iptvnator/m3u-state';
+import {
+    selectAllPlaylistsMeta,
+    selectPlaylistsLoadingFlag,
+} from '@iptvnator/m3u-state';
 import { EmptyStateComponent } from '@iptvnator/playlist/shared/ui';
 import { UnifiedLiveTabComponent } from './unified-live-tab.component';
 import { UnifiedGridTabComponent } from './unified-grid-tab.component';
@@ -97,6 +104,7 @@ export class UnifiedCollectionPageComponent implements AfterContentInit {
 
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
+    private readonly sceneTransition = inject(SceneTransitionService);
     private readonly store = inject(Store);
     private readonly destroyRef = inject(DestroyRef);
     private readonly hostElement = inject(ElementRef<HTMLElement>);
@@ -106,7 +114,9 @@ export class UnifiedCollectionPageComponent implements AfterContentInit {
     private readonly dialogService = inject(DialogService);
     private readonly runtime = inject(RuntimeCapabilitiesService);
     private readonly translate = inject(TranslateService);
-    private readonly workspaceViewCommands = inject(WorkspaceViewCommandService);
+    private readonly workspaceViewCommands = inject(
+        WorkspaceViewCommandService
+    );
     private readonly liveSidebarStateService = inject(
         LiveLayoutSidebarStateService
     );
@@ -413,8 +423,18 @@ export class UnifiedCollectionPageComponent implements AfterContentInit {
             }),
             keywords: () =>
                 this.mode() === 'favorites'
-                    ? ['clear', 'favorites', 'remove', this.selectedContentType()]
-                    : ['clear', 'recent', 'history', this.selectedContentType()],
+                    ? [
+                          'clear',
+                          'favorites',
+                          'remove',
+                          this.selectedContentType(),
+                      ]
+                    : [
+                          'clear',
+                          'recent',
+                          'history',
+                          this.selectedContentType(),
+                      ],
             priority: 10,
             run: () => this.clearAllCurrent(),
         });
@@ -822,16 +842,20 @@ export class UnifiedCollectionPageComponent implements AfterContentInit {
         item: UnifiedCollectionItem,
         seriesResume?: SeriesResumeTarget | null
     ): void {
-        this.selectedContentType.set(item.contentType);
-        this.selectedDetailItem.set(item);
-        this.selectedDetailSeriesResume.set(seriesResume ?? null);
+        this.sceneTransition.run('detail-open', () => {
+            this.selectedContentType.set(item.contentType);
+            this.selectedDetailItem.set(item);
+            this.selectedDetailSeriesResume.set(seriesResume ?? null);
+        });
     }
 
     private clearInlineDetail(): void {
-        this.selectedDetailItem.set(null);
-        this.selectedDetailSeriesResume.set(null);
-        this.autoSelectContentType();
-        clearNavigationStateKeys([OPEN_COLLECTION_DETAIL_STATE_KEY]);
+        this.sceneTransition.run('detail-close', () => {
+            this.selectedDetailItem.set(null);
+            this.selectedDetailSeriesResume.set(null);
+            this.autoSelectContentType();
+            clearNavigationStateKeys([OPEN_COLLECTION_DETAIL_STATE_KEY]);
+        });
     }
 
     private pushInlineDetailState(item: UnifiedCollectionItem): void {

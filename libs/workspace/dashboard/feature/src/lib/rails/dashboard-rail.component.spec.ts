@@ -39,6 +39,97 @@ describe('DashboardRailComponent', () => {
             ...overrides,
         }) as DashboardRailCard;
 
+    describe('horizontal paging', () => {
+        const originalMatchMedia = window.matchMedia;
+        const originalResizeObserver = globalThis.ResizeObserver;
+        beforeEach(() => {
+            globalThis.ResizeObserver = class {
+                observe = jest.fn();
+                unobserve = jest.fn();
+                disconnect = jest.fn();
+            } as unknown as typeof ResizeObserver;
+            Object.defineProperty(window, 'matchMedia', {
+                configurable: true,
+                value: jest.fn(() => ({ matches: true })),
+            });
+        });
+        afterEach(() => {
+            globalThis.ResizeObserver = originalResizeObserver;
+            Object.defineProperty(window, 'matchMedia', {
+                configurable: true,
+                value: originalMatchMedia,
+            });
+        });
+        it('pages from keyboard or arrows and exposes only available controls', async () => {
+            const motion = signal<'full' | 'reduced' | 'system'>('reduced');
+            await TestBed.configureTestingModule({
+                imports: [DashboardRailComponent, TranslateModule.forRoot()],
+                providers: [
+                    provideRouter([]),
+                    {
+                        provide: SettingsStore,
+                        useValue: {
+                            stripCountryPrefix: signal(false),
+                            workspaceMotion: motion,
+                        },
+                    },
+                ],
+            }).compileComponents();
+            const fixture = TestBed.createComponent(DashboardRailComponent);
+            fixture.componentRef.setInput('label', 'Movies');
+            fixture.componentRef.setInput('items', []);
+            fixture.detectChanges();
+            const track = fixture.nativeElement.querySelector(
+                '.rail__track'
+            ) as HTMLElement;
+            Object.defineProperties(track, {
+                clientWidth: { value: 400 },
+                scrollWidth: { value: 1200 },
+                scrollLeft: { value: 0, writable: true },
+            });
+            track.scrollBy = jest.fn();
+            fixture.componentInstance.onScroll();
+            fixture.detectChanges();
+            const next = fixture.nativeElement.querySelector(
+                '.rail__chev--right'
+            ) as HTMLButtonElement;
+            expect(next.disabled).toBe(false);
+            expect(next.tabIndex).toBe(0);
+            next.click();
+            expect(track.scrollBy).toHaveBeenLastCalledWith({
+                left: 340,
+                behavior: 'auto',
+            });
+            motion.set('full');
+            track.dispatchEvent(
+                new KeyboardEvent('keydown', {
+                    key: 'ArrowLeft',
+                    bubbles: true,
+                })
+            );
+            expect(track.scrollBy).toHaveBeenLastCalledWith({
+                left: -340,
+                behavior: 'smooth',
+            });
+            const child = document.createElement('a');
+            track.append(child);
+            jest.mocked(track.scrollBy).mockClear();
+            child.dispatchEvent(
+                new KeyboardEvent('keydown', {
+                    key: 'ArrowRight',
+                    bubbles: true,
+                })
+            );
+            expect(track.scrollBy).not.toHaveBeenCalled();
+            track.scrollLeft = 800;
+            fixture.componentInstance.onScroll();
+            fixture.detectChanges();
+            expect(next.disabled).toBe(true);
+            expect(next.tabIndex).toBe(-1);
+            fixture.destroy();
+        });
+    });
+
     afterEach(() => {
         TestBed.resetTestingModule();
     });
@@ -191,12 +282,10 @@ describe('DashboardRailComponent', () => {
 
             const art = element.querySelector('.rail__art--landscape');
             expect(art).not.toBeNull();
-            expect(art?.classList.contains('rail__art--contained')).toBe(
-                false
+            expect(art?.classList.contains('rail__art--contained')).toBe(false);
+            expect(art?.querySelector('img')?.getAttribute('src')).toBe(
+                'https://img.test/backdrop.jpg'
             );
-            expect(
-                art?.querySelector('img')?.getAttribute('src')
-            ).toBe('https://img.test/backdrop.jpg');
             expect(
                 art?.querySelector<HTMLElement>('.rail__art-progress i')?.style
                     .width
@@ -239,7 +328,9 @@ describe('DashboardRailComponent', () => {
                 element.querySelector('.rail__art--landscape img')
             ).toBeNull();
             expect(
-                element.querySelector('.rail__art--landscape .rail__art-fallback')
+                element.querySelector(
+                    '.rail__art--landscape .rail__art-fallback'
+                )
             ).not.toBeNull();
             fixture.destroy();
         });

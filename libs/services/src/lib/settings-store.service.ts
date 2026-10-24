@@ -280,6 +280,7 @@ export const SettingsStore = signalStore(
                         store.stripCountryPrefix?.() ??
                         DEFAULT_SETTINGS.stripCountryPrefix,
                     theme: store.theme(),
+                    workspaceMotion: store.workspaceMotion?.() ?? 'system',
                     mpvPlayerPath: store.mpvPlayerPath(),
                     mpvPlayerArguments: store.mpvPlayerArguments(),
                     mpvReuseInstance: store.mpvReuseInstance(),

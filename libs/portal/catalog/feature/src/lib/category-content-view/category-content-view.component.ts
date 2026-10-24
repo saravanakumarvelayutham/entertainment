@@ -1,4 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
+import { SceneTransitionService } from '@iptvnator/ui/components';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -72,6 +73,7 @@ export class CategoryContentViewComponent implements OnInit, OnDestroy {
     private readonly destroyRef = inject(DestroyRef);
     private readonly hostElement = inject(ElementRef<HTMLElement>);
     private readonly router = inject(Router);
+    private readonly sceneTransition = inject(SceneTransitionService);
     private readonly translate = inject(TranslateService);
     private readonly providerOnlyStalkerItemId = signal<string | null>(null);
     private readonly catalog = inject(
@@ -299,6 +301,12 @@ export class CategoryContentViewComponent implements OnInit, OnDestroy {
         }
 
         this.providerOnlyStalkerItemId.set(null);
+        if (this.catalog.provider === 'stalker') {
+            this.sceneTransition.run('detail-open', () =>
+                this.catalog.selectItem(item)
+            );
+            return;
+        }
         const navigation = this.catalog.selectItem(item);
         if (navigation?.length) {
             this.router.navigate(navigation, {

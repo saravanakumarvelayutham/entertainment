@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
 } from '@angular/core';
 import { Location } from '@angular/common';
+import { SceneTransitionService } from '@iptvnator/ui/components';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -71,6 +72,7 @@ import { createPlaybackSessionKey } from '@iptvnator/playback/util';
 })
 export class StalkerCatalogDetailComponent implements OnDestroy {
     private readonly catalog = inject(StalkerCatalogFacadeService);
+    private readonly sceneTransition = inject(SceneTransitionService);
     private readonly playbackPositions = inject(PORTAL_PLAYBACK_POSITIONS);
     private readonly portalPlayer = inject(PORTAL_PLAYER);
     private readonly playbackPositionBridge = inject(
@@ -282,7 +284,10 @@ export class StalkerCatalogDetailComponent implements OnDestroy {
         // target, or a marker left by an earlier handoff) still returns the
         // user to the category list — it only suppresses the navigation.
         this.closeInlinePlayer();
-        this.catalog.clearSelectedItem();
+        const clearSelection = () => this.catalog.clearSelectedItem();
+        if (back.kind === 'none')
+            this.sceneTransition.run('detail-close', clearSelection);
+        else clearSelection();
 
         if (back.kind === 'history-back') {
             // One-shot: retire the contract so a browser Forward onto this
@@ -321,9 +326,7 @@ export class StalkerCatalogDetailComponent implements OnDestroy {
         this.snackBar.open(
             this.translateService.instant('PORTALS.STREAM_URL_COPIED'),
             undefined,
-            {
-                duration: 2000,
-            }
+            { duration: 2000 }
         );
     }
 
@@ -333,7 +336,6 @@ export class StalkerCatalogDetailComponent implements OnDestroy {
             request.player
         );
         request.trackLaunch(launch);
-        void launch;
     }
 
     async onVodDownload(item: VodDetailsItem): Promise<void> {
@@ -439,9 +441,7 @@ export class StalkerCatalogDetailComponent implements OnDestroy {
                           'PORTALS.CONTENT_NOT_AVAILABLE'
                       )
                     : this.translateService.instant('PORTALS.PLAYBACK_ERROR');
-            this.snackBar.open(errorMessage, undefined, {
-                duration: 3000,
-            });
+            this.snackBar.open(errorMessage, undefined, { duration: 3000 });
         } finally {
             this.pendingStart.settle(startId);
         }

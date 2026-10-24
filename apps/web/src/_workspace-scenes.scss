@@ -1,0 +1,168 @@
+// View transitions animate browser snapshots, never the live video hierarchy.
+@keyframes workspace-scene-out {
+    to {
+        opacity: 0;
+        transform: translateX(-56px) scale(0.94);
+        filter: blur(5px);
+    }
+}
+@keyframes workspace-scene-in {
+    from {
+        opacity: 0;
+        transform: translateX(72px) scale(1.035);
+        filter: blur(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+@keyframes workspace-detail-in {
+    from {
+        opacity: 0;
+        transform: translateY(70px) scale(0.92);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+@keyframes workspace-detail-out {
+    to {
+        opacity: 0;
+        transform: translateY(60px) scale(1.045);
+        filter: blur(8px);
+    }
+}
+@keyframes workspace-library-return {
+    from {
+        opacity: 0;
+        transform: scale(0.94);
+        filter: blur(5px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+
+@mixin scene-motion {
+    // Leave chrome live: only the named content/panel surfaces are captured.
+    view-transition-name: none;
+    .workspace-content {
+        view-transition-name: workspace-scene;
+    }
+    app-workspace-shell-context-sidebar {
+        view-transition-name: workspace-context;
+    }
+
+    // A snapshot must contain fully visible content. Native scene transitions
+    // replace the older independent entrances after the first scene handoff.
+    &[data-workspace-transitions='ready'] .workspace-content {
+        > router-outlet + *,
+        .dashboard-masthead,
+        .dashboard-lead,
+        .rails-page__rails > *,
+        .hero__body > *,
+        app-grid-list,
+        .settings-group,
+        app-grid-list .grid-list__grid mat-card,
+        app-content-hero .hero__backdrop,
+        app-content-hero .hero__content > .poster,
+        app-content-hero .details > *,
+        app-movie-companion > section {
+            animation: none;
+        }
+    }
+
+    &::view-transition {
+        pointer-events: none;
+    }
+    &::view-transition-group(*) {
+        animation-duration: 620ms;
+        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    &::view-transition-image-pair(workspace-scene) {
+        isolation: isolate;
+    }
+    &::view-transition-old(workspace-scene) {
+        animation: workspace-scene-out 420ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    &::view-transition-new(workspace-scene) {
+        animation: workspace-scene-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    &[data-workspace-scene='detail-open']::view-transition-new(
+            workspace-scene
+        ) {
+        animation: workspace-detail-in 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    &[data-workspace-scene='detail-close']::view-transition-old(
+            workspace-scene
+        ) {
+        animation: workspace-detail-out 440ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    &[data-workspace-scene='detail-close']::view-transition-new(
+            workspace-scene
+        ) {
+        animation: workspace-library-return 680ms cubic-bezier(0.16, 1, 0.3, 1)
+            both;
+    }
+    .workspace-content app-portal-detail-shell {
+        .shell__hero {
+            transition-duration: 560ms, 400ms;
+        }
+        .shell__hero--collapsed {
+            transition:
+                grid-template-rows 560ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 400ms ease,
+                visibility 0s linear 560ms;
+        }
+        // The native player must never have a transformed ancestor.
+        .shell__player--active,
+        .shell__about {
+            animation: app-page-arrive 480ms ease both;
+        }
+    }
+    .cdk-overlay-pane .mat-mdc-dialog-container {
+        animation: workspace-detail-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    :root:not([data-workspace-motion='reduced']) {
+        @include scene-motion;
+    }
+}
+:root[data-workspace-motion='full'] {
+    @include scene-motion;
+}
+
+@mixin quiet-scenes {
+    &::view-transition-group(*),
+    &::view-transition-old(*),
+    &::view-transition-new(*) {
+        animation: none !important;
+    }
+    .workspace-content app-portal-detail-shell {
+        .shell__hero,
+        .shell__hero--collapsed {
+            transition: none;
+        }
+        .shell__player--active,
+        .shell__about {
+            animation: none;
+        }
+    }
+}
+:root[data-workspace-motion='reduced'] {
+    @include quiet-scenes;
+}
+@media (prefers-reduced-motion: reduce) {
+    :root:not([data-workspace-motion='full']) {
+        @include quiet-scenes;
+    }
+}

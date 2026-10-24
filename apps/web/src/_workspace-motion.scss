@@ -1,0 +1,307 @@
+// App-owned motion is emitted once, scoped to workspace surfaces. Explicit
+// Full motion can override the OS preference without changing Windows settings.
+@keyframes dashboard-arrive {
+    from {
+        opacity: 0;
+        translate: 0 24px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+@keyframes app-page-arrive {
+    from {
+        opacity: 0.25;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes workspace-panel-arrive {
+    from {
+        opacity: 0;
+        translate: 20px 0;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+@mixin workspace-motion {
+    // Animate artwork and text independently; the shared player stays stationary.
+    .workspace-content app-content-hero {
+        .hero__content > .poster,
+        .details > * {
+            animation: dashboard-arrive 850ms cubic-bezier(0.16, 1, 0.3, 1)
+                backwards;
+        }
+        .details > * {
+            @for $index from 1 through 6 {
+                &:nth-child(#{$index}) {
+                    animation-delay: #{100 + $index * 65}ms;
+                }
+            }
+        }
+        .action-buttons button {
+            transition:
+                translate 240ms ease,
+                scale 240ms ease,
+                box-shadow 240ms ease;
+            &:hover {
+                translate: 0 -4px;
+                scale: 1.04;
+            }
+            &:active {
+                scale: 0.95;
+            }
+        }
+    }
+    .workspace-content {
+        app-content-hero .poster,
+        .content-card .thumbnail-wrapper,
+        app-movie-companion .recommendation .poster,
+        .details__similar-card {
+            transform: perspective(900px) rotateX(var(--workspace-tilt-x, 0deg))
+                rotateY(var(--workspace-tilt-y, 0deg));
+            transition:
+                transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 400ms ease;
+        }
+        app-content-hero .poster[data-workspace-pointer-active],
+        .content-card:is(:hover, :focus-within) .thumbnail-wrapper,
+        app-movie-companion .recommendation:is(:hover, :focus-visible) .poster,
+        .details__similar-card:is(:hover, :focus-visible) {
+            transform: perspective(900px) rotateX(var(--workspace-tilt-x, 0deg))
+                rotateY(var(--workspace-tilt-y, 0deg)) translateY(-12px)
+                scale(1.045);
+            box-shadow: 0 32px 48px -18px rgba(0, 0, 0, 0.7);
+            transition-duration: 140ms;
+        }
+        app-movie-companion > section {
+            animation: dashboard-arrive 850ms cubic-bezier(0.16, 1, 0.3, 1)
+                backwards;
+        }
+        app-movie-companion > section + section {
+            animation-delay: 160ms;
+        }
+        .content-card .thumbnail-wrapper::after,
+        app-movie-companion .poster::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(
+                circle at var(--workspace-pointer-x, 50%)
+                    var(--workspace-pointer-y, 50%),
+                rgba(255, 255, 255, 0.38),
+                transparent 65%
+            );
+            opacity: 0;
+            transition: opacity 350ms ease;
+        }
+        .content-card[data-workspace-pointer-active] .thumbnail-wrapper::after,
+        app-movie-companion [data-workspace-pointer-active] .poster::after {
+            opacity: 1;
+        }
+    }
+    .workspace-shell .rail-links[data-workspace-nav-ready]::before {
+        transition:
+            transform 480ms cubic-bezier(0.22, 1, 0.36, 1),
+            width 480ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .workspace-shell .context-panel {
+        transition:
+            width 380ms cubic-bezier(0.22, 1, 0.36, 1),
+            padding 380ms cubic-bezier(0.22, 1, 0.36, 1),
+            margin 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .workspace-shell .context-panel > *,
+    .workspace-content app-grid-list,
+    .workspace-content .settings-group {
+        animation: workspace-panel-arrive 550ms cubic-bezier(0.22, 1, 0.36, 1)
+            backwards;
+    }
+
+    .workspace-content {
+        .rail__art {
+            transform: perspective(900px) rotateX(var(--workspace-tilt-x, 0deg))
+                rotateY(var(--workspace-tilt-y, 0deg));
+            transition:
+                transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 300ms ease;
+            backface-visibility: hidden;
+        }
+        [data-workspace-pointer-active] .rail__art,
+        app-grid-list
+            [data-workspace-pointer-active]
+            .card-thumbnail-container {
+            transition-duration: 100ms;
+            box-shadow: 0 24px 40px -18px rgba(0, 0, 0, 0.6);
+        }
+        .rail__art::after,
+        app-grid-list .card-thumbnail-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: inherit;
+            background: radial-gradient(
+                circle at var(--workspace-pointer-x, 50%)
+                    var(--workspace-pointer-y, 50%),
+                color-mix(in srgb, var(--app-feature-accent) 32%, transparent),
+                transparent 64%
+            );
+            opacity: 0;
+            transition: opacity 400ms ease;
+        }
+        [data-workspace-pointer-active] .rail__art::after,
+        app-grid-list
+            [data-workspace-pointer-active]
+            .card-thumbnail-container::after {
+            opacity: 1;
+        }
+    }
+    app-workspace-shell .context-drawer-backdrop {
+        animation: app-page-arrive 180ms ease-out;
+    }
+    app-workspace-shell .workspace-content > router-outlet + * {
+        // No transforms on player ancestors: native video bounds stay stable.
+        animation: app-page-arrive 420ms ease-out;
+    }
+    app-workspace-shell .portal-rail-link {
+        transition:
+            color 160ms ease,
+            background-color 160ms ease,
+            border-color 160ms ease,
+            scale 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        mat-icon {
+            transition: translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        &:hover mat-icon,
+        &:focus-visible mat-icon {
+            translate: 0 -3px;
+        }
+        &:active {
+            scale: 0.95;
+        }
+    }
+    .workspace-content lib-workspace-dashboard-rails {
+        .dashboard-masthead,
+        .dashboard-lead,
+        .rails-page__rails > * {
+            animation: dashboard-arrive 680ms cubic-bezier(0.16, 1, 0.3, 1)
+                backwards;
+        }
+        .dashboard-lead {
+            animation-delay: 100ms;
+        }
+        .rails-page__rails > * {
+            animation-delay: 180ms;
+            &:nth-child(2) {
+                animation-delay: 240ms;
+            }
+            &:nth-child(n + 3) {
+                animation-delay: 300ms;
+            }
+        }
+        .hero__body > * {
+            animation: dashboard-arrive 680ms cubic-bezier(0.16, 1, 0.3, 1)
+                140ms backwards;
+            &:nth-child(2) {
+                animation-delay: 220ms;
+            }
+            &:nth-child(n + 3) {
+                animation-delay: 300ms;
+            }
+        }
+    }
+    .workspace-content lib-dashboard-rail {
+        .rail__card {
+            transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+            &:hover,
+            &:focus-within {
+                transform: translateY(-8px);
+            }
+        }
+        .rail__art img {
+            transition: scale 450ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .rail__card:hover .rail__art img,
+        .rail__card:focus-within .rail__art img {
+            scale: 1.06;
+        }
+        .rail__card-link {
+            transition: scale 140ms ease-out;
+            &:active {
+                scale: 0.97;
+            }
+        }
+    }
+    .workspace-content app-grid-list .grid-list__grid mat-card {
+        animation: dashboard-arrive 600ms cubic-bezier(0.16, 1, 0.3, 1)
+            backwards;
+        @for $index from 1 through 12 {
+            &:nth-child(#{$index}) {
+                animation-delay: #{($index - 1) * 25}ms;
+            }
+        }
+        transition:
+            transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 300ms ease;
+        &:hover,
+        &:focus-visible {
+            transform: translateY(-8px);
+        }
+        &[data-workspace-pointer-active] {
+            transform: perspective(900px) rotateX(var(--workspace-tilt-x, 0deg))
+                rotateY(var(--workspace-tilt-y, 0deg)) translateY(-8px);
+            transition-duration: 100ms;
+        }
+        .card-thumbnail-container img {
+            transition: scale 450ms ease;
+        }
+        &:hover .card-thumbnail-container img,
+        &:focus-visible .card-thumbnail-container img {
+            scale: 1.06;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    :root:not([data-workspace-motion='reduced']) {
+        @include workspace-motion;
+    }
+}
+:root[data-workspace-motion='full'] {
+    @include workspace-motion;
+}
+
+// Explicit Reduced motion also suppresses the older component hover rules.
+:root[data-workspace-motion='reduced'] {
+    .workspace-shell .context-panel {
+        transition: none;
+    }
+    app-workspace-shell .context-drawer-backdrop {
+        animation: none;
+    }
+    app-workspace-shell .portal-rail-link,
+    app-workspace-shell .portal-rail-link mat-icon,
+    .workspace-content lib-dashboard-rail .rail__card,
+    .workspace-content app-grid-list mat-card {
+        animation: none;
+        transition: none;
+        transform: none;
+        translate: none;
+        scale: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root:not([data-workspace-motion='full']) .workspace-shell .context-panel {
+        transition: none;
+    }
+}

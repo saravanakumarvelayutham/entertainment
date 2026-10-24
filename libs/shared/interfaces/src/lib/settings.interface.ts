@@ -254,6 +254,8 @@ export interface Settings {
     portalConnectivityGuard?: boolean;
     /** Cover/poster sizing preset applied across grids and rails */
     coverSize?: CoverSize;
+    /** Workspace animation preference; system follows reduced-motion. */
+    workspaceMotion?: 'system' | 'full' | 'reduced';
     /**
      * Titles under movie/series covers. Default on; only an explicit false
      * switches VOD, series, favorites and recent grids to a posters-only

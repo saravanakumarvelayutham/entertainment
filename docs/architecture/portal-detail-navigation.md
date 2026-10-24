@@ -5,6 +5,13 @@ This document records the current navigation contract for Xtream and Stalker det
 Related:
 
 - [Embedded Inline Playback](./embedded-inline-playback.md)
+- [Workspace scene transitions](./iptvnator-ui-guidelines.md#connected-scene-transitions)
+
+Page navigation and inline detail open/return share `SceneTransitionService`.
+The visual snapshot transaction wraps existing state changes without replacing
+their history, focus or scroll ownership. Background artwork remains stationary;
+the outgoing/incoming scene snapshots provide depth and directional movement.
+Reduced motion and active playback bypass snapshots.
 
 ## Detail Scroll and Focus
 
