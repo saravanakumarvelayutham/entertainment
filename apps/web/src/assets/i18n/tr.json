@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Filmin perde arkası",
+        "SIMILAR": "Benzer filmler",
+        "LIBRARY": "Kitaplığınızda",
+        "EXPLORE": "TMDB’de keşfet",
+        "AVAILABILITY": "Bu önerilerin izlenebilirliği kontrol edilmemiştir.",
+        "SOURCE": "TMDB’den bilgiler",
+        "COLLECTION": "Koleksiyonun parçası",
+        "MUSIC": "Müzik",
+        "SCREENPLAY": "Senaryo",
+        "PRODUCTION": "Yapım şirketleri",
+        "BUDGET": "Bütçe (USD)",
+        "REVENUE": "Dünya çapında gişe hasılatı (USD)",
+        "ORIGINAL_TITLE": "Özgün ad",
+        "LANGUAGE": "Özgün dil",
+        "RELEASE": "Vizyon tarihi"
     }
 }

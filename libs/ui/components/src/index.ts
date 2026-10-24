@@ -13,6 +13,7 @@ export * from './lib/external-playback-dock/external-playback-dock.component';
 export * from './lib/portal-detail-shell/content-about.component';
 export * from './lib/portal-detail-shell/detail-template.directives';
 export * from './lib/portal-detail-shell/portal-detail-shell.component';
+export * from './lib/movie-companion/movie-companion.component';
 export * from './lib/view-in-portal-action/view-in-portal-action.component';
 export * from './lib/view-in-portal-action/view-in-portal-handoff.token';
 export * from './lib/progress-capsule/progress-capsule.component';

@@ -21,6 +21,7 @@
 
     scrollbar-gutter: stable;
     scrollbar-width: auto;
+    container: detail-stage / inline-size;
 
     &:focus-visible {
         outline: 2px solid var(--app-selection-color);
@@ -151,6 +152,55 @@
     max-width: var(--content-max-width);
     margin: 0 auto;
     padding: 0 clamp(20px, 4vw, 56px) 48px;
+}
+
+.shell__companion {
+    box-sizing: border-box;
+    max-width: var(--content-max-width);
+    min-width: 0;
+    margin: 24px auto;
+    padding: 0 clamp(20px, 4vw, 56px);
+    &[hidden] {
+        display: none;
+    }
+}
+
+@container detail-stage (min-width: 1600px) {
+    .shell__watch-layout--companion {
+        --content-max-width: 2400px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 380px;
+        gap: 0 28px;
+        max-width: var(--content-max-width);
+        margin: 0 auto;
+        padding: 24px clamp(24px, 3vw, 64px) 0;
+        box-sizing: border-box;
+        align-items: start;
+
+        .shell__player {
+            grid-column: 1;
+            grid-row: 1;
+            min-width: 0;
+            padding: 0;
+        }
+        .shell__episodes {
+            grid-column: 1;
+            grid-row: 2;
+            width: 100%;
+            padding: 0;
+        }
+        .shell__about {
+            grid-column: 1;
+            grid-row: 3;
+            min-width: 0;
+        }
+        .shell__companion {
+            grid-column: 2;
+            grid-row: 1 / span 3;
+            padding: 0;
+            margin: 0 0 28px;
+        }
+    }
 }
 
 @keyframes shell-fade-in {

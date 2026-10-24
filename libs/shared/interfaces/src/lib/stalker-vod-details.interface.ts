@@ -3,6 +3,7 @@ import {
     TmdbEnrichedCastMember,
     TmdbGenreFacet,
     TmdbMediaType,
+    TmdbMovieFacts,
     TmdbRecommendation,
     TmdbSeriesStatus,
 } from './tmdb.interface';
@@ -53,6 +54,8 @@ export interface StalkerVodInfo {
     tmdb_trailer?: string;
     /** Populated by TMDB enrichment */
     tmdb_recommendations?: TmdbRecommendation[];
+    /** Movie production facts from the existing TMDB detail payload. */
+    tmdb_movie_facts?: TmdbMovieFacts;
     /** Matched TMDB id — enables lazy season/episode enrichment */
     tmdb_id?: number;
     /** Populated by TMDB enrichment; per-entry clickable Discover chips */

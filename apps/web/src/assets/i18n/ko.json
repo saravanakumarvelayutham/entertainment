@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "영화의 뒷이야기",
+        "SIMILAR": "비슷한 영화",
+        "LIBRARY": "내 라이브러리",
+        "EXPLORE": "TMDB에서 보기",
+        "AVAILABILITY": "이 추천 작품들의 시청 가능 여부는 확인되지 않았습니다.",
+        "SOURCE": "TMDB의 영화 정보",
+        "COLLECTION": "컬렉션에 포함된 작품",
+        "MUSIC": "음악",
+        "SCREENPLAY": "각본",
+        "PRODUCTION": "제작사",
+        "BUDGET": "제작비 (USD)",
+        "REVENUE": "전 세계 흥행 수익 (USD)",
+        "ORIGINAL_TITLE": "원제",
+        "LANGUAGE": "원어",
+        "RELEASE": "개봉일"
     }
 }

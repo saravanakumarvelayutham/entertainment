@@ -5,7 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NEVER, of } from 'rxjs';
 import { Location } from '@angular/common';
-import { ContentHeroComponent } from '@iptvnator/ui/components';
+import {
+    ContentHeroComponent,
+    MovieCompanionComponent,
+} from '@iptvnator/ui/components';
 import {
     PORTAL_EXTERNAL_PLAYBACK,
     PORTAL_PLAYBACK_POSITIONS,
@@ -17,7 +20,11 @@ import {
     XtreamVodDetails,
     XtreamVodStream,
 } from '@iptvnator/shared/interfaces';
-import { DownloadsService, SettingsStore } from '@iptvnator/services';
+import {
+    DownloadsService,
+    SettingsStore,
+    TmdbEnrichmentService,
+} from '@iptvnator/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { VodDetailsRouteComponent } from './vod-details-route.component';
 
@@ -100,6 +107,10 @@ describe('VodDetailsRouteComponent', () => {
         await TestBed.configureTestingModule({
             imports: [VodDetailsRouteComponent],
             providers: [
+                {
+                    provide: TmdbEnrichmentService,
+                    useValue: { isEnabled: jest.fn().mockReturnValue(true) },
+                },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -213,6 +224,51 @@ describe('VodDetailsRouteComponent', () => {
         consoleWarnSpy?.mockRestore();
     });
 
+    it('presents movie facts with playable local suggestions and reuses their navigation', () => {
+        currentPlaylist.set({ id: 'p1' });
+        vodStreamsPlaylistId.set('p1');
+        vodStreams.set([
+            { stream_id: 77, name: 'Arrival (2016)', category_id: '7' },
+        ]);
+        selectedItem.set({
+            info: {
+                name: 'Dune',
+                description: 'Spice.',
+                tmdb_movie_facts: { tmdbId: 42, budget: 165000000 },
+                tmdb_recommendations: [
+                    {
+                        tmdbId: 43,
+                        title: 'Arrival',
+                        year: 2016,
+                        posterUrl: null,
+                    },
+                ],
+            },
+            movie_data: { stream_id: 650020, container_extension: 'mp4' },
+        } as XtreamVodDetails);
+        fixture.detectChanges();
+        const companion = fixture.debugElement.query(
+            By.directive(MovieCompanionComponent)
+        ).componentInstance as MovieCompanionComponent;
+        expect(companion.facts()).toEqual({ tmdbId: 42, budget: 165000000 });
+        expect(companion.availableItems()).toEqual([
+            expect.objectContaining({
+                key: 'local:77',
+                title: 'Arrival (2016)',
+            }),
+        ]);
+        const openSimilar = jest
+            .spyOn(fixture.componentInstance, 'openSimilar')
+            .mockImplementation(() => undefined);
+        companion.itemSelected.emit('local:77');
+        expect(openSimilar).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 77, categoryId: '7' })
+        );
+        expect(
+            fixture.nativeElement.querySelector('.details__similar')
+        ).toBeNull();
+    });
+
     it('keeps the fallback visible and exposes actions when catalog playback fields are usable', () => {
         selectedItem.set({
             info: [],
@@ -258,8 +314,12 @@ describe('VodDetailsRouteComponent', () => {
                 ?.textContent
         ).toContain('XTREAM.DETAIL_FALLBACK.STATUS');
         expect(host.querySelector('button.play-btn')).not.toBeNull();
-        expect(host.querySelector('[data-testid="vod-favorite-toggle"]')).not.toBeNull();
-        expect(host.querySelector('[data-testid="vod-download-start"]')).toBeNull();
+        expect(
+            host.querySelector('[data-testid="vod-favorite-toggle"]')
+        ).not.toBeNull();
+        expect(
+            host.querySelector('[data-testid="vod-download-start"]')
+        ).toBeNull();
     });
 
     it('keeps the fallback visible for a minimal info object', () => {
@@ -299,7 +359,9 @@ describe('VodDetailsRouteComponent', () => {
 
         const host = fixture.nativeElement as HTMLElement;
         expect(host.querySelector('button.play-btn')).toBeNull();
-        expect(host.querySelector('[data-testid="vod-favorite-toggle"]')).toBeNull();
+        expect(
+            host.querySelector('[data-testid="vod-favorite-toggle"]')
+        ).toBeNull();
 
         selectedItem.set({
             info: [],
@@ -309,7 +371,9 @@ describe('VodDetailsRouteComponent', () => {
         fixture.detectChanges();
 
         expect(host.querySelector('button.play-btn')).not.toBeNull();
-        expect(host.querySelector('[data-testid="vod-favorite-toggle"]')).not.toBeNull();
+        expect(
+            host.querySelector('[data-testid="vod-favorite-toggle"]')
+        ).not.toBeNull();
     });
 
     it('keeps the full Xtream detail view when usable metadata exists', () => {

@@ -118,6 +118,10 @@ export interface TmdbMovieDetails extends TmdbDetailsBase {
     original_title?: string;
     release_date?: string;
     runtime?: number;
+    budget?: number;
+    revenue?: number;
+    belongs_to_collection?: { id?: number; name?: string } | null;
+    production_companies?: { id?: number; name?: string }[];
 }
 
 export interface TmdbTvDetails extends TmdbDetailsBase {

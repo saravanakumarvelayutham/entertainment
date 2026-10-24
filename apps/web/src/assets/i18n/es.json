@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Detrás de la película",
+        "SIMILAR": "Películas similares",
+        "LIBRARY": "En tu biblioteca",
+        "EXPLORE": "Explorar en TMDB",
+        "AVAILABILITY": "No se ha comprobado la disponibilidad de estas sugerencias.",
+        "SOURCE": "Datos de TMDB",
+        "COLLECTION": "Parte de la colección",
+        "MUSIC": "Música de",
+        "SCREENPLAY": "Guion de",
+        "PRODUCTION": "Productoras",
+        "BUDGET": "Presupuesto (USD)",
+        "REVENUE": "Recaudación mundial (USD)",
+        "ORIGINAL_TITLE": "Título original",
+        "LANGUAGE": "Idioma original",
+        "RELEASE": "Fecha de estreno"
     }
 }

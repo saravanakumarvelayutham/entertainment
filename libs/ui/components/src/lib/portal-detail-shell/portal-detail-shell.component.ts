@@ -48,7 +48,7 @@ import {
     ],
     templateUrl: './portal-detail-shell.component.html',
     styleUrls: ['./portal-detail-shell.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection -- Preserve pre-Angular 22 eager checking during the framework upgrade.
+    // Preserve pre-Angular 22 eager checking during the framework upgrade.
     changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         tabindex: '0',
@@ -79,6 +79,8 @@ export class PortalDetailShellComponent {
     readonly backAvailable = input(true);
     /** True while inline playback is active — flips the layout to watch state. */
     readonly playbackActive = input(false);
+    /** Movie context that shares a wide watch stage without owning playback. */
+    readonly hasCompanion = input(false);
 
     readonly backClicked = output<void>();
     /** Emitted by the sticky control or Escape during inline playback. */

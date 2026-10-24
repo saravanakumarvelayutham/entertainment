@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "A film kulisszái mögött",
+        "SIMILAR": "Hasonló filmek",
+        "LIBRARY": "A könyvtáradban",
+        "EXPLORE": "Felfedezés a TMDB-n",
+        "AVAILABILITY": "Ezeknek az ajánlatoknak az elérhetősége nincs ellenőrizve.",
+        "SOURCE": "Adatok a TMDB-ről",
+        "COLLECTION": "A gyűjtemény része",
+        "MUSIC": "Zeneszerző",
+        "SCREENPLAY": "Forgatókönyvíró",
+        "PRODUCTION": "Gyártócégek",
+        "BUDGET": "Költségvetés (USD)",
+        "REVENUE": "Világméretű mozibevétel (USD)",
+        "ORIGINAL_TITLE": "Eredeti cím",
+        "LANGUAGE": "Eredeti nyelv",
+        "RELEASE": "Megjelenés dátuma"
     }
 }

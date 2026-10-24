@@ -83,7 +83,9 @@ describe('youtubeEmbedUrl', () => {
             youtubeEmbedUrl('https://www.youtube.com/watch?v=zAGVQLHvwOY')
         ).toBe('https://www.youtube-nocookie.com/embed/zAGVQLHvwOY');
         expect(
-            youtubeEmbedUrl('https://www.youtube.com/watch?feature=x&v=abc123def')
+            youtubeEmbedUrl(
+                'https://www.youtube.com/watch?feature=x&v=abc123def'
+            )
         ).toBe('https://www.youtube-nocookie.com/embed/abc123def');
     });
 
@@ -103,5 +105,34 @@ describe('youtubeEmbedUrl', () => {
         expect(youtubeEmbedUrl('   ')).toBeNull();
         expect(youtubeEmbedUrl('not a video!!!')).toBeNull();
         expect(youtubeEmbedUrl('https://vimeo.com/12345')).toBeNull();
+    });
+});
+
+describe('normalized movie production facts', () => {
+    const facts = { tmdbId: 603, budget: 63000000 };
+    it('passes Xtream and Stalker facts through to the shared view', () => {
+        expect(
+            normalizeXtreamVod({
+                info: { tmdb_movie_facts: facts },
+            } as import('./xtream-vod-details.interface').XtreamVodDetails)
+                .tmdbMovieFacts
+        ).toEqual(facts);
+        expect(
+            normalizeStalkerVod({
+                info: { tmdb_movie_facts: facts },
+            } as import('./stalker-vod-details.interface').StalkerVodDetails)
+                .tmdbMovieFacts
+        ).toEqual(facts);
+    });
+    it('does not show stale movie facts on embedded Stalker series', () => {
+        expect(
+            normalizeStalkerVod({
+                info: { tmdb_movie_facts: facts, tmdb_media_type: 'tv' },
+            } as import('./stalker-vod-details.interface').StalkerVodDetails)
+                .tmdbMovieFacts
+        ).toBeUndefined();
+    });
+    it('keeps un-enriched metadata free of facts', () => {
+        expect(normalizeXtreamVod({}).tmdbMovieFacts).toBeUndefined();
     });
 });

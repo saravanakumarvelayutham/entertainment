@@ -3,6 +3,21 @@ import { mergeStalkerInfoWithTmdb } from './tmdb-merge';
 import { TmdbMovieDetails, TmdbTvDetails } from './tmdb.types';
 
 describe('mergeStalkerInfoWithTmdb', () => {
+    it('attaches movie facts but clears them for embedded series', () => {
+        const movie = mergeStalkerInfoWithTmdb(
+            providerStalkerInfo,
+            { id: 20992, budget: 1000 },
+            'movie'
+        );
+        expect(movie.tmdb_movie_facts).toEqual({ tmdbId: 20992, budget: 1000 });
+        const series = mergeStalkerInfoWithTmdb(
+            movie,
+            { id: 100, first_air_date: '2000-01-01' },
+            'tv'
+        );
+        expect(series.tmdb_movie_facts).toBeUndefined();
+    });
+
     const providerStalkerInfo: StalkerVodInfo = {
         movie_image: '',
         description: '',
@@ -104,17 +119,13 @@ describe('mergeStalkerInfoWithTmdb', () => {
             {
                 ...tmdbMovieRu,
                 origin_country: ['RU'],
-                production_countries: [
-                    { iso_3166_1: 'RU', name: 'Russia' },
-                ],
+                production_countries: [{ iso_3166_1: 'RU', name: 'Russia' }],
             },
             'movie'
         );
 
         expect(merged.tmdb_genres).toEqual([{ id: 35, name: 'комедия' }]);
-        expect(merged.tmdb_countries).toEqual([
-            { code: 'RU', name: 'Russia' },
-        ]);
+        expect(merged.tmdb_countries).toEqual([{ code: 'RU', name: 'Russia' }]);
         expect(merged.tmdb_media_type).toBe('movie');
     });
 

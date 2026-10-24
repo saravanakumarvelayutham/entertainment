@@ -7,6 +7,7 @@ import {
     signal,
     untracked,
 } from '@angular/core';
+import type { MovieCompanionItem } from '@iptvnator/ui/components';
 import { XtreamStore } from '@iptvnator/portal/xtream/data-access';
 import {
     CrossPortalSimilarItem,
@@ -88,6 +89,20 @@ export class VodDetailsSimilarService {
             (item) => !localTitles.has(normalizeTitleKeys(item.title).exact)
         );
     });
+
+    readonly companionItems = computed<readonly MovieCompanionItem[]>(() => [
+        ...this.similarItems().map((item) => ({
+            ...item,
+            key: `local:${item.id}`,
+        })),
+        ...this.similarInPortals().map((item) => ({
+            key: `portal:${item.match.playlistId}:${item.match.xtreamId}`,
+            title: item.title,
+            posterUrl: item.posterUrl,
+            year: item.year,
+            sourceLabel: item.match.playlistName,
+        })),
+    ]);
 
     private readonly loadCrossPortalSimilar = effect(() => {
         const recommendations = this.vodInfo()?.tmdb_recommendations;

@@ -1,6 +1,7 @@
 @let meta = normalizedMeta();
 
 <app-portal-detail-shell
+    [hasCompanion]="hasCompanion()"
     [title]="meta.title"
     [description]="meta.description"
     [posterUrl]="meta.posterUrl"
@@ -329,8 +330,17 @@
         />
     }
 
+    @if (hasCompanion()) {
+        <app-movie-companion
+            detail-companion
+            [facts]="meta.tmdbMovieFacts"
+            [recommendations]="meta.tmdbRecommendations ?? []"
+            [availableItems]="companionItems()"
+            (itemSelected)="openCompanion($event)"
+        />
+    }
     <div detail-extras>
-        @if (similarInPortals().length) {
+        @if (meta.tmdbMediaType === 'tv' && similarInPortals().length) {
             <section class="details__similar" data-test-id="tmdb-similar">
                 <h3>{{ 'XTREAM.SIMILAR' | translate }}</h3>
                 <div class="details__similar-strip">

@@ -21,6 +21,8 @@ import {
     DetailActionsTemplateDirective,
     DetailMetaTemplateDirective,
     DetailTagsTemplateDirective,
+    MovieCompanionComponent,
+    type MovieCompanionItem,
     PortalDetailShellComponent,
     ViewInPortalActionComponent,
 } from '@iptvnator/ui/components';
@@ -73,6 +75,7 @@ import { createVodDownloadState } from './vod-download-state.util';
         DetailMetaTemplateDirective,
         DetailTagsTemplateDirective,
         MatIcon,
+        MovieCompanionComponent,
         PortalDetailShellComponent,
         ViewInPortalActionComponent,
         PortalInlinePlayerComponent,
@@ -213,6 +216,33 @@ export class VodDetailsComponent {
                 });
         });
     });
+
+    readonly companionItems = computed<readonly MovieCompanionItem[]>(() =>
+        this.similarInPortals().map((item) => ({
+            key: `${item.match.playlistId}:${item.match.xtreamId}`,
+            title: item.title,
+            posterUrl: item.posterUrl,
+            year: item.year,
+            sourceLabel: item.match.playlistName,
+        }))
+    );
+    readonly hasCompanion = computed(
+        () =>
+            this.tmdbEnrichment.isEnabled() &&
+            this.normalizedMeta().tmdbMediaType !== 'tv' &&
+            !!(
+                this.normalizedMeta().tmdbMovieFacts ||
+                this.normalizedMeta().tmdbRecommendations?.length ||
+                this.companionItems().length
+            )
+    );
+
+    openCompanion(key: string): void {
+        const item = this.similarInPortals().find(
+            (item) => `${item.match.playlistId}:${item.match.xtreamId}` === key
+        );
+        if (item) this.openSimilarInPortals(item);
+    }
 
     openSimilarInPortals(item: CrossPortalSimilarItem): void {
         void this.router.navigate(this.crossPortalSimilar.buildLink(item));

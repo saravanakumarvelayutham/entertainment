@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "خلف كواليس الفيلم",
+        "SIMILAR": "أفلام مشابهة",
+        "LIBRARY": "في مكتبتك",
+        "EXPLORE": "استكشف على TMDB",
+        "AVAILABILITY": "لم يتم التحقق من توفر هذه الاقتراحات.",
+        "SOURCE": "معلومات من TMDB",
+        "COLLECTION": "جزء من المجموعة",
+        "MUSIC": "الموسيقى من تأليف",
+        "SCREENPLAY": "من تأليف",
+        "PRODUCTION": "شركات الإنتاج",
+        "BUDGET": "الميزانية (دولار أمريكي)",
+        "REVENUE": "إيرادات شباك التذاكر العالمية (دولار أمريكي)",
+        "ORIGINAL_TITLE": "العنوان الأصلي",
+        "LANGUAGE": "اللغة الأصلية",
+        "RELEASE": "تاريخ الإصدار"
     }
 }

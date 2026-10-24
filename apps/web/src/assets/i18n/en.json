@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Behind the movie",
+        "SIMILAR": "More like this",
+        "LIBRARY": "In your library",
+        "EXPLORE": "Explore on TMDB",
+        "AVAILABILITY": "Availability is not checked for these suggestions.",
+        "SOURCE": "Facts from TMDB",
+        "COLLECTION": "Part of the collection",
+        "MUSIC": "Music by",
+        "SCREENPLAY": "Written by",
+        "PRODUCTION": "Production companies",
+        "BUDGET": "Budget (USD)",
+        "REVENUE": "Worldwide box office (USD)",
+        "ORIGINAL_TITLE": "Original title",
+        "LANGUAGE": "Original language",
+        "RELEASE": "Release date"
     }
 }

@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Dietro le quinte del film",
+        "SIMILAR": "Film simili",
+        "LIBRARY": "Nella tua raccolta",
+        "EXPLORE": "Esplora su TMDB",
+        "AVAILABILITY": "La disponibilità di questi suggerimenti non è stata verificata.",
+        "SOURCE": "Informazioni da TMDB",
+        "COLLECTION": "Parte della collezione",
+        "MUSIC": "Musiche di",
+        "SCREENPLAY": "Sceneggiatura di",
+        "PRODUCTION": "Case di produzione",
+        "BUDGET": "Budget (USD)",
+        "REVENUE": "Incassi mondiali (USD)",
+        "ORIGINAL_TITLE": "Titolo originale",
+        "LANGUAGE": "Lingua originale",
+        "RELEASE": "Data di uscita"
     }
 }

@@ -49,6 +49,31 @@ sidebar, and collection bootstrap placeholders have no return handler. They
 have no browse button or browse Escape action; M3U watch still offers Close
 player. Loading/error shells with a return handler keep Back available.
 
+## Movie context
+
+The optional `detail-companion` projection and `hasCompanion` input add movie
+context to the existing shell. `MovieCompanionComponent` is a controlled UI
+component in `libs/ui/components`; Xtream, shared Stalker VOD and M3U hosts
+supply facts and recommendations from their existing enrichment payload.
+
+In watch state at an available shell width of at least 1600px, the player and
+About share the left column and the companion occupies a 380px right column.
+The stage can grow to 2400px. Below that threshold and in browse state, the
+companion follows the existing content. There is no nested scroll owner and
+late metadata or library matching never replaces the mounted player.
+
+Facts are stated TMDB production metadata, not generated trivia: collection,
+composer, screenplay credits, production companies, original title/language,
+release date and reported budget/revenue (USD). Missing/zero values are omitted,
+with a source link to the matched TMDB movie. No additional API is called.
+
+More like this first lists verified library matches; selecting one uses the
+host's canonical navigation. Other TMDB suggestions link to their TMDB page
+and explicitly state that availability has not been checked. The current film,
+duplicate suggestions and already represented library matches are excluded.
+Metadata opt-out hides the companion; absent enrichment leaves playback intact.
+Movie changes clear asynchronous library results and stale matches are ignored.
+
 ## Summary
 
 - Xtream category browsing uses a route-first detail model.

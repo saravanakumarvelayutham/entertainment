@@ -12,6 +12,13 @@ stack. Global navigation sits above provider/source tabs, with labels above
 detail, live, Sources and Settings pages use distinct compositions.
 Canonical palette and interaction rules: `docs/architecture/iptvnator-ui-guidelines.md`.
 
+Movie detail hosts project `MovieCompanionComponent` into the shell when existing
+TMDB enrichment supplies facts or recommendations. Watch layouts at an available
+width of 1600px pair the player/About column with a 380px companion; smaller
+layouts put it below About. The shell remains the single scroll owner and the
+player projection is never conditionally reparented. See
+`docs/architecture/portal-detail-navigation.md` (Movie context).
+
 ## Plan Mode
 
 - When Claude Code is in Plan Mode and produces a final `<proposed_plan>`, it must also save that finalized plan as a Markdown file in the repo-root `.plans/` directory.
@@ -1582,7 +1589,7 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
 
 **VOD/Series Detail Pages (two-state layout)**:
 
-- Xtream and Stalker detail pages use the shared `PortalDetailShellComponent` (`libs/ui/components/src/lib/portal-detail-shell/`) with two states: **Browse** (hero with poster/metadata/actions, episodes below) and **Watch** (hero collapses with a ~300ms morph, the inline player takes the full content width, metadata moves to an About block below the episodes)
+- Xtream and Stalker detail pages use the shared `PortalDetailShellComponent` (`libs/ui/components/src/lib/portal-detail-shell/`) with two states: **Browse** (hero with poster/metadata/actions, episodes below) and **Watch** (hero collapses with a ~300ms morph, the inline player occupies the watch stage, metadata moves to an About block below the episodes; movie context can occupy a right column on wide screens)
 - The inline player (`PortalInlinePlayerComponent`) renders a full-width **theater stage** (`.player-shell__viewport`): the 16:9 player is centered and letterboxed so the leftover on wide-short windows is always the stage's black background, never app surface. An opt-in `playerAmbientMode` setting (Settings → Playback, default off, built-in web players only) fills that leftover with a blurred, dimmed copy of the poster (YouTube "Ambient mode" style)
 - For inline **series** playback on wide windows the stage instead docks the player left and shows an **"Up Next" episode rail** in the leftover column (`app-up-next-rail` in `libs/ui/playback/src/lib/portal-inline-player/`): rest of the current season plus next-season spillover, playing episode highlighted, watch-progress bars from playback positions; clicking plays inline via the host's episode flow (both Xtream and Stalker). Gated by the `playerUpNextRail` setting (default on, web players only) and a ≥320px leftover-width check via ResizeObserver — narrower windows keep the centered theater/ambient stage; movies and live never show the rail. The rail is opaque and sits on top of the ambient fill
 - Watch state derives from `inlinePlayback() !== null` only; external MPV/VLC playback keeps the browse layout. Esc and "Close player" exit to browse without navigation; the now-playing back arrow is route-level back (straight to the list via the host's `goBack()`)

@@ -1,4 +1,5 @@
 <app-portal-detail-shell
+    [hasCompanion]="hasCompanion()"
     [backAvailable]="false"
     [title]="title()"
     [description]="overview()"
@@ -96,6 +97,15 @@
             [playerOverride]="playerOverride()"
             (closed)="closeInlinePlayback()"
             (externalFallbackRequested)="externalFallbackRequested.emit($event)"
+        />
+    }
+    @if (hasCompanion()) {
+        <app-movie-companion
+            detail-companion
+            [facts]="movieFacts()"
+            [recommendations]="recommendations()"
+            [availableItems]="companionItems()"
+            (itemSelected)="openCompanion($event)"
         />
     }
 </app-portal-detail-shell>

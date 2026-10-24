@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "電影幕後",
+        "SIMILAR": "相似電影",
+        "LIBRARY": "在你的媒體庫中",
+        "EXPLORE": "在 TMDB 上探索",
+        "AVAILABILITY": "尚未確認這些推薦影片是否可觀看。",
+        "SOURCE": "資料來自 TMDB",
+        "COLLECTION": "所屬系列",
+        "MUSIC": "配樂",
+        "SCREENPLAY": "編劇",
+        "PRODUCTION": "製作公司",
+        "BUDGET": "預算（美元）",
+        "REVENUE": "全球票房（美元）",
+        "ORIGINAL_TITLE": "原片名",
+        "LANGUAGE": "原始語言",
+        "RELEASE": "上映日期"
     }
 }

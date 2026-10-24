@@ -8,7 +8,6 @@ import {
     effect,
     inject,
     signal,
-    untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
@@ -21,6 +20,7 @@ import {
     DetailMetaTemplateDirective,
     DetailTagsTemplateDirective,
     DialogService,
+    MovieCompanionComponent,
     PortalDetailShellComponent,
     ViewInPortalActionComponent,
     VodSourcesChipComponent,
@@ -49,23 +49,14 @@ import {
 } from '@iptvnator/services';
 import {
     getXtreamVodInfo,
-    normalizeTitleKeys,
-    playlistDisplayLabel,
-    reportsPlaybackFailures,
     TmdbEnrichedCastMember,
     XtreamCategory,
     XtreamVodDetails,
     XtreamVodInfo,
     XtreamVodStream,
     youtubeEmbedUrl,
-    type PlaybackPositionData,
-    type VodSourceCandidate,
-    type VodSourceDescriptor,
 } from '@iptvnator/shared/interfaces';
-import {
-    SimilarCatalogItem,
-    matchRecommendationsToCatalog,
-} from '../tmdb-similar.util';
+import { SimilarCatalogItem } from '../tmdb-similar.util';
 import {
     buildXtreamVodFallbackViewModel,
     hasUsableXtreamVodMetadata,
@@ -118,6 +109,7 @@ function resolveVodIdentity(item: XtreamVodDetails): number | null {
         DetailActionsTemplateDirective,
         DetailMetaTemplateDirective,
         DetailTagsTemplateDirective,
+        MovieCompanionComponent,
         MatIcon,
         MatTooltip,
         NgTemplateOutlet,
@@ -363,6 +355,31 @@ export class VodDetailsRouteComponent implements OnInit, OnDestroy {
 
     readonly similarItems = this.similar.similarItems;
     readonly similarInPortals = this.similar.similarInPortals;
+    readonly companionItems = this.similar.companionItems;
+    readonly hasCompanion = computed(
+        () =>
+            this.tmdbEnrichment.isEnabled() &&
+            !!(
+                this.selectedVodInfo()?.tmdb_movie_facts ||
+                this.selectedVodInfo()?.tmdb_recommendations?.length ||
+                this.companionItems().length
+            )
+    );
+
+    openCompanion(key: string): void {
+        const local = this.similarItems().find(
+            (item) => `local:${item.id}` === key
+        );
+        if (local) {
+            this.openSimilar(local);
+            return;
+        }
+        const portal = this.similarInPortals().find(
+            (item) =>
+                `portal:${item.match.playlistId}:${item.match.xtreamId}` === key
+        );
+        if (portal) this.openSimilarInPortals(portal);
+    }
 
     /**
      * The alternative the player is on, in playback's terms — null while the

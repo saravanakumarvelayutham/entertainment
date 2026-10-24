@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "ورا كواليس الفيلم",
+        "SIMILAR": "أفلام بحال هادا",
+        "LIBRARY": "فالمكتبة ديالك",
+        "EXPLORE": "استكشف فـ TMDB",
+        "AVAILABILITY": "ما تأكدناش واش هاد الاقتراحات متوفرة.",
+        "SOURCE": "معلومات من TMDB",
+        "COLLECTION": "جزء من المجموعة",
+        "MUSIC": "الموسيقى ديال",
+        "SCREENPLAY": "كتابة",
+        "PRODUCTION": "شركات الإنتاج",
+        "BUDGET": "الميزانية (دولار أمريكي)",
+        "REVENUE": "مداخيل السينما فالعالم (دولار أمريكي)",
+        "ORIGINAL_TITLE": "العنوان الأصلي",
+        "LANGUAGE": "اللغة الأصلية",
+        "RELEASE": "تاريخ الإصدار"
     }
 }

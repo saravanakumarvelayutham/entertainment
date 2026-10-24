@@ -1,4 +1,7 @@
-import { XtreamVodDetails, getXtreamVodInfo } from './xtream-vod-details.interface';
+import {
+    XtreamVodDetails,
+    getXtreamVodInfo,
+} from './xtream-vod-details.interface';
 import { StalkerVodDetails } from './stalker-vod-details.interface';
 import { parseFacetYear } from './tmdb.interface';
 import {
@@ -33,6 +36,7 @@ export function normalizeXtreamVod(item: XtreamVodDetails): NormalizedVodMeta {
         tmdbCast: info?.tmdb_cast,
         tmdbDirectors: info?.tmdb_directors,
         tmdbRecommendations: info?.tmdb_recommendations,
+        tmdbMovieFacts: info?.tmdb_movie_facts,
         tmdbGenres: info?.tmdb_genres,
         tmdbCountries: info?.tmdb_countries,
     };
@@ -43,7 +47,9 @@ export function normalizeXtreamVod(item: XtreamVodDetails): NormalizedVodMeta {
  * Stalker has fewer metadata fields than Xtream.
  * Prefers o_name (original title) over name (often formatted/generic).
  */
-export function normalizeStalkerVod(item: StalkerVodDetails): NormalizedVodMeta {
+export function normalizeStalkerVod(
+    item: StalkerVodDetails
+): NormalizedVodMeta {
     const info = item?.info;
 
     return {
@@ -65,6 +71,8 @@ export function normalizeStalkerVod(item: StalkerVodDetails): NormalizedVodMeta 
         tmdbCast: info?.tmdb_cast,
         tmdbDirectors: info?.tmdb_directors,
         tmdbRecommendations: info?.tmdb_recommendations,
+        tmdbMovieFacts:
+            info?.tmdb_media_type === 'tv' ? undefined : info?.tmdb_movie_facts,
         tmdbMediaType: info?.tmdb_media_type,
         tmdbGenres: info?.tmdb_genres,
         tmdbCountries: info?.tmdb_countries,

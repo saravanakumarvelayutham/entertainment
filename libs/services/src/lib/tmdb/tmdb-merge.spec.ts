@@ -1,5 +1,9 @@
 import { XtreamSerieInfo, XtreamVodInfo } from '@iptvnator/shared/interfaces';
-import { mergeSerieInfoWithTmdb, mergeVodInfoWithTmdb } from './tmdb-merge';
+import {
+    mergeSerieInfoWithTmdb,
+    mergeVodInfoWithTmdb,
+    movieRecommendationsFromTmdb,
+} from './tmdb-merge';
 import { TmdbMovieDetails, TmdbTvDetails } from './tmdb.types';
 
 function providerVodInfo(
@@ -101,6 +105,32 @@ const tmdbMovie: TmdbMovieDetails = {
 };
 
 describe('mergeVodInfoWithTmdb', () => {
+    it('exposes the same bounded recommendations to raw movie detail hosts', () => {
+        expect(movieRecommendationsFromTmdb(tmdbMovie)).toEqual(
+            mergeVodInfoWithTmdb(providerVodInfo(), tmdbMovie).tmdb_recommendations
+        );
+        expect(movieRecommendationsFromTmdb({ id: 1 })).toEqual([]);
+        expect(movieRecommendationsFromTmdb({
+            id: 1,
+            recommendations: { results: Array.from({ length: 20 }, (_, n) => ({ id: n + 1, title: `Movie ${n}` })) },
+        })).toHaveLength(12);
+    });
+    it('attaches validated movie production facts independently of provider fields', () => {
+        const merged = mergeVodInfoWithTmdb(providerVodInfo(), {
+            ...tmdbMovie,
+            budget: 63000000,
+        });
+        expect(merged.tmdb_movie_facts).toEqual({
+            tmdbId: 603,
+            releaseDate: '1999-03-31',
+            budget: 63000000,
+        });
+        expect(
+            mergeVodInfoWithTmdb(providerVodInfo(), { id: 603 })
+                .tmdb_movie_facts
+        ).toBeUndefined();
+    });
+
     it('prefers TMDB editorial fields when present', () => {
         const merged = mergeVodInfoWithTmdb(providerVodInfo(), tmdbMovie);
 
@@ -261,9 +291,7 @@ describe('mergeVodInfoWithTmdb', () => {
             ],
         });
 
-        expect(merged.tmdb_countries).toEqual([
-            { code: 'FR', name: 'France' },
-        ]);
+        expect(merged.tmdb_countries).toEqual([{ code: 'FR', name: 'France' }]);
     });
 
     it('drops an origin country TMDB does not name', () => {

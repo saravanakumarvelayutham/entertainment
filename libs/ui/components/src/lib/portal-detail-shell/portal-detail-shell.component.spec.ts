@@ -24,6 +24,7 @@ import { PortalDetailShellComponent } from './portal-detail-shell.component';
             [backLabel]="'Return to downloads'"
             [backAvailable]="backAvailable()"
             [playbackActive]="playbackActive()"
+            [hasCompanion]="hasCompanion()"
             (backClicked)="backRequests = backRequests + 1"
             (closePlayerRequested)="closePlayer()"
         >
@@ -41,11 +42,13 @@ import { PortalDetailShellComponent } from './portal-detail-shell.component';
             }
             <div detail-episodes class="fake-episodes">episodes</div>
             <div detail-extras class="fake-extras">extras</div>
+            <div detail-companion class="fake-companion">movie facts</div>
         </app-portal-detail-shell>
     `,
 })
 class HostComponent {
     readonly playbackActive = signal(false);
+    readonly hasCompanion = signal(false);
     readonly backAvailable = signal(true);
     closeRequests = 0;
     backRequests = 0;
@@ -83,6 +86,25 @@ describe('PortalDetailShellComponent', () => {
         fixture = TestBed.createComponent(HostComponent);
         host = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    it('changes companion layout without replacing the mounted player', () => {
+        host.playbackActive.set(true);
+        fixture.detectChanges();
+        const player = requiredQuery('.fake-player');
+        expect(requiredQuery('.shell__companion').hidden).toBe(true);
+        host.hasCompanion.set(true);
+        fixture.detectChanges();
+        expect(
+            requiredQuery('.shell__watch-layout').classList.contains(
+                'shell__watch-layout--companion'
+            )
+        ).toBe(true);
+        expect(requiredQuery('.shell__companion').hidden).toBe(false);
+        expect(requiredQuery('.fake-player')).toBe(player);
+        host.hasCompanion.set(false);
+        fixture.detectChanges();
+        expect(requiredQuery('.fake-player')).toBe(player);
     });
 
     it('makes the scroll owner a named keyboard region and focuses it once', async () => {

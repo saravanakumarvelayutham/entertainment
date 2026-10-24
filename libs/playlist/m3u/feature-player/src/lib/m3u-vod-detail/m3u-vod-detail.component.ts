@@ -9,10 +9,16 @@ import {
     untracked,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { createLogger } from '@iptvnator/portal/shared/util';
 import type { PlaybackFallbackRequest } from '@iptvnator/playback/util';
 import {
+    CrossPortalSimilarService,
+    type CrossPortalSimilarItem,
+    movieFactsFromTmdb,
+    movieRecommendationsFromTmdb,
     enrichedCast,
     tmdbBackdropUrl,
     tmdbPosterUrl,
@@ -22,11 +28,14 @@ import {
     Channel,
     ResolvedPortalPlayback,
     VideoPlayer,
+    type TmdbRecommendation,
 } from '@iptvnator/shared/interfaces';
 import {
     DetailActionsTemplateDirective,
     DetailMetaTemplateDirective,
     DetailTagsTemplateDirective,
+    MovieCompanionComponent,
+    type MovieCompanionItem,
     PortalDetailShellComponent,
 } from '@iptvnator/ui/components';
 import { PortalInlinePlayerComponent } from '@iptvnator/ui/playback';
@@ -55,6 +64,7 @@ import { M3uVodMetadataService } from './m3u-vod-metadata.service';
         DetailMetaTemplateDirective,
         DetailTagsTemplateDirective,
         MatIcon,
+        MovieCompanionComponent,
         PortalDetailShellComponent,
         PortalInlinePlayerComponent,
         TranslatePipe,
@@ -65,6 +75,9 @@ import { M3uVodMetadataService } from './m3u-vod-metadata.service';
 })
 export class M3uVodDetailComponent {
     private readonly metadata = inject(M3uVodMetadataService);
+    private readonly similar = inject(CrossPortalSimilarService);
+    private readonly router = inject(Router);
+    private readonly logger = createLogger('M3uVodDetail');
 
     readonly channel = input.required<Channel>();
     /** Parent-owned playback payload (headers/DRM already resolved). */
@@ -105,6 +118,63 @@ export class M3uVodDetailComponent {
     }
 
     readonly tmdb = computed(() => this.metadata.state().details);
+
+    readonly movieFacts = computed(() => {
+        const details = this.tmdb();
+        return details ? movieFactsFromTmdb(details) : undefined;
+    });
+    readonly recommendations = computed<TmdbRecommendation[]>(() => {
+        const details = this.tmdb();
+        return details ? movieRecommendationsFromTmdb(details) : [];
+    });
+    private readonly matchedRecommendations = signal<CrossPortalSimilarItem[]>(
+        []
+    );
+    readonly companionItems = computed<readonly MovieCompanionItem[]>(() =>
+        this.matchedRecommendations().map((item) => ({
+            key: `${item.match.playlistId}:${item.match.xtreamId}`,
+            title: item.title,
+            posterUrl: item.posterUrl,
+            year: item.year,
+            sourceLabel: item.match.playlistName,
+        }))
+    );
+    readonly hasCompanion = computed(
+        () =>
+            !!(
+                this.movieFacts() ||
+                this.recommendations().length ||
+                this.companionItems().length
+            )
+    );
+    private readonly loadRecommendations = effect(() => {
+        const recommendations = this.recommendations();
+        untracked(() => {
+            this.matchedRecommendations.set([]);
+            if (!recommendations.length || !this.similar.isAvailable) return;
+            void this.similar
+                .matchRecommendations(recommendations, 'movie')
+                .then(
+                    (items) => {
+                        if (this.recommendations() === recommendations)
+                            this.matchedRecommendations.set(items);
+                    },
+                    () => {
+                        if (this.recommendations() === recommendations) {
+                            this.logger.warn(
+                                'Could not match movie recommendations to the library'
+                            );
+                        }
+                    }
+                );
+        });
+    });
+    openCompanion(key: string): void {
+        const item = this.matchedRecommendations().find(
+            (item) => `${item.match.playlistId}:${item.match.xtreamId}` === key
+        );
+        if (item) void this.router.navigate(this.similar.buildLink(item));
+    }
 
     readonly title = computed(
         () => this.tmdb()?.title?.trim() || this.channel().name

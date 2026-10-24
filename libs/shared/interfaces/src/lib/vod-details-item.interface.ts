@@ -5,6 +5,7 @@ import {
     TmdbEnrichedCastMember,
     TmdbGenreFacet,
     TmdbMediaType,
+    TmdbMovieFacts,
     TmdbRecommendation,
 } from './tmdb.interface';
 
@@ -92,6 +93,8 @@ export interface NormalizedVodMeta {
     tmdbDirectors?: TmdbEnrichedCastMember[];
     /** TMDB recommendations (drives the cross-portal "Similar" rail) */
     tmdbRecommendations?: TmdbRecommendation[];
+    /** Movie production facts from the existing TMDB detail payload. */
+    tmdbMovieFacts?: TmdbMovieFacts;
     /** Media type the enrichment matched as; Discover click routing */
     tmdbMediaType?: TmdbMediaType;
     /** Per-entry clickable genre chips (Discover page) */

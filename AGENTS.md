@@ -10,6 +10,13 @@ stack. Global navigation sits above provider/source tabs, with labels above
 detail, live, Sources and Settings pages use distinct compositions.
 Canonical palette and interaction rules: `docs/architecture/iptvnator-ui-guidelines.md`.
 
+Movie detail hosts project `MovieCompanionComponent` into the shell when existing
+TMDB enrichment supplies facts or recommendations. Watch layouts at an available
+width of 1600px pair the player/About column with a 380px companion; smaller
+layouts put it below About. The shell remains the single scroll owner and the
+player projection is never conditionally reparented. See
+`docs/architecture/portal-detail-navigation.md` (Movie context).
+
 ## Plan Mode
 
 - When an agent is in Plan Mode and produces a final `<proposed_plan>`, it must also save that finalized plan as a Markdown file in the repo-root `.plans/` directory.

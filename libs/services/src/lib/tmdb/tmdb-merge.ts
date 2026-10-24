@@ -20,6 +20,7 @@ import {
     topCast,
     unifiedTvCast,
 } from './tmdb-credits';
+import { movieFactsFromTmdb } from './tmdb-movie-facts';
 import { extractYear } from './tmdb-matcher';
 import {
     TmdbDetails,
@@ -59,6 +60,13 @@ function recommendationList(details: TmdbDetails): TmdbRecommendation[] {
             posterUrl: tmdbPosterUrl(result.poster_path),
         }))
         .filter((recommendation) => recommendation.title !== '');
+}
+
+/** Existing movie recommendations for hosts without a provider detail object. */
+export function movieRecommendationsFromTmdb(
+    details: TmdbMovieDetails
+): TmdbRecommendation[] {
+    return recommendationList(details);
 }
 
 function genreNames(details: TmdbDetails): string {
@@ -148,6 +156,7 @@ export function mergeVodInfoWithTmdb(
     return {
         ...info,
         tmdb_id: details.id,
+        tmdb_movie_facts: movieFactsFromTmdb(details),
         plot: prefer(details.overview, info.plot),
         description: prefer(details.overview, info.description),
         cast: prefer(cast, info.cast),
@@ -294,5 +303,9 @@ export function mergeStalkerInfoWithTmdb(
         // Lets the shared detail view route Discover clicks to the media
         // type this item actually matched as (embedded-VOD series → tv)
         tmdb_media_type: mediaType,
+        tmdb_movie_facts:
+            mediaType === 'movie'
+                ? movieFactsFromTmdb(details as TmdbMovieDetails)
+                : undefined,
     };
 }

@@ -277,7 +277,9 @@
             <app-portal-inline-player
                 [playbackSessionKey]="playbackSessionKey()"
                 [playback]="playback"
-                [releaseYear]="selectedVodInfo()?.releasedate?.slice(0, 4) ?? null"
+                [releaseYear]="
+                    selectedVodInfo()?.releasedate?.slice(0, 4) ?? null
+                "
                 [alternativeSources]="multiSource.alternatives()"
                 [allSources]="multiSource.sources()"
                 [sourcesMatchKind]="multiSource.matchKind()"
@@ -304,6 +306,7 @@
 @let item = selectedItem();
 @if (selectedVodInfo(); as info) {
     <app-portal-detail-shell
+        [hasCompanion]="hasCompanion()"
         [title]="info.name || item?.movie_data?.name"
         [description]="info.description || info.plot"
         [posterUrl]="info.movie_image || info.cover_big"
@@ -484,6 +487,15 @@
         </ng-template>
         <ng-container detail-player [ngTemplateOutlet]="inlinePlayer" />
 
+        @if (hasCompanion()) {
+            <app-movie-companion
+                detail-companion
+                [facts]="info.tmdb_movie_facts"
+                [recommendations]="info.tmdb_recommendations ?? []"
+                [availableItems]="companionItems()"
+                (itemSelected)="openCompanion($event)"
+            />
+        }
         <div detail-extras>
             @if (trailerEmbedUrl(); as trailerUrl) {
                 <div class="youtube-trailer">
@@ -506,77 +518,6 @@
                         ></iframe>
                     </div>
                 </div>
-            }
-
-            @if (similarItems().length || similarInPortals().length) {
-                <section class="details__similar" data-test-id="tmdb-similar">
-                    <h3>{{ 'XTREAM.SIMILAR' | translate }}</h3>
-                    <div class="details__similar-strip">
-                        @for (item of similarItems(); track item.id) {
-                            <button
-                                type="button"
-                                class="details__similar-card"
-                                [title]="item.title"
-                                (click)="openSimilar(item)"
-                            >
-                                @if (item.posterUrl) {
-                                    <img
-                                        class="details__similar-poster"
-                                        [src]="item.posterUrl"
-                                        [alt]="item.title"
-                                        loading="lazy"
-                                    />
-                                } @else {
-                                    <span
-                                        class="details__similar-poster details__similar-poster--fallback"
-                                    >
-                                        {{ item.title.charAt(0) }}
-                                    </span>
-                                }
-                                <span class="details__similar-title">
-                                    {{ item.title }}
-                                </span>
-                            </button>
-                        }
-                        @for (
-                            item of similarInPortals();
-                            track 'x' +
-                                item.match.playlistId +
-                                '-' +
-                                item.match.xtreamId
-                        ) {
-                            <button
-                                type="button"
-                                class="details__similar-card"
-                                [title]="
-                                    item.title + ' — ' + item.match.playlistName
-                                "
-                                (click)="openSimilarInPortals(item)"
-                            >
-                                @if (item.posterUrl) {
-                                    <img
-                                        class="details__similar-poster"
-                                        [src]="item.posterUrl"
-                                        [alt]="item.title"
-                                        loading="lazy"
-                                    />
-                                } @else {
-                                    <span
-                                        class="details__similar-poster details__similar-poster--fallback"
-                                    >
-                                        {{ item.title.charAt(0) }}
-                                    </span>
-                                }
-                                <span class="details__similar-title">
-                                    {{ item.title }}
-                                </span>
-                                <span class="details__similar-source">
-                                    {{ item.match.playlistName }}
-                                </span>
-                            </button>
-                        }
-                    </div>
-                </section>
             }
         </div>
     </app-portal-detail-shell>

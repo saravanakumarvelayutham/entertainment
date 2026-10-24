@@ -8,6 +8,23 @@
 
 export type TmdbMediaType = 'movie' | 'tv';
 
+/** Stated movie production facts from TMDB, never generated trivia. */
+export interface TmdbMovieFacts {
+    tmdbId: number;
+    originalTitle?: string;
+    /** ISO 639-1 code. */
+    originalLanguage?: string;
+    /** Calendar date in YYYY-MM-DD format. */
+    releaseDate?: string;
+    /** Reported amounts in US dollars; absent when unknown. */
+    budget?: number;
+    revenue?: number;
+    collectionName?: string;
+    productionCompanies?: string[];
+    screenplayBy?: string[];
+    musicBy?: string[];
+}
+
 /**
  * Row namespace in the shared metadata cache table. Besides movie/tv
  * details it also stores person payloads (`person:<id>` lookup keys).
@@ -40,12 +57,7 @@ export const DEFAULT_TMDB_SETTINGS: TmdbSettings = {
  * through translated labels.
  */
 export type TmdbSeriesStatus =
-    | 'returning'
-    | 'planned'
-    | 'in-production'
-    | 'ended'
-    | 'canceled'
-    | 'pilot';
+    'returning' | 'planned' | 'in-production' | 'ended' | 'canceled' | 'pilot';
 
 const SERIES_STATUS_TOKENS: Record<string, TmdbSeriesStatus> = {
     'returning series': 'returning',

@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "电影幕后",
+        "SIMILAR": "相似电影",
+        "LIBRARY": "在你的媒体库中",
+        "EXPLORE": "在 TMDB 上探索",
+        "AVAILABILITY": "尚未核实这些推荐影片是否可观看。",
+        "SOURCE": "资料来自 TMDB",
+        "COLLECTION": "所属系列",
+        "MUSIC": "音乐",
+        "SCREENPLAY": "编剧",
+        "PRODUCTION": "制作公司",
+        "BUDGET": "预算（美元）",
+        "REVENUE": "全球票房（美元）",
+        "ORIGINAL_TITLE": "原片名",
+        "LANGUAGE": "原始语言",
+        "RELEASE": "上映日期"
     }
 }

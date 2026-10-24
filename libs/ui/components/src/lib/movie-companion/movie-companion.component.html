@@ -1,0 +1,147 @@
+@if (factCards().length) {
+    <section
+        class="movie-facts"
+        data-test-id="movie-facts"
+        [attr.aria-label]="'MOVIE_COMPANION.FACTS' | translate"
+    >
+        <header class="section-heading">
+            <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+            <h2>
+                {{ 'MOVIE_COMPANION.FACTS' | translate }}
+            </h2>
+        </header>
+        <dl class="facts-grid">
+            @for (fact of factCards(); track fact.key) {
+                <div class="fact-card">
+                    <dt>
+                        <mat-icon aria-hidden="true">{{ fact.icon }}</mat-icon
+                        >{{ 'MOVIE_COMPANION.' + fact.key | translate }}
+                    </dt>
+                    <dd>
+                        @if (fact.amount) {
+                            {{
+                                fact.amount
+                                    | currency: 'USD' : 'symbol' : '1.0-0'
+                            }}
+                        } @else if (fact.date) {
+                            {{ fact.date | date: 'mediumDate' : 'UTC' }}
+                        } @else {
+                            {{ fact.value }}
+                        }
+                    </dd>
+                </div>
+            }
+        </dl>
+        @if (sourceUrl(); as source) {
+            <a
+                class="source-link"
+                [href]="source"
+                target="_blank"
+                rel="noopener noreferrer"
+                >{{ 'MOVIE_COMPANION.SOURCE' | translate }}
+                <mat-icon aria-hidden="true">open_in_new</mat-icon></a
+            >
+        }
+    </section>
+}
+
+@if (libraryItems().length || discoveryItems().length) {
+    <section
+        class="movie-recommendations"
+        data-test-id="movie-recommendations"
+        [attr.aria-label]="'MOVIE_COMPANION.SIMILAR' | translate"
+    >
+        <header class="section-heading">
+            <mat-icon aria-hidden="true">explore</mat-icon>
+            <h2>
+                {{ 'MOVIE_COMPANION.SIMILAR' | translate }}
+            </h2>
+        </header>
+        @if (libraryItems().length) {
+            <p class="section-caption">
+                {{ 'MOVIE_COMPANION.LIBRARY' | translate }}
+            </p>
+            <div class="recommendation-grid">
+                @for (item of libraryItems(); track item.key) {
+                    <button
+                        type="button"
+                        class="recommendation"
+                        data-test-id="movie-library-recommendation"
+                        (click)="itemSelected.emit(item.key)"
+                    >
+                        <span class="poster">
+                            @if (hasPoster(item.posterUrl)) {
+                                <img
+                                    [src]="item.posterUrl"
+                                    alt=""
+                                    loading="lazy"
+                                    (error)="posterFailed(item.posterUrl!)"
+                                />
+                            } @else {
+                                <mat-icon aria-hidden="true">movie</mat-icon>
+                            }
+                            <span class="play-badge"
+                                ><mat-icon aria-hidden="true"
+                                    >play_arrow</mat-icon
+                                ></span
+                            >
+                        </span>
+                        <strong>{{ item.title }}</strong>
+                        <span class="recommendation__meta"
+                            >{{
+                                item.sourceLabel ||
+                                    ('MOVIE_COMPANION.LIBRARY' | translate)
+                            }}
+                            @if (item.year) {
+                                · {{ item.year }}
+                            }
+                        </span>
+                    </button>
+                }
+            </div>
+        }
+        @if (discoveryItems().length) {
+            <p class="section-caption">
+                {{ 'MOVIE_COMPANION.AVAILABILITY' | translate }}
+            </p>
+            <div class="recommendation-grid">
+                @for (item of discoveryItems(); track item.tmdbId) {
+                    <a
+                        class="recommendation"
+                        data-test-id="movie-discovery-recommendation"
+                        [href]="movieUrl(item.tmdbId)"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <span class="poster">
+                            @if (hasPoster(item.posterUrl)) {
+                                <img
+                                    [src]="item.posterUrl"
+                                    alt=""
+                                    loading="lazy"
+                                    (error)="posterFailed(item.posterUrl!)"
+                                />
+                            } @else {
+                                <mat-icon aria-hidden="true">movie</mat-icon>
+                            }
+                        </span>
+                        <strong
+                            >{{ item.title }}
+                            @if (item.year) {
+                                <span class="recommendation__year">{{
+                                    item.year
+                                }}</span>
+                            }
+                        </strong>
+                        <span class="recommendation__meta"
+                            >{{ 'MOVIE_COMPANION.EXPLORE' | translate }}
+                            <mat-icon aria-hidden="true"
+                                >open_in_new</mat-icon
+                            ></span
+                        >
+                    </a>
+                }
+            </div>
+        }
+    </section>
+}

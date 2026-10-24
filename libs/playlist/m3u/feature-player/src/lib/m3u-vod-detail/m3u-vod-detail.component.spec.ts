@@ -1,7 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { TmdbEnrichmentService } from '@iptvnator/services';
+import { Router } from '@angular/router';
+import {
+    CrossPortalSimilarService,
+    TmdbEnrichmentService,
+} from '@iptvnator/services';
 import { Channel, ResolvedPortalPlayback } from '@iptvnator/shared/interfaces';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MockPipe } from 'ng-mocks';
@@ -33,6 +37,7 @@ class StubPortalDetailShellComponent {
     readonly backLabel = input<string>();
     readonly backAvailable = input(true);
     readonly playbackActive = input(false);
+    readonly hasCompanion = input(false);
     readonly backClicked = output<void>();
     readonly closePlayerRequested = output<void>();
 }
@@ -50,6 +55,14 @@ class StubPortalInlinePlayerComponent {
     readonly playerOverride = input<unknown>(null);
     readonly closed = output<void>();
     readonly externalFallbackRequested = output<unknown>();
+}
+
+@Component({ selector: 'app-movie-companion', template: '' })
+class StubMovieCompanionComponent {
+    readonly facts = input<unknown>();
+    readonly recommendations = input<readonly unknown[]>([]);
+    readonly availableItems = input<readonly unknown[]>([]);
+    readonly itemSelected = output<string>();
 }
 
 const channel = (overrides: Partial<Channel> = {}): Channel =>
@@ -131,6 +144,11 @@ describe('M3uVodDetailComponent', () => {
             imports: [M3uVodDetailComponent],
             providers: [
                 {
+                    provide: CrossPortalSimilarService,
+                    useValue: { isAvailable: false },
+                },
+                { provide: Router, useValue: { navigate: jest.fn() } },
+                {
                     provide: TmdbEnrichmentService,
                     useValue: {
                         enrichMovie,
@@ -147,6 +165,7 @@ describe('M3uVodDetailComponent', () => {
                 set: {
                     imports: [
                         StubPortalDetailShellComponent,
+                        StubMovieCompanionComponent,
                         StubPortalInlinePlayerComponent,
                         MockPipe(
                             TranslatePipe,
@@ -262,6 +281,125 @@ describe('M3uVodDetailComponent', () => {
             'Timothée Chalamet',
         ]);
         expect(component.directors()).toBe('Denis Villeneuve');
+    });
+
+    it('projects existing metadata into a companion without changing playback', async () => {
+        enrichMovie.mockResolvedValue({
+            id: 42,
+            title: 'Dune',
+            budget: 165000000,
+            recommendations: {
+                results: [
+                    {
+                        id: 43,
+                        title: 'Arrival',
+                        release_date: '2016-01-01',
+                        poster_path: '/arrival.jpg',
+                    },
+                ],
+            },
+        });
+        const source = playback();
+        await create({ channel: channel(), playback: source });
+        const companion = fixture.debugElement.query(
+            By.directive(StubMovieCompanionComponent)
+        ).componentInstance as StubMovieCompanionComponent;
+        expect(companion.facts()).toEqual({ tmdbId: 42, budget: 165000000 });
+        expect(companion.recommendations()).toEqual([
+            expect.objectContaining({
+                tmdbId: 43,
+                title: 'Arrival',
+                year: 2016,
+            }),
+        ]);
+        expect(fixture.componentInstance.inlinePlayback()).toBe(source);
+        expect(enrichMovie).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens a matched library recommendation through its canonical route', async () => {
+        const match = {
+            title: 'Arrival',
+            posterUrl: null,
+            year: 2016,
+            match: { playlistId: 'p2', xtreamId: 43, playlistName: 'Cinema' },
+        };
+        const link = ['/workspace/xtreams', 'p2', 'vod', '7', '43'];
+        Object.assign(TestBed.inject(CrossPortalSimilarService), {
+            isAvailable: true,
+            matchRecommendations: jest.fn().mockResolvedValue([match]),
+            buildLink: jest.fn().mockReturnValue(link),
+        });
+        enrichMovie.mockResolvedValue({
+            id: 42,
+            title: 'Dune',
+            recommendations: { results: [{ id: 43, title: 'Arrival' }] },
+        });
+        await create({ channel: channel(), playback: playback() });
+        await flush();
+        expect(fixture.componentInstance.companionItems()).toEqual([
+            expect.objectContaining({ key: 'p2:43', sourceLabel: 'Cinema' }),
+        ]);
+        fixture.debugElement
+            .query(By.directive(StubMovieCompanionComponent))
+            .componentInstance.itemSelected.emit('p2:43');
+        expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(link);
+    });
+
+    it('ignores a library match that resolves after changing the movie', async () => {
+        let resolveMatch!: (value: unknown[]) => void;
+        Object.assign(TestBed.inject(CrossPortalSimilarService), {
+            isAvailable: true,
+            matchRecommendations: jest.fn().mockReturnValue(
+                new Promise((resolve) => {
+                    resolveMatch = resolve;
+                })
+            ),
+        });
+        enrichMovie.mockResolvedValueOnce({
+            id: 42,
+            title: 'Dune',
+            recommendations: { results: [{ id: 43, title: 'Arrival' }] },
+        });
+        await create({ channel: channel(), playback: playback() });
+        enrichMovie.mockResolvedValueOnce(null);
+        fixture.componentRef.setInput(
+            'channel',
+            channel({ id: 'next', name: 'Unknown' })
+        );
+        fixture.detectChanges();
+        await flush();
+        resolveMatch([
+            {
+                title: 'Arrival',
+                posterUrl: null,
+                year: 2016,
+                match: { playlistId: 'p2', xtreamId: 43 },
+            },
+        ]);
+        await flush();
+        expect(fixture.componentInstance.companionItems()).toEqual([]);
+        expect(fixture.componentInstance.hasCompanion()).toBe(false);
+    });
+
+    it('clears the companion when the next movie has no metadata', async () => {
+        enrichMovie.mockResolvedValueOnce({
+            id: 42,
+            title: 'Dune',
+            budget: 165000000,
+        });
+        await create({ channel: channel(), playback: playback() });
+        expect(fixture.componentInstance.hasCompanion()).toBe(true);
+        enrichMovie.mockResolvedValueOnce(null);
+        fixture.componentRef.setInput(
+            'channel',
+            channel({ id: 'second', name: 'Unknown' })
+        );
+        fixture.detectChanges();
+        await flush();
+        expect(fixture.componentInstance.hasCompanion()).toBe(false);
+        expect(
+            fixture.nativeElement.querySelector('app-movie-companion')
+        ).toBeNull();
     });
 
     it('keeps the provider presentation when TMDB has no match', async () => {

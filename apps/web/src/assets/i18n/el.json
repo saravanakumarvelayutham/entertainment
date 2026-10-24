@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Πίσω από την ταινία",
+        "SIMILAR": "Παρόμοιες ταινίες",
+        "LIBRARY": "Στη βιβλιοθήκη σας",
+        "EXPLORE": "Εξερευνήστε στο TMDB",
+        "AVAILABILITY": "Η διαθεσιμότητα αυτών των προτάσεων δεν έχει ελεγχθεί.",
+        "SOURCE": "Στοιχεία από το TMDB",
+        "COLLECTION": "Μέρος της συλλογής",
+        "MUSIC": "Μουσική",
+        "SCREENPLAY": "Σενάριο",
+        "PRODUCTION": "Εταιρείες παραγωγής",
+        "BUDGET": "Προϋπολογισμός (USD)",
+        "REVENUE": "Παγκόσμιες εισπράξεις (USD)",
+        "ORIGINAL_TITLE": "Πρωτότυπος τίτλος",
+        "LANGUAGE": "Πρωτότυπη γλώσσα",
+        "RELEASE": "Ημερομηνία κυκλοφορίας"
     }
 }

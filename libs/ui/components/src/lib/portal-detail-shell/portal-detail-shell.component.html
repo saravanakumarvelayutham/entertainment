@@ -57,28 +57,37 @@
     </div>
 </div>
 
-<!-- Player region (watch state) — the slot itself is never wrapped in @if,
+<div
+    class="shell__watch-layout"
+    [class.shell__watch-layout--companion]="isWatch() && hasCompanion()"
+>
+    <!-- Player region (watch state) — the slot itself is never wrapped in @if,
      so the host-owned player subtree survives every shell state change -->
-<div class="shell__player" [class.shell__player--active]="isWatch()">
-    <ng-content select="[detail-player]"></ng-content>
-</div>
+    <div class="shell__player" [class.shell__player--active]="isWatch()">
+        <ng-content select="[detail-player]"></ng-content>
+    </div>
 
-<!-- Episodes / seasons — both states -->
-<div class="shell__episodes">
-    <ng-content select="[detail-episodes]"></ng-content>
-</div>
+    <!-- Episodes / seasons — both states -->
+    <div class="shell__episodes">
+        <ng-content select="[detail-episodes]"></ng-content>
+    </div>
 
-<!-- About block — watch state only, metadata moves here -->
-@if (isWatch() && !isLoading() && !errorMessage()) {
-    <app-content-about
-        class="shell__about"
-        [title]="title()"
-        [posterUrl]="posterUrl()"
-        [description]="description()"
-        [tagsTemplate]="tagsTemplate()?.templateRef ?? null"
-        [metaTemplate]="metaTemplate()?.templateRef ?? null"
-    />
-}
+    <!-- About block — watch state only, metadata moves here -->
+    @if (isWatch() && !isLoading() && !errorMessage()) {
+        <app-content-about
+            class="shell__about"
+            [title]="title()"
+            [posterUrl]="posterUrl()"
+            [description]="description()"
+            [tagsTemplate]="tagsTemplate()?.templateRef ?? null"
+            [metaTemplate]="metaTemplate()?.templateRef ?? null"
+        />
+    }
+
+    <aside class="shell__companion" [hidden]="!hasCompanion()">
+        <ng-content select="[detail-companion]"></ng-content>
+    </aside>
+</div>
 
 <!-- Extras (trailer, similar rail) — both states -->
 <div class="shell__extras">

@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Achter de schermen",
+        "SIMILAR": "Vergelijkbare films",
+        "LIBRARY": "In je bibliotheek",
+        "EXPLORE": "Ontdekken op TMDB",
+        "AVAILABILITY": "De beschikbaarheid van deze suggesties is niet gecontroleerd.",
+        "SOURCE": "Feiten van TMDB",
+        "COLLECTION": "Onderdeel van de collectie",
+        "MUSIC": "Muziek van",
+        "SCREENPLAY": "Scenario van",
+        "PRODUCTION": "Productiebedrijven",
+        "BUDGET": "Budget (USD)",
+        "REVENUE": "Wereldwijde bioscoopopbrengst (USD)",
+        "ORIGINAL_TITLE": "Oorspronkelijke titel",
+        "LANGUAGE": "Oorspronkelijke taal",
+        "RELEASE": "Releasedatum"
     }
 }

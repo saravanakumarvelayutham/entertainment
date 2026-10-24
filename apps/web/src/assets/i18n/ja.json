@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "映画の舞台裏",
+        "SIMILAR": "似ている映画",
+        "LIBRARY": "ライブラリ内",
+        "EXPLORE": "TMDBで見る",
+        "AVAILABILITY": "これらのおすすめ作品の視聴可否は確認されていません。",
+        "SOURCE": "TMDBの作品情報",
+        "COLLECTION": "シリーズ作品",
+        "MUSIC": "音楽",
+        "SCREENPLAY": "脚本",
+        "PRODUCTION": "製作会社",
+        "BUDGET": "製作費（米ドル）",
+        "REVENUE": "世界興行収入（米ドル）",
+        "ORIGINAL_TITLE": "原題",
+        "LANGUAGE": "原語",
+        "RELEASE": "公開日"
     }
 }

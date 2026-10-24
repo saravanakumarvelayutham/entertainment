@@ -13,6 +13,7 @@ import {
     DetailActionsTemplateDirective,
     DetailMetaTemplateDirective,
     DetailTagsTemplateDirective,
+    MovieCompanionComponent,
     PortalDetailShellComponent,
     ViewInPortalActionComponent,
 } from '@iptvnator/ui/components';
@@ -21,6 +22,7 @@ import {
     CrossPortalSimilarService,
     DownloadItem,
     DownloadsService,
+    TmdbEnrichmentService,
 } from '@iptvnator/services';
 import {
     ExternalPlayerSession,
@@ -223,6 +225,10 @@ describe('VodDetailsComponent offline playback', () => {
             imports: [VodDetailsComponent, TranslateModule.forRoot()],
             providers: [
                 {
+                    provide: TmdbEnrichmentService,
+                    useValue: { isEnabled: jest.fn().mockReturnValue(true) },
+                },
+                {
                     provide: DownloadsService,
                     useValue: {
                         downloads,
@@ -301,6 +307,7 @@ describe('VodDetailsComponent offline playback', () => {
                         DetailMetaTemplateDirective,
                         DetailTagsTemplateDirective,
                         MatIcon,
+                        MovieCompanionComponent,
                         PortalDetailShellComponent,
                         ViewInPortalActionComponent,
                         StubPortalInlinePlayerComponent,
@@ -342,6 +349,46 @@ describe('VodDetailsComponent offline playback', () => {
 
     afterEach(() => {
         fixture?.destroy();
+    });
+
+    it('passes movie facts and suggestions to the shared companion', async () => {
+        await render();
+        const movie = JSON.parse(JSON.stringify(STALKER_VOD)) as VodDetailsItem;
+        if (movie.type !== 'stalker')
+            throw new Error('Expected Stalker fixture');
+        movie.data.info.tmdb_movie_facts = { tmdbId: 42, budget: 1000000 };
+        movie.data.info.tmdb_recommendations = [
+            { tmdbId: 43, title: 'Next Movie', year: 2025, posterUrl: null },
+        ];
+        fixture.componentRef.setInput('item', movie);
+        fixture.detectChanges();
+        const companion = fixture.debugElement.query(
+            By.directive(MovieCompanionComponent)
+        ).componentInstance as MovieCompanionComponent;
+        expect(companion.facts()).toEqual({ tmdbId: 42, budget: 1000000 });
+        expect(companion.recommendations()).toEqual(
+            movie.data.info.tmdb_recommendations
+        );
+        expect(
+            fixture.nativeElement.querySelector('.details__similar')
+        ).toBeNull();
+    });
+
+    it('keeps a cached movie companion hidden when metadata is disabled', async () => {
+        jest.mocked(
+            TestBed.inject(TmdbEnrichmentService).isEnabled
+        ).mockReturnValue(false);
+        await render();
+        const movie = JSON.parse(JSON.stringify(STALKER_VOD)) as VodDetailsItem;
+        if (movie.type !== 'stalker')
+            throw new Error('Expected Stalker fixture');
+        movie.data.info.tmdb_movie_facts = { tmdbId: 42, budget: 1000000 };
+        fixture.componentRef.setInput('item', movie);
+        fixture.detectChanges();
+        expect(fixture.componentInstance.hasCompanion()).toBe(false);
+        expect(
+            fixture.nativeElement.querySelector('app-movie-companion')
+        ).toBeNull();
     });
 
     it('renders Offline and plays a completed download from the primary action', async () => {

@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "Hinter den Kulissen",
+        "SIMILAR": "Ähnliche Filme",
+        "LIBRARY": "In deiner Mediathek",
+        "EXPLORE": "Auf TMDB entdecken",
+        "AVAILABILITY": "Die Verfügbarkeit dieser Vorschläge wurde nicht geprüft.",
+        "SOURCE": "Fakten von TMDB",
+        "COLLECTION": "Teil der Sammlung",
+        "MUSIC": "Musik von",
+        "SCREENPLAY": "Drehbuch von",
+        "PRODUCTION": "Produktionsfirmen",
+        "BUDGET": "Budget (USD)",
+        "REVENUE": "Weltweites Einspielergebnis (USD)",
+        "ORIGINAL_TITLE": "Originaltitel",
+        "LANGUAGE": "Originalsprache",
+        "RELEASE": "Erscheinungsdatum"
     }
 }

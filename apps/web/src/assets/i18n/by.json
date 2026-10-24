@@ -2003,5 +2003,22 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "MOVIE_COMPANION": {
+        "FACTS": "За кадрам фільма",
+        "SIMILAR": "Падобныя фільмы",
+        "LIBRARY": "У вашай бібліятэцы",
+        "EXPLORE": "Даведацца на TMDB",
+        "AVAILABILITY": "Даступнасць гэтых прапаноў не праверана.",
+        "SOURCE": "Факты з TMDB",
+        "COLLECTION": "Частка калекцыі",
+        "MUSIC": "Музыка",
+        "SCREENPLAY": "Сцэнарый",
+        "PRODUCTION": "Кінакампаніі",
+        "BUDGET": "Бюджэт (долары ЗША)",
+        "REVENUE": "Сусветныя касавыя зборы (долары ЗША)",
+        "ORIGINAL_TITLE": "Арыгінальная назва",
+        "LANGUAGE": "Мова арыгінала",
+        "RELEASE": "Дата выхаду"
     }
 }
