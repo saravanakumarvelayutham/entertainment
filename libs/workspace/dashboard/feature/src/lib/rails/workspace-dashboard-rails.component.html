@@ -1,7 +1,6 @@
 <section
     class="rails-page"
     [class.rails-page--empty]="ready() && !hasPlaylists()"
-    [style.--hero-ambient]="heroAmbient()"
     data-test-id="dashboard-page"
 >
     @if (data.playlistsLoaded() && !hasPlaylists()) {
@@ -11,251 +10,279 @@
             (addPlaylistClicked)="onAddPlaylist($event)"
         />
     } @else {
-        <!-- Hero: full-bleed banner for the featured recent item, with the
+        <header class="dashboard-masthead">
+            <h1>{{ 'WORKSPACE.SHELL.RAIL_LIBRARY' | translate }}</h1>
+            <a
+                [routerLink]="['/workspace/sources']"
+                class="dashboard-masthead__action"
+            >
+                <mat-icon>tune</mat-icon>
+                {{ 'WORKSPACE.DASHBOARD.MANAGE_ALL' | translate }}
+            </a>
+        </header>
+        <!-- Hero: contained feature for the featured recent item, with the
              other newest items as an up-next stack. A skeleton holds the
              space while the first global recent item loads; nothing renders
              when there is no recent activity. Each block below renders as
              soon as ITS data is ready — never pinned on the slowest rail. -->
         @if (dashboardRails().hero) {
             @if (hero(); as item) {
-                <section
-                    class="hero"
-                    data-test-id="dashboard-hero"
-                    [class.hero--has-backdrop]="item.hasBackdrop"
-                    [class.hero--has-default-backdrop]="
-                        item.backdropSource === 'fallback'
-                    "
-                    [class.hero--live]="item.contentType === 'live'"
-                    [attr.aria-label]="item.title"
+                <div
+                    class="dashboard-lead"
+                    [class.dashboard-lead--with-queue]="heroUpNext().length > 0"
                 >
-                    <span
-                        class="hero__backdrop"
-                        aria-hidden="true"
-                        [style.backgroundImage]="
-                            item.backdropUrl
-                                ? 'url(' + item.backdropUrl + ')'
-                                : item.fallbackBackdropBackground
+                    <section
+                        class="hero"
+                        data-test-id="dashboard-hero"
+                        [class.hero--has-backdrop]="item.hasBackdrop"
+                        [class.hero--has-default-backdrop]="
+                            item.backdropSource === 'fallback'
                         "
-                    ></span>
-                    @if (item.backdropUrl; as backdropUrl) {
-                        <img
-                            class="hero__image-probe"
-                            [src]="backdropUrl"
-                            alt=""
+                        [class.hero--live]="item.contentType === 'live'"
+                        [attr.aria-label]="item.title"
+                    >
+                        <span
+                            class="hero__backdrop"
                             aria-hidden="true"
-                            loading="eager"
-                            decoding="async"
-                            (error)="markHeroImageFailed(backdropUrl)"
-                        />
-                    }
-                    <span class="hero__vignette" aria-hidden="true"></span>
+                            [style.backgroundImage]="
+                                item.backdropUrl
+                                    ? 'url(' + item.backdropUrl + ')'
+                                    : item.fallbackBackdropBackground
+                            "
+                        ></span>
+                        @if (item.backdropUrl; as backdropUrl) {
+                            <img
+                                class="hero__image-probe"
+                                [src]="backdropUrl"
+                                alt=""
+                                aria-hidden="true"
+                                loading="eager"
+                                decoding="async"
+                                (error)="markHeroImageFailed(backdropUrl)"
+                            />
+                        }
+                        <span class="hero__vignette" aria-hidden="true"></span>
 
-                    <div class="hero__layout">
-                        <!-- The poster only appears when the banner has no
+                        <div class="hero__layout">
+                            <!-- The poster only appears when the banner has no
                              landscape artwork: a blurred poster wash needs
                              the sharp poster to identify the title. -->
-                        @if (!item.hasBackdrop) {
-                            <span class="hero__poster">
-                                @if (item.posterUrl; as posterUrl) {
-                                    <img
-                                        [src]="posterUrl"
-                                        [alt]="item.title"
-                                        loading="eager"
-                                        decoding="async"
-                                        (error)="markHeroImageFailed(posterUrl)"
-                                    />
-                                } @else {
+                            @if (!item.hasBackdrop) {
+                                <span class="hero__poster">
+                                    @if (item.posterUrl; as posterUrl) {
+                                        <img
+                                            [src]="posterUrl"
+                                            [alt]="item.title"
+                                            loading="eager"
+                                            decoding="async"
+                                            (error)="
+                                                markHeroImageFailed(posterUrl)
+                                            "
+                                        />
+                                    } @else {
+                                        <span
+                                            class="hero__poster-fallback"
+                                            [style.backgroundImage]="
+                                                item.fallbackPosterBackground
+                                            "
+                                        >
+                                            <mat-icon>{{ item.icon }}</mat-icon>
+                                        </span>
+                                    }
+                                </span>
+                            }
+
+                            <div class="hero__body">
+                                <span class="hero__eyebrow">{{
+                                    item.subtitle
+                                }}</span>
+                                <h2 class="hero__title">{{ item.title }}</h2>
+
+                                @if (
+                                    item.episodeBadge ||
+                                    item.rating ||
+                                    (item.genres && item.genres.length > 0)
+                                ) {
                                     <span
-                                        class="hero__poster-fallback"
-                                        [style.backgroundImage]="
-                                            item.fallbackPosterBackground
-                                        "
+                                        class="hero__badges"
+                                        data-test-id="dashboard-hero-badges"
                                     >
-                                        <mat-icon>{{ item.icon }}</mat-icon>
+                                        @if (item.episodeBadge) {
+                                            <span
+                                                class="hero__badge hero__badge--episode"
+                                                >{{ item.episodeBadge }}</span
+                                            >
+                                        }
+                                        @if (item.rating) {
+                                            <span
+                                                class="hero__badge hero__badge--rating"
+                                                >★ {{ item.rating }}</span
+                                            >
+                                        }
+                                        @for (
+                                            genre of item.genres;
+                                            track genre
+                                        ) {
+                                            <span class="hero__badge">{{
+                                                genre
+                                            }}</span>
+                                        }
                                     </span>
                                 }
-                            </span>
-                        }
 
-                        <div class="hero__body">
-                            <span class="hero__eyebrow">{{
-                                item.subtitle
-                            }}</span>
-                            <h1 class="hero__title">{{ item.title }}</h1>
-
-                            @if (
-                                item.episodeBadge ||
-                                item.rating ||
-                                (item.genres && item.genres.length > 0)
-                            ) {
-                                <span
-                                    class="hero__badges"
-                                    data-test-id="dashboard-hero-badges"
-                                >
-                                    @if (item.episodeBadge) {
-                                        <span
-                                            class="hero__badge hero__badge--episode"
-                                            >{{ item.episodeBadge }}</span
-                                        >
-                                    }
-                                    @if (item.rating) {
-                                        <span
-                                            class="hero__badge hero__badge--rating"
-                                            >★ {{ item.rating }}</span
-                                        >
-                                    }
-                                    @for (genre of item.genres; track genre) {
-                                        <span class="hero__badge">{{
-                                            genre
-                                        }}</span>
-                                    }
-                                </span>
-                            }
-
-                            @if (
-                                item.contentType === 'live' &&
-                                (item.nowPlayingTitle ||
-                                    item.nowPlayingTimeRange ||
-                                    (item.nowPlayingProgress !== null &&
-                                        item.nowPlayingProgress !== undefined))
-                            ) {
-                                <span
-                                    class="hero__live-epg"
-                                    data-test-id="dashboard-hero-live-epg"
-                                >
-                                    <span class="hero__live-epg-topline">
-                                        <span class="hero__live-epg-chip"
-                                            >LIVE</span
-                                        >
-                                        @if (item.nowPlayingTimeRange) {
-                                            <span class="hero__live-epg-time">{{
-                                                item.nowPlayingTimeRange
-                                            }}</span>
-                                        }
-                                    </span>
-                                    @if (item.nowPlayingTitle) {
-                                        <span class="hero__live-epg-title">{{
-                                            item.nowPlayingTitle
-                                        }}</span>
-                                    }
+                                @if (
+                                    item.contentType === 'live' &&
+                                    (item.nowPlayingTitle ||
+                                        item.nowPlayingTimeRange ||
+                                        (item.nowPlayingProgress !== null &&
+                                            item.nowPlayingProgress !==
+                                                undefined))
+                                ) {
                                     <span
-                                        class="hero__live-epg-progress"
-                                        [class.hero__live-epg-progress--idle]="
-                                            item.nowPlayingProgress === null ||
-                                            item.nowPlayingProgress ===
-                                                undefined
-                                        "
-                                        aria-hidden="true"
+                                        class="hero__live-epg"
+                                        data-test-id="dashboard-hero-live-epg"
                                     >
-                                        <i
-                                            [style.width.%]="
-                                                item.nowPlayingProgress ?? 0
+                                        <span class="hero__live-epg-topline">
+                                            <span class="hero__live-epg-chip"
+                                                >LIVE</span
+                                            >
+                                            @if (item.nowPlayingTimeRange) {
+                                                <span
+                                                    class="hero__live-epg-time"
+                                                    >{{
+                                                        item.nowPlayingTimeRange
+                                                    }}</span
+                                                >
+                                            }
+                                        </span>
+                                        @if (item.nowPlayingTitle) {
+                                            <span
+                                                class="hero__live-epg-title"
+                                                >{{
+                                                    item.nowPlayingTitle
+                                                }}</span
+                                            >
+                                        }
+                                        <span
+                                            class="hero__live-epg-progress"
+                                            [class.hero__live-epg-progress--idle]="
+                                                item.nowPlayingProgress ===
+                                                    null ||
+                                                item.nowPlayingProgress ===
+                                                    undefined
                                             "
-                                        ></i>
+                                            aria-hidden="true"
+                                        >
+                                            <i
+                                                [style.width.%]="
+                                                    item.nowPlayingProgress ?? 0
+                                                "
+                                            ></i>
+                                        </span>
                                     </span>
-                                </span>
-                            }
+                                }
 
-                            @if (
-                                item.watchProgress !== null &&
-                                item.watchProgress !== undefined
-                            ) {
-                                <span class="hero__progress-row">
-                                    <span
-                                        class="hero__progress"
-                                        aria-hidden="true"
-                                    >
+                                @if (
+                                    item.watchProgress !== null &&
+                                    item.watchProgress !== undefined
+                                ) {
+                                    <span class="hero__progress-row">
                                         <span
-                                            class="hero__progress-bar"
-                                            [style.width.%]="item.watchProgress"
-                                        ></span>
+                                            class="hero__progress"
+                                            aria-hidden="true"
+                                        >
+                                            <span
+                                                class="hero__progress-bar"
+                                                [style.width.%]="
+                                                    item.watchProgress
+                                                "
+                                            ></span>
+                                        </span>
+                                        <span class="hero__progress-meta">
+                                            @if (item.remainingLabel) {
+                                                <span>{{
+                                                    item.remainingLabel.key
+                                                        | translate
+                                                            : item
+                                                                  .remainingLabel
+                                                                  .params
+                                                }}</span>
+                                            } @else {
+                                                <span>{{
+                                                    'WORKSPACE.DASHBOARD.PERCENT_WATCHED'
+                                                        | translate
+                                                            : {
+                                                                  value: item.watchProgress,
+                                                              }
+                                                }}</span>
+                                            }
+                                        </span>
                                     </span>
-                                    <span class="hero__progress-meta">
-                                        @if (item.remainingLabel) {
-                                            <span>{{
-                                                item.remainingLabel.key
-                                                    | translate
-                                                        : item.remainingLabel
-                                                              .params
-                                            }}</span>
-                                        } @else {
-                                            <span>{{
-                                                'WORKSPACE.DASHBOARD.PERCENT_WATCHED'
-                                                    | translate
-                                                        : {
-                                                              value: item.watchProgress,
-                                                          }
-                                            }}</span>
-                                        }
-                                    </span>
-                                </span>
-                            }
+                                }
 
-                            <span class="hero__actions">
-                                <a
-                                    class="hero__cta"
-                                    data-test-id="dashboard-hero-cta"
-                                    [routerLink]="item.link"
-                                    [state]="item.state ?? {}"
-                                >
-                                    <mat-icon>play_arrow</mat-icon>
-                                    <span>{{
-                                        item.ctaLabelKey | translate
-                                    }}</span>
-                                </a>
-                                @if (item.detailState; as detailState) {
+                                <span class="hero__actions">
                                     <a
-                                        class="hero__secondary"
-                                        data-test-id="dashboard-hero-details"
+                                        class="hero__cta"
+                                        data-test-id="dashboard-hero-cta"
                                         [routerLink]="item.link"
-                                        [state]="detailState"
+                                        [state]="item.state ?? {}"
                                     >
-                                        <mat-icon>info_outline</mat-icon>
+                                        <mat-icon>play_arrow</mat-icon>
                                         <span>{{
-                                            'WORKSPACE.DASHBOARD.HERO_DETAILS'
-                                                | translate
+                                            item.ctaLabelKey | translate
                                         }}</span>
                                     </a>
-                                }
-                            </span>
-                        </div>
-
-                        @if (heroUpNext().length > 0) {
-                            <div
-                                class="hero__up-next"
-                                data-test-id="dashboard-hero-up-next"
-                            >
-                                <span class="hero__up-next-label">{{
-                                    'WORKSPACE.DASHBOARD.HERO_UP_NEXT'
-                                        | translate
-                                }}</span>
-                                <div class="hero__up-next-track" role="group">
-                                    @for (
-                                        thumb of heroUpNext();
-                                        track thumb.key
-                                    ) {
-                                        <button
-                                            type="button"
-                                            class="hero__up-next-item"
-                                            [class.hero__up-next-item--current]="
-                                                thumb.isCurrent
-                                            "
-                                            [class.hero__up-next-item--live]="
-                                                thumb.isLive
-                                            "
-                                            [attr.aria-pressed]="
-                                                thumb.isCurrent
-                                            "
-                                            [attr.aria-label]="
-                                                'WORKSPACE.DASHBOARD.HERO_FEATURE_ITEM'
+                                    @if (item.detailState; as detailState) {
+                                        <a
+                                            class="hero__secondary"
+                                            data-test-id="dashboard-hero-details"
+                                            [routerLink]="item.link"
+                                            [state]="detailState"
+                                        >
+                                            <mat-icon>info_outline</mat-icon>
+                                            <span>{{
+                                                'WORKSPACE.DASHBOARD.HERO_DETAILS'
                                                     | translate
-                                                        : { title: thumb.title }
-                                            "
-                                            [attr.title]="thumb.title"
+                                            }}</span>
+                                        </a>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </section>
+                    @if (heroUpNext().length > 0) {
+                        <div
+                            class="hero__up-next"
+                            data-test-id="dashboard-hero-up-next"
+                        >
+                            <span class="hero__up-next-label">{{
+                                'WORKSPACE.DASHBOARD.HERO_UP_NEXT' | translate
+                            }}</span>
+                            <div class="hero__up-next-track" role="group">
+                                @for (thumb of heroUpNext(); track thumb.key) {
+                                    <button
+                                        type="button"
+                                        class="hero__up-next-item"
+                                        [class.hero__up-next-item--current]="
+                                            thumb.isCurrent
+                                        "
+                                        [class.hero__up-next-item--live]="
+                                            thumb.isLive
+                                        "
+                                        [attr.aria-pressed]="thumb.isCurrent"
+                                        [attr.aria-label]="
+                                            'WORKSPACE.DASHBOARD.HERO_FEATURE_ITEM'
+                                                | translate
+                                                    : { title: thumb.title }
+                                        "
+                                        [attr.title]="thumb.title"
+                                        (click)="featureHeroItem(thumb.key)"
+                                    >
+                                        <span
+                                            class="hero__up-next-art"
                                             [style.backgroundImage]="
                                                 thumb.fallbackBackground
                                             "
-                                            (click)="featureHeroItem(thumb.key)"
                                         >
                                             @if (thumb.imageUrl; as imageUrl) {
                                                 <img
@@ -288,13 +315,16 @@
                                                     ></i
                                                 ></span>
                                             }
-                                        </button>
-                                    }
-                                </div>
+                                        </span>
+                                        <span class="hero__up-next-title">{{
+                                            thumb.title
+                                        }}</span>
+                                    </button>
+                                }
                             </div>
-                        }
-                    </div>
-                </section>
+                        </div>
+                    }
+                </div>
             } @else if (data.globalRecentLoading()) {
                 <section
                     class="rails-page__skeleton-hero"
@@ -483,7 +513,9 @@
                      the Refresh action, then the ranked rail or an empty-state
                      card. Test ids are the E2E contract; keep them. -->
                 <section class="ai-panel" data-test-id="dashboard-ai-panel">
-                    @if (aiRecommendationsService.resultCachePersistenceFailed()) {
+                    @if (
+                        aiRecommendationsService.resultCachePersistenceFailed()
+                    ) {
                         <p class="ai-panel__notice" role="status">
                             <mat-icon aria-hidden="true">warning</mat-icon>
                             <span>{{
@@ -563,7 +595,9 @@
                                 data-test-id="dashboard-ai-refresh"
                             >
                                 <mat-icon aria-hidden="true">refresh</mat-icon>
-                                {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
+                                {{
+                                    'WORKSPACE.DASHBOARD.AI_REFRESH' | translate
+                                }}
                             </button>
                         </section>
                     } @else if (aiCards().length > 0) {
@@ -580,7 +614,9 @@
                                 data-test-id="dashboard-ai-refresh"
                             >
                                 <mat-icon aria-hidden="true">refresh</mat-icon>
-                                {{ 'WORKSPACE.DASHBOARD.AI_REFRESH' | translate }}
+                                {{
+                                    'WORKSPACE.DASHBOARD.AI_REFRESH' | translate
+                                }}
                             </button>
                         </div>
                     }
@@ -605,12 +641,17 @@
                             data-test-id="dashboard-ai-status"
                             aria-live="polite"
                         >
-                            <mat-icon class="ai-panel__status-icon" aria-hidden="true"
+                            <mat-icon
+                                class="ai-panel__status-icon"
+                                aria-hidden="true"
                                 >auto_awesome</mat-icon
                             >
                             <div class="ai-panel__status-body">
                                 <h2>
-                                    {{ 'WORKSPACE.DASHBOARD.AI_PICKS' | translate }}
+                                    {{
+                                        'WORKSPACE.DASHBOARD.AI_PICKS'
+                                            | translate
+                                    }}
                                 </h2>
                                 <p>
                                     {{
@@ -636,7 +677,10 @@
                                     (click)="retryAiRecommendations()"
                                     data-test-id="dashboard-ai-retry"
                                 >
-                                    {{ 'WORKSPACE.DASHBOARD.AI_RETRY' | translate }}
+                                    {{
+                                        'WORKSPACE.DASHBOARD.AI_RETRY'
+                                            | translate
+                                    }}
                                 </button>
                             }
                         </section>

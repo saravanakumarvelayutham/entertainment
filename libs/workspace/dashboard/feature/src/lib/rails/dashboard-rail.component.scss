@@ -2,7 +2,7 @@
     display: block;
     --rail-card-width: var(--cover-rail-width, 172px);
     --rail-gap: var(--cover-gap, 14px);
-    --rail-radius: 12px;
+    --rail-radius: 18px;
 }
 
 .rail {
@@ -61,7 +61,11 @@
     padding: 0;
     border: 1px solid transparent;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--app-on-surface, #e6e1e5) 8%, transparent);
+    background: color-mix(
+        in srgb,
+        var(--app-on-surface, #e6e1e5) 8%,
+        transparent
+    );
     color: var(--app-body-color, #8b93a8);
     cursor: pointer;
     app-region: no-drag;
@@ -131,7 +135,7 @@
     font-size: 1.35rem;
     font-weight: 700;
     line-height: 1.2;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.035em;
     color: var(--app-heading-color, #1a1d23);
     min-width: 0;
 
@@ -295,7 +299,7 @@
 .rail__card-link {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     min-width: 0;
     color: inherit;
     text-decoration: none;

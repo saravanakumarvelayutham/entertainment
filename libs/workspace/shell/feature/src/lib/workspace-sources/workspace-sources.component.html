@@ -3,33 +3,44 @@
     [class.sources-page--empty]="visibleSourcesCount() === 0"
 >
     @if (visibleSourcesCount() > 0 || canCleanSources()) {
-        <header class="sources-header">
-            <div class="sources-header__meta">
-                <h2 class="sources-title">{{ title() }}</h2>
-                <span class="sources-subtitle">{{ subtitle() }}</span>
+        <header class="sources-command sources-header">
+            <div class="sources-command__identity">
+                <span class="sources-command__icon" aria-hidden="true">
+                    <mat-icon>video_library</mat-icon>
+                </span>
+                <div class="sources-header__meta">
+                    <h2 class="sources-title">{{ title() }}</h2>
+                    <span class="sources-subtitle">{{ subtitle() }}</span>
+                </div>
             </div>
-            @if (canCleanSources()) {
+            <div class="sources-command__actions">
+                @if (canCleanSources()) {
+                    <button
+                        mat-stroked-button
+                        type="button"
+                        class="cleanup-trigger"
+                        [attr.aria-label]="'SOURCE_CLEANUP.TITLE' | translate"
+                        (click)="openCleanup()"
+                    >
+                        <mat-icon>cleaning_services</mat-icon>
+                        <span>{{ 'SOURCE_CLEANUP.TITLE' | translate }}</span>
+                    </button>
+                }
                 <button
-                    mat-stroked-button
                     type="button"
-                    class="cleanup-trigger"
-                    [attr.aria-label]="'SOURCE_CLEANUP.TITLE' | translate"
-                    (click)="openCleanup()"
+                    mat-stroked-button
+                    class="sort-trigger"
+                    [matMenuTriggerFor]="sortMenu"
                 >
-                    <mat-icon>cleaning_services</mat-icon>
-                    <span>{{ 'SOURCE_CLEANUP.TITLE' | translate }}</span>
+                    <mat-icon>sort</mat-icon>
+                    <span class="sort-trigger__label">{{
+                        activeSortLabel()
+                    }}</span>
+                    <mat-icon class="sort-trigger__caret"
+                        >arrow_drop_down</mat-icon
+                    >
                 </button>
-            }
-            <button
-                type="button"
-                mat-stroked-button
-                class="sort-trigger"
-                [matMenuTriggerFor]="sortMenu"
-            >
-                <mat-icon>sort</mat-icon>
-                <span class="sort-trigger__label">{{ activeSortLabel() }}</span>
-                <mat-icon class="sort-trigger__caret">arrow_drop_down</mat-icon>
-            </button>
+            </div>
             <mat-menu #sortMenu="matMenu" xPosition="before">
                 @for (option of sortOptions; track option.translationKey) {
                     <button
@@ -46,15 +57,30 @@
                     </button>
                 }
             </mat-menu>
+            <div class="sources-command__summary">
+                @for (sourceType of sourceTypeSummary(); track sourceType.id) {
+                    <div class="source-stat">
+                        <mat-icon aria-hidden="true">{{
+                            sourceType.icon
+                        }}</mat-icon>
+                        <span class="source-stat__label">{{
+                            sourceType.translationKey | translate
+                        }}</span>
+                        <strong>{{ sourceType.count }}</strong>
+                    </div>
+                }
+            </div>
         </header>
     }
     <div
         class="sources-content"
         [class.app-scrollbar]="visibleSourcesCount() > 0"
     >
-        <app-recent-playlists
-            [searchQueryInput]="searchQuery()"
-            (addPlaylistClicked)="onAddPlaylist($event)"
-        />
+        <div class="sources-library">
+            <app-recent-playlists
+                [searchQueryInput]="searchQuery()"
+                (addPlaylistClicked)="onAddPlaylist($event)"
+            />
+        </div>
     </div>
 </section>

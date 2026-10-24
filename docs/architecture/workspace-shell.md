@@ -10,8 +10,12 @@ Related:
 ## Summary
 
 - `/workspace` is the primary app surface.
-- `WorkspaceShellComponent` owns the persistent frame: rail, header, optional
+- `WorkspaceShellComponent` owns the persistent frame: navigation, header, optional
   context panel, content outlet, and external playback footer.
+- Global navigation is horizontal at every width: 64px desktop, 52px phone.
+  Provider/source tabs form a separate 46px row (42px phone) when available.
+  Navigation labels remain visible above 640px; phones use compact global icons.
+  Labels reuse localized accessible names and preserve drag/no-drag ownership.
 - Descendant workspace pages inherit `layout = 'workspace'` from the
   `/workspace` root route.
 - Provider route trees now bootstrap through route-scoped session providers
@@ -81,21 +85,21 @@ Provider route integration:
 
 The shell is intentionally split into four persistent regions:
 
-1. Left rail:
+1. Global navigation and provider tabs:
     1. Static workspace links for dashboard, sources, global favorites, and
        recently viewed. The routed global-search rail link is Electron-only
        because its data source is the SQLite worker bridge.
     2. Provider-aware context links derived from the active or current playlist.
-    3. Settings remains a persistent footer shortcut in the rail.
-2. Top header:
+    3. Settings remains a pinned shortcut at the end of global navigation.
+2. Source/search toolbar (64px desktop, 56px phone):
     1. Playlist switcher.
     2. Route-aware search input and command palette trigger.
     3. Add source action.
     4. Optional playlist refresh and route-specific shortcut actions.
     5. Downloads shortcut in Electron.
 3. Main body:
-    1. Optional left context panel.
-    2. Main router outlet content.
+    1. Optional floating left context panel; phones open it as a drawer.
+    2. Main router outlet in a framed stage; phones use the full available width.
 4. Optional footer:
     1. External playback session bar when a docked session is visible.
 
@@ -412,9 +416,8 @@ Layout integration:
 1. `document.body` gets a `frameless-platform` class (set in
    `AppComponent`, same mechanism as `dark-theme`) — body-level so rules
    also reach cdk-overlay content rendered outside `app-root`.
-2. `apps/web/src/styles.scss` reserves `padding-right: 150px` in
-   the top-aligned drag region (`.workspace-header`) for the 3 × 46px
-   button strip.
+2. `workspace-shell-rail.component.scss` reserves `padding-inline-end: 154px`
+   in the top navigation (`.global-navigation`) for the 3 × 46px button strip.
 3. Button colors follow the theme via CSS variables (`--app-on-surface`,
    `--app-hover-overlay`); the close button uses the Windows-style red
    hover (`#e81123`). No theme IPC is involved.

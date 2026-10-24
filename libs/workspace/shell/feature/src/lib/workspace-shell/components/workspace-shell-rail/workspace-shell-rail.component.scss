@@ -1,309 +1,144 @@
 :host {
     display: block;
     min-width: 0;
-    min-height: 0;
 }
 
 .app-rail {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 10px 8px;
-    border-right: 1px solid
-        var(--app-rail-border, var(--mat-sys-outline-variant));
-    background: var(--app-rail-bg, var(--mat-sys-surface-container-low));
-    app-region: drag;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    --rail-link-color: color-mix(in srgb, var(--app-on-surface) 65%, transparent);
+    background: var(--app-rail-bg);
+    color: var(--app-on-surface);
+    --rail-link-color: var(--app-body-color);
     --rail-link-hover-color: var(--app-on-surface);
     --rail-link-hover-bg: var(--app-hover-overlay);
-    --rail-link-active-bg: var(--app-selection-surface);
-    --rail-link-active-bg-strong: var(--app-selection-surface-strong);
     --rail-link-active-color: var(--app-selection-color);
-    --rail-link-active-icon: var(--app-selection-color);
-    --rail-link-active-border: var(--app-selection-border);
-    --rail-link-active-glow: var(--app-selection-glow);
+    app-region: drag;
+}
 
-    &.is-macos {
-        padding-top: 36px;
+.global-navigation {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    min-width: 0;
+    height: 64px;
+    padding: 0 24px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--app-rail-border);
+}
+
+.is-macos .global-navigation {
+    padding-inline-start: 90px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    color: var(--app-heading-color);
+    text-decoration: none;
+    app-region: no-drag;
+
+    img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
     }
+}
 
-    &::-webkit-scrollbar {
+.rail-brand-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+}
+.global-links {
+    flex: 1;
+    min-width: 0;
+}
+.rail-footer {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+.rail-shortcut {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--app-widget-border);
+    border-radius: 12px;
+    color: var(--app-body-color);
+    background: var(--app-widget-bg);
+    text-decoration: none;
+    app-region: no-drag;
+
+    &.is-active,
+    &:hover {
+        color: var(--app-heading-color);
+        background: var(--app-card-hover-bg);
+    }
+}
+
+.brand:focus-visible,
+.rail-shortcut:focus-visible {
+    outline: 2px solid var(--app-selection-color);
+    outline-offset: 3px;
+}
+
+.rail-context-region {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 46px;
+    padding: 0 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    border-bottom: 1px solid var(--app-rail-border);
+    background: var(--app-shell-bg);
+    app-region: no-drag;
+}
+
+.section-links {
+    flex: 0 0 auto;
+}
+.rail-divider {
+    flex: 0 0 1px;
+    height: 20px;
+    background: var(--app-separator);
+}
+
+@media (max-width: 1000px) {
+    .global-navigation {
+        gap: 16px;
+        padding-inline: 16px;
+    }
+    .rail-brand-label {
         display: none;
     }
 }
 
-.app-rail a {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--rail-link-color);
-    text-decoration: none;
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-    app-region: no-drag;
-
-    mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-    }
-}
-
-.app-rail a:hover {
-    color: var(--rail-link-hover-color);
-    background: var(--rail-link-hover-bg);
-}
-
-.app-rail a.is-active,
-.app-rail a.active {
-    color: var(--rail-link-active-color);
-    background: linear-gradient(
-        145deg,
-        var(--rail-link-active-bg-strong),
-        var(--rail-link-active-bg)
-    );
-    box-shadow:
-        inset 0 0 0 1px var(--rail-link-active-border),
-        0 10px 20px -16px var(--rail-link-active-glow);
-    transform: translateY(-1px);
-
-    mat-icon {
-        color: var(--rail-link-active-icon);
-    }
-
-    &::after {
-        content: '';
-        position: absolute;
-        right: -4px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 18px;
-        border-radius: 999px;
-        background: var(--rail-link-active-icon);
-        box-shadow: 0 0 10px var(--rail-link-active-glow);
-    }
-}
-
-.brand {
-    margin-bottom: 10px;
-    background: var(--mat-sys-primary-container);
-    color: var(--mat-sys-on-primary-container);
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.brand img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
-.rail-context-region {
-    --region-accent: var(--mat-sys-outline-variant);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    width: 100%;
-    max-width: 48px;
-    padding: 5px 2px;
-    margin: 4px 0;
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--app-on-surface) 3%, transparent);
-    border: 1px solid color-mix(in srgb, var(--app-on-surface) 4%, transparent);
-    position: relative;
-    animation: region-enter 0.25s ease-out both;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: -1px;
-        left: 10px;
-        right: 10px;
-        height: 2px;
-        border-radius: 0 0 2px 2px;
-        background: var(--region-accent);
-        opacity: 0.5;
-    }
-
-    .rail-divider {
-        width: 24px;
-        margin: 3px 0;
-        opacity: 0.25;
-    }
-}
-
-.rail-context-region--xtreams {
-    --region-accent: #7c8cf5;
-}
-
-.rail-context-region--stalker {
-    --region-accent: #4ecdc4;
-}
-
-.rail-context-region--playlists {
-    --region-accent: #f5a623;
-}
-
-@keyframes region-enter {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.rail-divider {
-    width: 44px;
-    height: 1px;
-    background: var(--mat-sys-outline-variant);
-    margin: 6px 0;
-    opacity: 0.5;
-}
-
-.rail-footer {
-    margin-top: auto;
-
-    .rail-shortcut {
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        gap: 0;
-        border-radius: 14px;
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: color-mix(in srgb, var(--app-on-surface) 65%, transparent);
-        app-region: no-drag;
-
-        mat-icon {
-            font-size: 20px;
-            width: 20px;
-            height: 20px;
-        }
-
-        &:hover:not(.is-active) {
-            background: var(--app-hover-overlay);
-            color: var(--app-on-surface);
-        }
-
-        &.is-active::after {
-            content: '';
-            position: absolute;
-            right: -4px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 20px;
-            border-radius: 999px;
-            background: var(--app-selection-color);
-            box-shadow: 0 0 10px var(--app-selection-glow);
-        }
-    }
-}
-
 @media (max-width: 640px) {
-    .app-rail {
-        flex-direction: row;
-        justify-content: flex-start;
-        gap: 4px;
-        padding: 6px 8px;
-        border-right: none;
-        border-bottom: 1px solid var(--mat-sys-outline-variant);
-        // A phone cannot fit every portal section at once, so the bar
-        // scrolls sideways instead of squeezing the icons into overlap.
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        &.is-macos {
-            padding-top: 6px;
-        }
-
-        // The brand links to the dashboard, which the first workspace link
-        // already does. On a bar this narrow that duplicate costs a section.
-        .brand {
-            display: none;
-        }
-
-        a {
-            flex: 0 0 auto;
-        }
-
-        a.is-active::after,
-        a.active::after {
-            right: auto;
-            top: auto;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 18px;
-            height: 3px;
-        }
+    .global-navigation {
+        height: 52px;
+        gap: 8px;
+        padding-inline: 8px;
     }
-
-    .rail-divider {
-        width: 1px;
-        height: 24px;
-        margin: 0 4px;
+    .brand {
+        display: none;
     }
-
     .rail-context-region {
-        width: auto;
-        // The vertical rail caps this at 48px; in a row that cap would
-        // stack every portal section on top of itself.
-        max-width: none;
-        flex: 0 0 auto;
-        flex-direction: row;
-        margin: 0;
-        padding: 2px 4px;
-        border-radius: 10px;
-
-        &::before {
-            display: none;
-        }
-
-        .rail-divider {
-            width: 1px;
-            height: 24px;
-            margin: 0 2px;
-        }
+        padding-inline: 8px;
+        gap: 10px;
+        height: 42px;
     }
-
-    // Settings sits at the end of a bar that scrolls sideways once a portal
-    // adds its sections, so it is pinned instead of scrolling out of reach.
-    .rail-footer {
-        margin-top: 0;
-        margin-left: auto;
-        flex: 0 0 auto;
-        position: sticky;
-        right: 0;
-        padding-left: 4px;
-        background: linear-gradient(
-            to right,
-            transparent,
-            var(--app-rail-bg, var(--mat-sys-surface-container-low)) 25%
-        );
+    .rail-shortcut {
+        width: 36px;
+        height: 36px;
     }
+}
+
+// Frameless Windows/Linux caption buttons occupy the top-right 138px.
+// Keep navigation and its Settings action outside their native hit targets.
+:host-context(.frameless-platform) .global-navigation {
+    padding-inline-end: 154px;
 }

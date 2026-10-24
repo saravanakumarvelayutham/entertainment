@@ -4,6 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > The process sections below (Plan Mode, Documentation After Changes, Upgrade And Migration Compatibility, Regression Prevention, Agent Bootstrap, Electron CDP Debugging) are mirrored in `AGENTS.md`, which is the canonical copy for agent workflows. When updating one, keep the other in sync.
 
+## Workspace Visual Language
+
+Workspace chrome uses neutral charcoal/silver app tokens and the app sans-serif
+stack. Global navigation sits above provider/source tabs, with labels above
+640px. The dashboard pairs a feature card with a separate history deck; catalog,
+detail, live, Sources and Settings pages use distinct compositions.
+Canonical palette and interaction rules: `docs/architecture/iptvnator-ui-guidelines.md`.
+
 ## Plan Mode
 
 - When Claude Code is in Plan Mode and produces a final `<proposed_plan>`, it must also save that finalized plan as a Markdown file in the repo-root `.plans/` directory.
@@ -1653,11 +1661,11 @@ stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
 - See `docs/architecture/tmdb-metadata-enrichment.md`
 
 **Dashboard Layout** (`libs/workspace/dashboard/feature`): a lean-back
-surface where artwork carries the page. The hero is a full-bleed banner for
-one of the newest five recent items with an "Up next for you" thumbnail stack
+surface with a Library masthead and a contained feature card for
+one of the newest five recent items beside an "Up next for you" history deck
 that swaps the featured item without navigating (session-only selection,
-`selectDashboardHeroItem`); its bottom fades into the page and the first rail
-starts inside that fade, over a title-derived `--hero-ambient` tint. The
+`selectDashboardHeroItem`); rails follow the feature in normal flow on a
+neutral charcoal surface (near-white in light mode). The
 shared rail has five layouts — `cover`, `landscape` (Continue Watching: 16:9
 still from `backdrop_url` or a contained poster, progress bar, "17m left"
 caption), `ranked` (Top 10 numeral), `channel` (programme-first live card) and

@@ -6,8 +6,8 @@
 .rail {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 12px 0 0;
+    gap: 14px;
+    padding: 18px 0 0;
     border: 1px solid transparent;
     border-radius: 16px;
     transition:
@@ -19,7 +19,7 @@
 // Optional active accent — used by recently-added when a section matches the
 // currently-scoped content type. Mirrors the prior `.section--active` look.
 .rail--active {
-    padding: 12px 14px 0;
+    padding: 18px 18px 2px;
     border-color: var(--app-selection-border);
     background: linear-gradient(
         145deg,
@@ -41,8 +41,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 0 2px;
-    min-height: 24px;
+    padding: 0 2px 8px;
+    min-height: 30px;
+    border-bottom: 1px solid var(--app-separator);
 }
 
 .rail__title {
@@ -50,8 +51,8 @@
     display: inline-flex;
     align-items: baseline;
     gap: 8px;
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+    font-weight: 680;
     line-height: 1.2;
     letter-spacing: -0.012em;
     color: var(--app-heading-color, #1a1d23);
@@ -159,7 +160,7 @@
     scroll-snap-type: x mandatory;
     scroll-padding-inline-start: 4px;
     scrollbar-width: none;
-    padding: 4px 0 16px;
+    padding: 4px 2px 20px;
     margin: -4px 0 0;
 
     &::-webkit-scrollbar {

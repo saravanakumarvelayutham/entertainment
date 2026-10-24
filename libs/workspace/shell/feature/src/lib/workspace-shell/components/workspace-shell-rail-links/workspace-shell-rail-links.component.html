@@ -6,15 +6,16 @@
             [routerLinkActive]="activeClass()"
             [routerLinkActiveOptions]="{ exact: link.exact ?? false }"
             [matTooltip]="link.tooltip"
-            [matTooltipPosition]="'right'"
+            [matTooltipPosition]="'below'"
             [attr.aria-label]="link.tooltip"
             [attr.aria-current]="isActive(link) ? 'page' : null"
             [class.active]="activeClass() === 'active' && isActive(link)"
-            [class.is-active]="
-                activeClass() === 'is-active' && isActive(link)
-            "
+            [class.is-active]="activeClass() === 'is-active' && isActive(link)"
         >
             <mat-icon>{{ resolveIcon(link) }}</mat-icon>
+            <span class="rail-link-label" aria-hidden="true">{{
+                link.tooltip
+            }}</span>
         </a>
     }
 </nav>

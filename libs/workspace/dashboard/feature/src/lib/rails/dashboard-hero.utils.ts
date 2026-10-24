@@ -75,17 +75,6 @@ export interface DashboardHeroUpNextCard {
     readonly watchProgress: number | null;
 }
 
-/**
- * The page tint behind the hero. Without colour extraction from artwork,
- * the title-derived hue (the same one the fallback artwork uses) gives each
- * featured item its own ambient wash, so the banner never sits on a flat
- * background and the fallback artwork always matches it.
- */
-export function resolveDashboardHeroAmbient(title: string): string {
-    const hue = calculateHue(title || 'placeholder');
-    return `hsl(${hue}, 45%, 38%)`;
-}
-
 export interface DashboardHeroArtworkInput {
     readonly backdropUrl?: string | null;
     readonly posterUrl?: string | null;

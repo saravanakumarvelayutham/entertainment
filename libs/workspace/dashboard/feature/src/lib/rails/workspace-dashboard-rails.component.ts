@@ -82,7 +82,6 @@ import type {
 } from './dashboard-hero.utils';
 import {
     HERO_CANDIDATE_LIMIT,
-    resolveDashboardHeroAmbient,
     resolveDashboardHeroArtwork,
     selectDashboardHeroItem,
 } from './dashboard-hero.utils';
@@ -360,12 +359,6 @@ export class WorkspaceDashboardRailsComponent {
                           ),
             };
         });
-    });
-
-    /** Page tint behind the banner, derived from the featured title. */
-    readonly heroAmbient = computed(() => {
-        const item = this.heroRecentItem();
-        return item ? resolveDashboardHeroAmbient(item.title) : null;
     });
 
     featureHeroItem(key: string): void {

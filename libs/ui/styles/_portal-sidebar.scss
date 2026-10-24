@@ -12,15 +12,24 @@
     width: 400px;
     min-width: 250px;
     max-width: 600px;
-    border-right: 1px solid var(--app-separator);
+    border: 1px solid var(--app-widget-border, var(--app-separator));
+    border-radius: 16px;
+    background: var(--app-widget-bg, var(--mat-sys-surface-container));
+    box-shadow: var(--app-widget-shadow, none);
     display: flex;
     flex-direction: column;
     flex-shrink: 0; // Prevent sidebar from shrinking
 
     .sidebar-header {
-        padding: 8px 12px;
-        background: var(--app-widget-header-bg, var(--mat-sys-surface-container-high));
-        border-bottom: 1px solid var(--app-separator);
+        min-height: 54px;
+        box-sizing: border-box;
+        padding: 8px 10px 8px 14px;
+        background: var(
+            --app-widget-header-bg,
+            var(--mat-sys-surface-container-high)
+        );
+        border-bottom: 1px solid
+            var(--app-widget-header-border, var(--app-separator));
         app-region: drag;
         display: flex;
         align-items: center;
@@ -29,10 +38,10 @@
 
         h2 {
             margin: 0;
-            font-size: 0.94rem;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            color: var(--mat-sys-on-surface);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            color: var(--app-heading-color, var(--mat-sys-on-surface));
             flex: 1;
         }
 
@@ -59,10 +68,10 @@
 
         .category-title {
             margin: 0;
-            font-size: 0.94rem;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            color: var(--mat-sys-on-surface);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            color: var(--app-heading-color, var(--mat-sys-on-surface));
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -72,8 +81,12 @@
             flex-shrink: 0;
             font-size: 0.72rem;
             font-weight: 500;
-            color: var(--mat-sys-on-surface-variant);
-            background: var(--mat-sys-surface-container);
+            color: var(--app-muted-color, var(--mat-sys-on-surface-variant));
+            background: color-mix(
+                in srgb,
+                var(--app-on-surface) 7%,
+                transparent
+            );
             padding: 2px 8px;
             border-radius: 999px;
         }
@@ -98,7 +111,7 @@
             padding: 0 4px 0 8px;
             margin-left: -8px;
             border: 1px solid transparent;
-            border-radius: 8px;
+            border-radius: 10px;
             background: transparent;
             color: inherit;
             font: inherit;
@@ -116,7 +129,10 @@
                 font-size: 18px;
                 width: 18px;
                 height: 18px;
-                color: var(--mat-sys-on-surface-variant);
+                color: var(
+                    --app-muted-color,
+                    var(--mat-sys-on-surface-variant)
+                );
             }
 
             &:hover,

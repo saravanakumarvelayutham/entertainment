@@ -217,13 +217,32 @@ describe('CategoryContentViewComponent', () => {
         fixture.detectChanges();
 
         const subtitle = fixture.nativeElement.querySelector(
-            '.category-subtitle'
+            '.category-eyebrow'
         ) as HTMLElement | null;
 
         expect(catalog.initialize).toHaveBeenCalledWith(null);
         expect(subtitle?.textContent?.trim()).toBe(
             'Fetching playlist data from source...'
         );
+    });
+
+    it('separates the editorial category identity from its refinement tool shelf', () => {
+        contentSortMode.set('date-desc');
+        categoryItemCount.set(12);
+
+        fixture.detectChanges();
+
+        const header = fixture.nativeElement.querySelector(
+            '.category-content-header'
+        ) as HTMLElement;
+        const identity = header.querySelector(
+            '.category-content-header__identity'
+        );
+        const tools = header.querySelector('.category-content-header__tools');
+
+        expect(identity?.querySelector('.category-eyebrow')).not.toBeNull();
+        expect(identity?.querySelector('.category-title')).not.toBeNull();
+        expect(tools?.querySelector('.refine-action')).not.toBeNull();
     });
 
     it('forwards query-param search updates to the catalog facade when supported', () => {

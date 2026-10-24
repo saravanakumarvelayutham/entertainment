@@ -50,6 +50,13 @@ interface SortOption {
     translationKey: string;
 }
 
+interface SourceTypeSummary {
+    id: 'm3u' | 'xtream' | 'stalker';
+    icon: string;
+    translationKey: string;
+    count: number;
+}
+
 @Component({
     selector: 'app-workspace-sources',
     imports: [
@@ -219,6 +226,32 @@ export class WorkspaceSourcesComponent {
             })
             .filter((item) => (item.title || '').toLowerCase().includes(query))
             .length;
+    });
+
+    readonly sourceTypeSummary = computed<SourceTypeSummary[]>(() => {
+        const items = this.playlists();
+        return [
+            {
+                id: 'm3u',
+                icon: 'playlist_play',
+                translationKey: 'HOME.PLAYLIST_TYPES.M3U',
+                count: items.filter(
+                    (item) => !item.serverUrl && !item.macAddress
+                ).length,
+            },
+            {
+                id: 'xtream',
+                icon: 'cloud',
+                translationKey: 'HOME.PLAYLIST_TYPES.XTREAM',
+                count: items.filter((item) => !!item.serverUrl).length,
+            },
+            {
+                id: 'stalker',
+                icon: 'router',
+                translationKey: 'HOME.PLAYLIST_TYPES.STALKER',
+                count: items.filter((item) => !!item.macAddress).length,
+            },
+        ];
     });
 
     readonly subtitle = computed(() => {

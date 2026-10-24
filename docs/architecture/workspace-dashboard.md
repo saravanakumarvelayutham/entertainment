@@ -35,19 +35,21 @@ Core implementation:
 
 ## Page Structure
 
-The page is a lean-back surface: artwork carries it and chrome recedes. The
-hero bleeds to the content pane's edges, its bottom fades into the page
-background, and the first rail starts inside that fade (negative top margin on
-`.rails-page__rails`). A title-derived ambient tint
-(`resolveDashboardHeroAmbient`, written to the `--hero-ambient` custom
-property on `.rails-page`) sits behind the banner so it never rests on a flat
-surface.
+The Library masthead introduces a feature card beside a separate 300px history
+deck. At 1100px and below, the deck becomes a horizontal row below the feature.
+The feature uses a dark media
+surface, bold sans-serif title and silver actions. Desktop artwork occupies
+the right side under a copy scrim; phone artwork fills the card. Content rails
+follow in normal flow, with no negative overlap or colored page wash. The
+loading skeleton reserves the same feature geometry. Existing artwork,
+fallback handling, content order and metadata preferences remain the source
+of every visible title and image.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  Hero — full-bleed artwork, copy bottom-left, "Up next for you"     │
-│  thumbnail stack bottom-right (the other newest recent items)       │
-│  ░░░░░░░░░░░░░░░░ bottom fade into the page ░░░░░░░░░░░░░░░░░░░░░░ │
+│  Library masthead + contained hero, "Up next for you"              │
+│  separate history deck (the other newest recent items)            │
+│  Independent content rails below the feature card                 │
 │  Continue Watching · See all →                                      │
 │  [16:9 still ▬▬▬▬▭][16:9 still ▬▭][16:9 still ▬▬▬▭] →→             │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -86,12 +88,12 @@ Render rules:
 2. `hasPlaylists() === false` → render `<app-empty-state [type]="'welcome-dashboard'">`
    full-bleed. All rails and the hero are skipped.
 3. The hero features one of the newest `HERO_CANDIDATE_LIMIT` (5) global
-   recent items. The newest is featured by default; the up-next stack
+   recent items. The newest is featured by default; the up-next deck
    (`heroUpNext()`, `data-test-id="dashboard-hero-up-next"`) renders every
-   candidate as a thumbnail button and `featureHeroItem(key)` swaps the
+   candidate as a titled thumbnail button and `featureHeroItem(key)` swaps the
    banner without navigating. The selection is session-only; a selected item
    that leaves the recent list falls back to the newest one
-   (`selectDashboardHeroItem`). The stack renders only when there are at
+   (`selectDashboardHeroItem`). The deck renders only when there are at
    least two candidates. The TMDB extras effect follows the featured item.
 4. Each rail is emitted via `@if (cards.length > 0)`. Empty rails are hidden
    — there is no "empty widget" placeholder.
@@ -113,15 +115,15 @@ Render rules:
    1–10 by `rankDashboardCards`. It is not re-ranked by rating. The Top rated
    rail (same `tmdbTrending` toggle, rating ≥ 7.5) excludes the titles already
    in the Top 10 (`excludeDashboardCards`) so no title appears twice.
-6. Live favorites are promoted into their own live rail; movie/series
+9. Live favorites are promoted into their own live rail; movie/series
    favorites render in a separate `Favorite movies & series` rail
    (`favoriteMoviesAndSeriesCards`, `data-test-id="dashboard-favorite-vod-rail"`,
    mapped from `globalFavoriteItems()` filtered to movie/series). Full mixed
    favorites management stays on `/workspace/global-favorites`.
-7. The live favorites rail keeps its scoped skeleton until the initial global
-   favorites load has completed for both Xtream-backed and playlist-backed
-   favorites. This avoids first-paint partial counts such as a single Stalker
-   favorite appearing before M3U favorites finish resolving.
+10. The live favorites rail keeps its scoped skeleton until the initial global
+    favorites load has completed for both Xtream-backed and playlist-backed
+    favorites. This avoids first-paint partial counts such as a single Stalker
+    favorite appearing before M3U favorites finish resolving.
 
 ## Rail Contract
 

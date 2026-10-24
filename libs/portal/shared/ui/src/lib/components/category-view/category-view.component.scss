@@ -6,24 +6,35 @@
     min-height: 0;
     overflow-y: auto;
     flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
+    padding: 10px 8px 18px;
+    box-sizing: border-box;
 }
 
 .category-item {
     cursor: pointer;
-    width: auto;
+    width: 100%;
+    min-height: 42px;
+    margin: 2px 0;
+    padding-inline: 12px 10px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+
+    &:hover:not(.selected) {
+        border-color: var(--app-widget-border, var(--app-separator));
+        background: color-mix(in srgb, var(--app-widget-bg) 72%, transparent);
+    }
 }
 
 // Selected row: tint the badge surface with the selection accent. Text colour
 // is already swapped to --app-selection-color by the parent `.nav-item.selected
 // *` rule in nav-list.scss, so we only need to override the background here.
 .category-item--selected .item-count.app-count-badge {
-    background: color-mix(
-        in srgb,
-        var(--app-selection-color) 18%,
-        transparent
-    );
+    background: color-mix(in srgb, var(--app-selection-color) 18%, transparent);
+}
+
+.category-item--selected {
+    border-color: var(--app-selection-border);
+    box-shadow: inset 3px 0 0 var(--app-selection-color);
 }
 
 mat-card-content {
@@ -54,7 +65,7 @@ mat-card-content {
 @media (max-width: 800px) {
     .category-item {
         width: 100%;
-        margin: 4px;
+        margin: 2px 0;
     }
 
     .category-empty-state {

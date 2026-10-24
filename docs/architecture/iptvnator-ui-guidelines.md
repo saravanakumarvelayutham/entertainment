@@ -47,6 +47,22 @@ Use it when changing existing views or introducing new list-based UI in the work
 
 ## Shared Tokens
 
+The workspace uses neutral charcoal layers in dark mode and near-white surfaces
+in light mode. Material controls retain the azure palette; provider identity
+colors remain separate. `--app-feature-accent` and `--app-feature-on-accent`
+form the fixed silver/dark pair for actions over artwork. The dashboard uses
+the app sans-serif stack and a Library masthead above a feature/history split;
+content rails follow in normal flow. Global navigation is a horizontal top bar
+with labels above 640px and compact icons on phones. Provider/source tabs occupy
+a second row. Decorative surfaces must not introduce new scroll owners.
+
+Catalogs separate their identity from sorting/refinement controls and use dense
+poster walls for VOD, landscape cards for live channels. Detail pages place a
+poster beside metadata and actions, with artwork weighted to the right. Live
+pages frame channel navigation, the player and the programme guide as separate
+panes. Sources use a command deck above the inventory; Settings group controls
+beside a section identity panel, stacking as available content width narrows.
+
 These tokens are the base for interactive emphasis:
 
 - `--app-selection-color`
@@ -88,7 +104,12 @@ icons. The dock must never pair a dark fallback surface with inherited light
 app text. Loader/stall and transient feedback overlays own a light foreground
 and dark scrim because they cover video. Video viewports remain black in both
 themes and fullscreen; frame-copy and built-in shared controls keep their
-existing light-on-dark overlay palette.
+light-on-dark overlay palette. Shared overlay controls use a smoked-glass dock,
+silver transport/seek accents, rounded capability panels and responsive title
+type. The primary play/pause action pairs a dark icon with the silver surface;
+other icons stay white over the dark dock. The decorative glass layer never
+clips popovers or captures pointer input. Reduced-motion preferences suppress
+chrome transitions, live pulsing and feedback scaling.
 
 EPG timeline, list, empty states and programme details use the library-local
 `libs/ui/epg/src/lib/_epg-theme.scss` palette, based on app surfaces, separators,

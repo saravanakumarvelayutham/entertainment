@@ -7,10 +7,11 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    height: 56px;
+    height: 64px;
+    box-sizing: border-box;
     padding: 0 24px;
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
-    background: var(--app-header-bg, var(--mat-sys-surface-container-low));
+    border-bottom: 1px solid var(--app-rail-border);
+    background: var(--app-shell-bg);
     app-region: drag;
 }
 
@@ -30,9 +31,9 @@
 .search-field {
     flex: 1;
     min-width: 160px;
-    max-width: 560px;
-    height: 36px;
-    border-radius: 10px;
+    max-width: none;
+    height: 40px;
+    border-radius: 14px;
     border: 1px solid var(--app-search-border, var(--mat-sys-outline-variant));
     background: var(--app-search-bg, var(--mat-sys-surface-container));
     display: flex;
@@ -46,9 +47,9 @@
     app-region: no-drag;
 
     &:focus-within {
-        border-color: var(--mat-sys-primary);
+        border-color: var(--app-selection-color);
         box-shadow: 0 0 0 3px
-            color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+            color-mix(in srgb, var(--app-selection-color) 12%, transparent);
     }
 
     mat-icon {
@@ -334,6 +335,7 @@
 
 @media (max-width: 640px) {
     .workspace-header {
+        height: 56px;
         padding-inline: 8px;
         gap: 8px;
     }

@@ -4,6 +4,168 @@ import { join } from 'node:path';
 import { expect, test } from './fixtures';
 
 const MEDIA_HOST = 'https://watching-insights-fixture.local';
+
+for (const theme of ['Light', 'Dark'] as const) {
+    test(`@web @workspace charcoal library ${theme.toLowerCase()} keeps artwork and navigation accessible`, async ({
+        page,
+    }, testInfo) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await mockMovieMetadata(page);
+        const art = readFileSync(
+            join(__dirname, 'fixtures/artwork/cinematic-landscape.svg')
+        );
+        await page.route('https://image.tmdb.org/**', (route) =>
+            route.fulfill({ contentType: 'image/svg+xml', body: art })
+        );
+        await page.goto('/workspace/settings/general');
+        await page.getByRole('radio', { name: theme, exact: true }).click();
+        const save = page.getByRole('button', { name: 'Save changes' });
+        if (await save.isVisible()) {
+            await save.click();
+            await expect(save).toBeHidden();
+        }
+        await page.goto('/workspace/settings/tmdb');
+        await page.locator('[data-test-id="tmdb-enabled"] input').check();
+        await page.locator('[data-test-id="tmdb-api-key"]').fill('e2e-key');
+        await save.click();
+        await expect(save).toBeHidden();
+        await importChannels(
+            page,
+            [
+                '#EXTM3U',
+                '#EXTINF:-1 group-title="Movies",Night Signal (2024)',
+                `${MEDIA_HOST}/night-signal.mp4`,
+                '#EXTINF:-1 group-title="Culture",Field Notes',
+                `${MEDIA_HOST}/field.m3u8`,
+                '#EXTINF:-1 group-title="Cinema",World Cinema',
+                `${MEDIA_HOST}/cinema.m3u8`,
+                '#EXTINF:-1 group-title="Music",Slow Sunday',
+                `${MEDIA_HOST}/sunday.m3u8`,
+                '#EXTINF:-1 group-title="Music",After Hours',
+                `${MEDIA_HOST}/after.m3u8`,
+            ].join('\n'),
+            '5 channels'
+        );
+        const clip = readFileSync(
+            join(__dirname, 'fixtures/playback/episode.webm')
+        );
+        await page.route(`${MEDIA_HOST}/night-signal.mp4`, (route) =>
+            route.fulfill({ contentType: 'video/webm', body: clip })
+        );
+        const rows = page.locator('[data-test-id="channel-item"]');
+        for (const row of await rows.all()) {
+            await row.locator('.favorite-button').click();
+        }
+        for (const name of [
+            'Field Notes',
+            'World Cinema',
+            'Slow Sunday',
+            'After Hours',
+        ]) {
+            await selectChannel(page, name);
+        }
+        await rows.filter({ hasText: 'Night Signal (2024)' }).click();
+        await expect(
+            page
+                .locator('app-m3u-vod-detail')
+                .getByText('Mystery', { exact: true })
+                .first()
+        ).toHaveText('Mystery');
+        await page
+            .getByRole('link', { name: 'Dashboard', exact: true })
+            .click();
+        const dashboard = page.locator('[data-test-id="dashboard-page"]');
+        await expect(
+            dashboard.getByRole('heading', { name: 'Library', exact: true })
+        ).toBeVisible();
+        const title = dashboard.locator('.hero__title');
+        await expect(title).toContainText('Night Signal');
+        await expect(page.locator('mat-snack-bar-container')).toHaveCount(0, {
+            timeout: 10_000,
+        });
+        const contrast = await dashboard.evaluate((element) => {
+            const style = getComputedStyle(element);
+            const context = document.createElement('canvas').getContext('2d');
+            if (!context) throw new Error('Canvas color parsing unavailable');
+            const luminance = (token: string) => {
+                context.fillStyle = style.getPropertyValue(token).trim();
+                context.fillRect(0, 0, 1, 1);
+                const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+                const linear = [r, g, b].map((channel) => {
+                    const value = channel / 255;
+                    return value <= 0.04045
+                        ? value / 12.92
+                        : ((value + 0.055) / 1.055) ** 2.4;
+                });
+                return (
+                    linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+                );
+            };
+            const text = luminance('--app-body-color');
+            const background = luminance('--app-content-bg');
+            return (
+                (Math.max(text, background) + 0.05) /
+                (Math.min(text, background) + 0.05)
+            );
+        });
+        expect(contrast).toBeGreaterThanOrEqual(4.5);
+        await expect(dashboard.locator('.hero__up-next')).toBeVisible();
+        for (const width of [1440, 1200, 1024, 390]) {
+            await page.setViewportSize({ width, height: 960 });
+            await expect
+                .poll(() =>
+                    page.evaluate(() => document.documentElement.scrollWidth)
+                )
+                .toBeLessThanOrEqual(width);
+            const link = page.getByRole('link', {
+                name: 'Dashboard',
+                exact: true,
+            });
+            const label = link.locator('.rail-link-label');
+            if (width > 640) {
+                await expect(label).toBeVisible();
+                const rail = await page
+                    .locator('.global-navigation')
+                    .boundingBox();
+                const bounds = await link.boundingBox();
+                if (!rail || !bounds)
+                    throw new Error('Navigation has no layout');
+                expect(bounds.x + bounds.width).toBeLessThanOrEqual(
+                    rail.x + rail.width
+                );
+                expect(bounds.y + bounds.height).toBeLessThanOrEqual(
+                    rail.y + rail.height
+                );
+            } else {
+                await expect(label).toBeHidden();
+            }
+            await link.focus();
+            await link.press('Tab');
+            await page.keyboard.press('Shift+Tab');
+            await expect(link).toBeFocused();
+            await expect(link).toHaveCSS('outline-style', 'solid');
+            await expect(link).toHaveCSS('transition-duration', '0s');
+            await link.press('Escape');
+            await expect(page.getByRole('tooltip')).toBeHidden();
+            const feature = await dashboard.locator('.hero').boundingBox();
+            const copy = await title.boundingBox();
+            if (!feature || !copy) throw new Error('Feature has no layout');
+            expect(copy.width).toBeGreaterThan(180);
+            expect(copy.y + copy.height).toBeLessThanOrEqual(
+                feature.y + feature.height
+            );
+            const screenshot = testInfo.outputPath(
+                `dashboard-${theme.toLowerCase()}-${width}.png`
+            );
+            await page.screenshot({ path: screenshot });
+            await testInfo.attach(`dashboard-${width}`, {
+                path: screenshot,
+                contentType: 'image/png',
+            });
+        }
+    });
+}
+
 const PLAYLIST = [
     '#EXTM3U',
     '#EXTINF:-1 tvg-id="insights-news" group-title="News",Insights News',

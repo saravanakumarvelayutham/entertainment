@@ -3,6 +3,13 @@
 .content-card {
     @include grid.content-card;
     position: relative;
+    border: 1px solid transparent;
+    background: transparent;
+
+    &:hover {
+        border-color: var(--app-widget-border, var(--app-separator));
+        box-shadow: 0 18px 34px -24px rgba(0, 0, 0, 0.8);
+    }
 
     // Keyboard/pointer activation surface; the Remove button is a sibling
     // absolutely positioned over the poster's corner. The focus ring is
@@ -23,6 +30,11 @@
 
     .thumbnail-wrapper {
         @include grid.thumbnail-wrapper;
+        border-radius: 11px;
+        background: var(
+            --app-widget-header-bg,
+            var(--mat-sys-surface-container-high)
+        );
 
         .cover-title-overlay {
             @include grid.cover-title-overlay;
@@ -35,10 +47,38 @@
 
     .card-info {
         @include grid.card-info;
+        padding: 10px 5px 5px;
+
+        h3 {
+            font-size: 0.84rem;
+            font-weight: 620;
+            color: var(--app-heading-color, var(--mat-sys-on-surface));
+        }
     }
 }
 
 .content-card:hover .cover-title-overlay,
 .content-card__activation:focus-visible .cover-title-overlay {
     opacity: 1;
+}
+
+:host.content-card--landscape .content-card {
+    padding: 7px;
+    border-color: var(--app-widget-border, var(--app-separator));
+    background: color-mix(in srgb, var(--app-widget-bg) 82%, transparent);
+
+    .poster,
+    .poster-placeholder {
+        aspect-ratio: 16 / 8;
+    }
+
+    .poster {
+        object-fit: contain;
+        padding: clamp(12px, 2vw, 24px);
+        box-sizing: border-box;
+    }
+
+    .card-info {
+        padding: 10px 6px 4px;
+    }
 }

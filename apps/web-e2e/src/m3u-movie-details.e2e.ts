@@ -213,6 +213,74 @@ async function seekUsingControls(page: Page): Promise<void> {
 
 type MetadataMode = 'disabled' | 'details-disabled' | 'enabled';
 
+for (const theme of ['LIGHT_THEME', 'DARK_THEME']) {
+    test(`@web @m3u cinematic controls remain reachable in compact players (${theme})`, async ({
+        page,
+    }, testInfo) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await serveSeekableClip(page);
+        await page.goto('/workspace/settings/general');
+        await page.locator(`[data-test-id="${theme}"]`).click();
+        if (
+            await page.getByRole('button', { name: 'Save changes' }).isVisible()
+        ) {
+            await saveSettings(page);
+        }
+        await selectPlayer(page, 'HTML5 video player');
+        await importPlaylist(page);
+        await sidebarEntry(page, 'Dune (2021) 1080p').click();
+        await seekUsingControls(page);
+
+        const view = page.locator('app-web-player-view');
+        const controls = view.locator('app-player-controls');
+        const primary = controls.locator('.player-controls__button--primary');
+        for (const width of [1280, 390]) {
+            await page.setViewportSize({ width, height: 900 });
+            await view.hover();
+            await primary.focus();
+            await expect(primary).toBeFocused();
+            await expect(primary).toHaveCSS('transition-duration', '0s');
+            const bounds = await controls.boundingBox();
+            const button = await primary.boundingBox();
+            if (!bounds || !button)
+                throw new Error('Player controls have no layout');
+            expect(button.x).toBeGreaterThanOrEqual(bounds.x);
+            expect(button.y + button.height).toBeLessThanOrEqual(
+                bounds.y + bounds.height
+            );
+
+            const volume = controls
+                .locator('.player-controls__popover-anchor')
+                .filter({
+                    has: page.locator('.player-controls__slider--volume'),
+                });
+            // Exercise the capability panel through its trigger, including at the
+            // narrow breakpoint where the actions wrap and anchors change.
+            const volumeButton = controls
+                .getByRole('button', { name: /mute/i })
+                .first();
+            await volumeButton.hover();
+            await expect(volume).toBeVisible();
+            const panel = await volume
+                .locator('.player-controls__panel')
+                .boundingBox();
+            if (!panel) throw new Error('Volume panel has no layout');
+            expect(panel.x).toBeGreaterThanOrEqual(bounds.x);
+            expect(panel.x + panel.width).toBeLessThanOrEqual(
+                bounds.x + bounds.width
+            );
+            const screenshot = testInfo.outputPath(`player-${width}.png`);
+            await view.screenshot({ path: screenshot });
+            await testInfo.attach(`player-${width}`, {
+                path: screenshot,
+                contentType: 'image/png',
+            });
+            await primary.focus();
+            await primary.press('Enter');
+        }
+    });
+}
+
 async function configureMetadata(
     page: Page,
     mode: MetadataMode

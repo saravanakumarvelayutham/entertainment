@@ -30,7 +30,6 @@ import {
 } from './dashboard-playback.utils';
 import {
     HERO_CANDIDATE_LIMIT,
-    resolveDashboardHeroAmbient,
     resolveDashboardHeroArtwork,
     selectDashboardHeroItem,
 } from './dashboard-hero.utils';
@@ -243,15 +242,6 @@ describe('hero selection helpers', () => {
         expect(HERO_CANDIDATE_LIMIT).toBe(5);
     });
 
-    it('derives a stable ambient tint from the featured title', () => {
-        const tint = resolveDashboardHeroAmbient('Skyline Sentinels');
-
-        expect(tint).toMatch(/^hsl\(\d+, 45%, 38%\)$/);
-        expect(resolveDashboardHeroAmbient('Skyline Sentinels')).toBe(tint);
-        expect(resolveDashboardHeroAmbient('Black Harbor')).not.toBe(tint);
-        // An empty title still yields a valid colour instead of hsl(NaN).
-        expect(resolveDashboardHeroAmbient('')).toMatch(/^hsl\(\d+/);
-    });
 });
 
 describe('isDashboardHighRated', () => {

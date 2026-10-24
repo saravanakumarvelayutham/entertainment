@@ -11,12 +11,14 @@
 }
 
 .context-panel {
-    border-right: 1px solid var(--mat-sys-outline-variant);
-    background: var(--app-rail-bg, var(--mat-sys-surface-container-low));
+    border: 1px solid var(--app-widget-border);
+    border-radius: 18px;
+    background: var(--app-rail-bg);
+    margin: 12px 0 12px 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    height: 100%;
+    height: calc(100% - 24px);
     padding: 12px;
     width: 300px;
     min-width: 0;
@@ -29,6 +31,8 @@
 }
 
 .context-panel--collapsed {
+    margin: 0;
+    border-width: 0;
     width: 0 !important;
     min-width: 0 !important;
     // !important: the `--route` / `--sources` variants set their padding
@@ -81,6 +85,11 @@
 // uses visibility (delayed until the slide-out finishes) so the off-screen
 // panel can't be tabbed or scrolled into.
 @media (max-width: 640px) {
+    .context-panel {
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+    }
     :host {
         position: fixed;
         top: 0;

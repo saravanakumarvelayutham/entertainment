@@ -25,22 +25,24 @@
 <div class="main-content">
     <div class="content-header">
         <div class="category-meta">
-            <h2 class="category-title">
-                {{ titleTranslationString() | translate }}
-            </h2>
             @if (selectedCategoryId()) {
                 <div class="category-subtitle">{{ selectedCategoryId() }}</div>
             }
+            <h2 class="category-title">
+                {{ titleTranslationString() | translate }}
+            </h2>
         </div>
         @if (showHeaderAction() && !isWorkspaceLayout) {
-            <button
-                type="button"
-                mat-icon-button
-                [matTooltip]="headerActionTooltip()"
-                (click)="onHeaderActionClick()"
-            >
-                <mat-icon>{{ headerActionIcon() }}</mat-icon>
-            </button>
+            <div class="content-header__tools">
+                <button
+                    type="button"
+                    mat-icon-button
+                    [matTooltip]="headerActionTooltip()"
+                    (click)="onHeaderActionClick()"
+                >
+                    <mat-icon>{{ headerActionIcon() }}</mat-icon>
+                </button>
+            </div>
         }
     </div>
     <div class="scrollable-content">

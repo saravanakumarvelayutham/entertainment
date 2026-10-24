@@ -214,6 +214,22 @@ describe('WorkspaceSourcesComponent', () => {
         expect(subtitle.tagName).toBe('SPAN');
     });
 
+    it('summarizes the real source inventory in the management header', async () => {
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        const stats = Array.from(
+            fixture.nativeElement.querySelectorAll<HTMLElement>('.source-stat')
+        );
+
+        expect(stats).toHaveLength(3);
+        expect(
+            stats.map((stat) =>
+                stat.querySelector('strong')?.textContent?.trim()
+            )
+        ).toEqual(['1', '0', '0']);
+    });
+
     it('uses the shared always-visible scrollbar utility for the playlist list', async () => {
         fixture.detectChanges();
         await fixture.whenStable();

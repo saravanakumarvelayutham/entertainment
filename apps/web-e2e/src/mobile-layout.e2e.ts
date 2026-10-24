@@ -65,7 +65,7 @@ async function boxOf(
  * is fine — the bar scrolls sideways by design — so only y is asserted.
  */
 async function expectRailLinksInsideTopBar(page: Page): Promise<void> {
-    const rail = page.locator('.app-rail');
+    const rail = page.locator('.global-navigation');
     await expect(rail).toBeVisible();
 
     const railBox = await boxOf(rail);
@@ -77,7 +77,7 @@ async function expectRailLinksInsideTopBar(page: Page): Promise<void> {
         'row'
     );
 
-    const links = page.locator('.app-rail a:visible');
+    const links = page.locator('.global-navigation a:visible');
     const count = await links.count();
     expect(count).toBeGreaterThan(0);
 

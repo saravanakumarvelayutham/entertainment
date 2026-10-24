@@ -1,7 +1,5 @@
-// Dashboard page: artwork carries the page, chrome recedes. The hero bleeds
-// to the content pane's edges, its bottom fades into the page, and the rails
-// start inside that fade. A title-derived ambient tint sits behind it all so
-// the banner never rests on a flat surface.
+// A contained feature anchors the library; artwork supplies color while the
+// surrounding page and navigation stay neutral.
 
 :host {
     display: block;
@@ -23,13 +21,52 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    // The ambient wash is a page-level radial behind hero and first rails.
-    background: radial-gradient(
-        1200px 620px at 50% -120px,
-        color-mix(in srgb, var(--hero-ambient, transparent) 34%, transparent)
-            0%,
-        transparent 70%
-    );
+    gap: 28px;
+}
+
+.dashboard-masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 32px 32px 0;
+
+    h1 {
+        margin: 0;
+        color: var(--app-heading-color);
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: -0.06em;
+    }
+}
+
+.dashboard-masthead__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--app-widget-border);
+    border-radius: 10px;
+    color: var(--app-body-color);
+    background: var(--app-widget-bg);
+    font-size: 0.8rem;
+    text-decoration: none;
+    app-region: no-drag;
+
+    mat-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+    }
+    &:hover {
+        color: var(--app-on-surface);
+        background: var(--app-card-hover-bg);
+    }
+    &:focus-visible {
+        outline: 2px solid var(--app-selection-color);
+        outline-offset: 3px;
+    }
 }
 
 .rails-page--empty {
@@ -43,37 +80,48 @@
     background: none;
 }
 
-// Rails sit inside the hero's bottom fade; the negative margin is what makes
-// the first rail read as part of the banner instead of a separate box.
+// Rails remain in normal flow below the feature, including when it is hidden.
 .rails-page__rails {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 44px;
-    padding: 8px 44px 0;
+    gap: 36px;
+    padding: 0 32px;
     min-width: 0;
-
-    .hero + & {
-        margin-top: -56px;
-    }
 }
 
 // ── Hero ────────────────────────────────────────────────────────────────────
-// Full-bleed landscape banner. Copy is pinned bottom-left, the up-next stack
+// Contained landscape feature. Copy is pinned bottom-left, the up-next stack
 // bottom-right. The surface is always dark (artwork or the dark fallback
 // gradient), so the type is light in both app themes.
+.dashboard-lead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 0 32px;
+    min-width: 0;
+    &--with-queue {
+        grid-template-columns: minmax(0, 1fr) 300px;
+    }
+}
+
 .hero {
     position: relative;
     display: flex;
     align-items: flex-end;
-    min-height: clamp(380px, 54vh, 600px);
-    padding: 72px 44px 96px;
+    min-height: 448px;
+    margin: 0;
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
     box-sizing: border-box;
     color: #fff;
     overflow: hidden;
     isolation: isolate;
-    background: #0d0f12;
+    background: #151518;
+    container-type: inline-size;
+    container-name: dashboard-feature;
     app-region: no-drag;
 
     --hero-poster-width: 150px;
@@ -83,9 +131,9 @@
 // scaled so its colours wash the whole banner without portrait edges.
 .hero__backdrop {
     position: absolute;
-    inset: 0;
+    inset: 0 0 0 32%;
     background-size: cover;
-    background-position: 70% 25%;
+    background-position: center;
     background-repeat: no-repeat;
     z-index: 0;
     pointer-events: none;
@@ -115,37 +163,20 @@
     pointer-events: none;
 }
 
-// Layer 1: scrim. Left-to-right for legibility behind the copy, and a
-// bottom fade into the content background so the rails below merge in.
+// Layer 1: copy scrim stays inside the feature's dark media surface.
 .hero__vignette {
     position: absolute;
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    // Layer order matters: the bottom fade is listed FIRST so it paints on
-    // top of the horizontal scrim. The fade must be fully opaque for a
-    // stretch, not only at the last pixel, or a light backdrop leaves a
-    // visible seam where the banner ends — and the scrim must not darken
-    // that stretch, or the light theme shows a grey band under the first
-    // rail header, which `.rails-page__rails` pulls up into it.
     background:
-        linear-gradient(
-            to top,
-            var(--app-content-bg, #161a22) 0%,
-            var(--app-content-bg, #161a22) 13%,
-            color-mix(in srgb, var(--app-content-bg, #161a22) 86%, transparent)
-                19%,
-            color-mix(in srgb, var(--app-content-bg, #161a22) 42%, transparent)
-                27%,
-            rgba(0, 0, 0, 0.08) 40%,
-            rgba(0, 0, 0, 0.35) 100%
-        ),
+        linear-gradient(0deg, rgba(0, 0, 0, 0.4), transparent 65%),
         linear-gradient(
             90deg,
-            rgba(0, 0, 0, 0.82) 0%,
-            rgba(0, 0, 0, 0.55) 42%,
-            rgba(0, 0, 0, 0.1) 75%,
-            rgba(0, 0, 0, 0) 100%
+            #151518 15%,
+            rgba(21, 21, 24, 0.92) 38%,
+            rgba(21, 21, 24, 0.45) 65%,
+            transparent 100%
         );
 }
 
@@ -212,27 +243,39 @@
     gap: 12px;
     flex: 1 1 0;
     min-width: 0;
-    max-width: 720px;
+    max-width: 580px;
 }
 
 .hero__eyebrow {
+    display: block;
     font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.78);
+    color: var(--app-feature-accent);
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    &::before {
+        content: '';
+        width: 28px;
+        height: 2px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-inline-end: 12px;
+        background: currentColor;
+    }
 }
 
 .hero__title {
     margin: 0;
-    font-size: clamp(2rem, 4.2vw, 3.6rem);
-    font-weight: 800;
+    font-family: inherit;
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    font-weight: 700;
     line-height: 1.02;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.06em;
     color: #fff;
     text-shadow: 0 2px 16px rgba(0, 0, 0, 0.55);
     overflow: hidden;
@@ -450,35 +493,45 @@
 }
 
 .hero__cta {
-    background: #fff;
-    color: #0d0f12;
+    background: var(--app-feature-accent);
+    color: var(--app-feature-on-accent);
     box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.7);
 
     &:hover {
-        background: #f3f4f8;
+        background: color-mix(in srgb, var(--app-feature-accent) 85%, white);
     }
 }
 
 .hero__secondary {
     font-weight: 600;
     color: #fff;
-    background: rgba(255, 255, 255, 0.14);
+    background: color-mix(
+        in srgb,
+        var(--app-feature-on-accent) 82%,
+        transparent
+    );
     border: 1px solid rgba(255, 255, 255, 0.28);
     backdrop-filter: blur(10px);
 
     &:hover {
-        background: rgba(255, 255, 255, 0.22);
+        background: color-mix(
+            in srgb,
+            var(--app-feature-on-accent) 92%,
+            transparent
+        );
     }
 }
 
-// Up-next stack: the other hero candidates as thumbnails. The featured one
-// wears the white ring (the shared hover/focus language of the cards below).
+// Separate history deck: titles remain readable beside their artwork.
 .hero__up-next {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-    flex: 0 0 auto;
+    align-items: stretch;
+    gap: 16px;
+    padding: 20px;
+    background: var(--app-rail-bg);
+    border: 1px solid var(--app-widget-border);
+    border-radius: 20px;
     min-width: 0;
 }
 
@@ -487,27 +540,29 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.72);
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+    color: var(--app-heading-color);
 }
 
 .hero__up-next-track {
-    display: flex;
-    gap: 10px;
+    display: grid;
+    gap: 8px;
 }
 
 .hero__up-next-item {
     position: relative;
-    width: 124px;
-    aspect-ratio: 16 / 9;
-    padding: 0;
-    border: 0;
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 64px;
+    width: 100%;
+    padding: 6px;
+    border: 1px solid transparent;
     border-radius: 10px;
     overflow: hidden;
-    background-color: #1e2330;
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.8);
+    background: transparent;
+    color: var(--app-on-surface);
     cursor: pointer;
     transition:
         transform 0.15s ease,
@@ -524,12 +579,13 @@
 
     &:hover,
     &:focus-visible {
-        transform: translateY(-2px);
-        outline-color: rgba(255, 255, 255, 0.95);
+        background: var(--app-card-hover-bg);
+        outline-color: var(--app-selection-color);
     }
 
     &--current {
-        outline-color: rgba(255, 255, 255, 0.95);
+        background: var(--app-widget-bg);
+        border-color: var(--app-selection-border);
     }
 
     &--live img {
@@ -538,6 +594,28 @@
         padding: 14% 22%;
         filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
     }
+}
+
+.hero__up-next-art {
+    position: relative;
+    display: block;
+    width: 88px;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+}
+
+.hero__up-next-title {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
 }
 
 .hero__up-next-live {
@@ -743,18 +821,16 @@
     position: relative;
     display: flex;
     align-items: flex-end;
-    min-height: clamp(380px, 54vh, 600px);
-    padding: 72px 44px 96px;
+    min-height: 448px;
+    padding: 40px;
+    margin-inline: 32px;
+    border-radius: 24px;
     box-sizing: border-box;
     background: linear-gradient(
         to top,
         var(--app-content-bg, #161a22) 0%,
         var(--app-widget-header-bg, #232840) 60%
     );
-
-    & + .rails-page__rails {
-        margin-top: -56px;
-    }
 }
 
 .rails-page__skeleton-hero-body {
@@ -867,17 +943,16 @@
 
 // ── Responsive ──────────────────────────────────────────────────────────────
 @media (max-width: 1100px) {
-    .hero__layout {
-        flex-wrap: wrap;
+    .dashboard-lead--with-queue {
+        grid-template-columns: minmax(0, 1fr);
     }
-
-    .hero__up-next {
-        align-items: flex-start;
-        width: 100%;
-    }
-
     .hero__up-next-track {
-        flex-wrap: wrap;
+        display: flex;
+        overflow-x: auto;
+        padding: 3px;
+    }
+    .hero__up-next-item {
+        flex: 0 0 220px;
     }
 }
 
@@ -890,17 +965,21 @@
 
     .rails-page__rails {
         gap: 28px;
-        padding: 8px 16px 0;
-
-        .hero + & {
-            margin-top: -32px;
-        }
+        padding: 0 16px;
     }
 
     .hero,
     .rails-page__skeleton-hero {
         min-height: 340px;
-        padding: 56px 16px 64px;
+        padding: 28px 20px;
+        margin-inline: 16px;
+    }
+
+    .dashboard-lead {
+        padding-inline: 16px;
+    }
+    .dashboard-lead .hero {
+        margin-inline: 0;
     }
 
     .hero {
@@ -912,7 +991,15 @@
     }
 
     .hero__title {
-        font-size: 1.7rem;
+        font-size: 2rem;
+    }
+
+    .dashboard-masthead {
+        padding: 24px 16px 0;
+    }
+
+    .hero__backdrop {
+        inset: 0;
     }
 
     .hero__cta,
@@ -920,10 +1007,6 @@
         min-height: 44px;
         padding: 0 16px 0 12px;
         font-size: 0.9rem;
-    }
-
-    .hero__up-next-item {
-        width: 96px;
     }
 
     .rails-page__skeleton-card {

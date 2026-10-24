@@ -13,16 +13,23 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 0; // Important for proper flex behavior
+    min-height: 0;
+    background: var(--app-content-bg);
 }
 
 .content-header {
-    padding: 8px 12px;
-    min-height: 48px;
-    background: var(--app-widget-header-bg, var(--mat-sys-surface-container-high));
+    padding: clamp(22px, 3.5vw, 42px) clamp(18px, 3vw, 38px) 18px;
+    min-height: 104px;
+    background:
+        radial-gradient(
+            circle at 7% -70%,
+            color-mix(in srgb, var(--app-selection-color) 16%, transparent),
+            transparent 56%
+        ),
+        var(--app-content-bg);
     border-bottom: 1px solid var(--app-separator);
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 8px;
 }
@@ -31,15 +38,17 @@
     min-width: 0;
     flex: 1;
     display: flex;
-    align-items: baseline;
-    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
 }
 
 .category-title {
     margin: 0;
-    font-size: 0.94rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.045em;
     color: var(--mat-sys-on-surface);
     white-space: nowrap;
     overflow: hidden;
@@ -50,18 +59,21 @@
 .category-subtitle {
     white-space: nowrap;
     flex-shrink: 0;
-    font-size: 0.70rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: capitalize;
+    font-size: 0.7rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     line-height: 1;
-    color: var(--mat-sys-primary);
-    background: color-mix(in srgb, var(--mat-sys-primary) 10%, var(--mat-sys-surface-container-high));
-    padding: 4px 10px;
-    border-radius: 999px;
-    box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent),
-        0 1px 3px rgba(0, 0, 0, 0.18);
+    color: var(--app-muted-color, var(--mat-sys-on-surface-variant));
+}
+
+.content-header__tools {
+    display: flex;
+    padding: 5px;
+    border: 1px solid var(--app-widget-border, var(--app-separator));
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--app-widget-bg) 88%, transparent);
+    app-region: no-drag;
 }
 
 .scrollable-content {
@@ -81,8 +93,11 @@
 }
 
 .items-grid {
-    @include grid.content-grid;
-    padding: 16px;
+    @include grid.content-grid(
+        var(--cover-grid-min-width, 138px),
+        clamp(10px, 1.35vw, 16px)
+    );
+    padding: 20px clamp(16px, 3vw, 38px) 36px;
     width: 100%;
     box-sizing: border-box;
     margin: 0;

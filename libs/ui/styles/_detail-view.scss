@@ -1,501 +1,268 @@
-// ============================================================================
-// Netflix-style Detail View - Cinematic Streaming Design
-// ============================================================================
-
 @use 'detail-view-actions' as detail-actions;
 
 @mixin base(
     $season-title-font-size: 1.375rem,
-    $season-title-font-weight: 600,
-    $season-title-letter-spacing: 0,
+    $season-title-font-weight: 650,
+    $season-title-letter-spacing: -0.02em,
     $episode-title-font-size: 1.125rem,
-    $episode-title-letter-spacing: 0
+    $episode-title-letter-spacing: -0.01em
 ) {
     :host {
-        --poster-width: 220px;
-        --poster-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
-        --content-max-width: 1400px;
-
-        // Light theme colors (default - no .dark-theme class on body)
-        --hero-gradient-start: rgba(255, 250, 245, 0);
-        --hero-gradient-mid: rgba(255, 250, 245, 0.75);
-        --hero-gradient-end: rgba(255, 250, 245, 1);
-        --surface-bg: #fffaf5;
-        --text-primary: #1a1a1a;
-        --text-secondary: rgba(26, 26, 26, 0.75);
-        --text-muted: rgba(26, 26, 26, 0.5);
-        // Single primary CTA color — matches --app-selection-color so the
-        // Play button reads as the same blue used everywhere else for
-        // "active / call to action".
-        --accent-color: #2f7bff;
-        --tag-bg: rgba(0, 0, 0, 0.06);
-        --tag-border: rgba(0, 0, 0, 0.12);
-        --play-idle-bg: linear-gradient(
-            135deg,
-            #2f7bff 0%,
-            #3b86ff 52%,
-            #4a90ff 100%
+        --surface-bg: var(--app-content-bg, #f7f7f8);
+        --text-primary: var(--app-heading-color, #202027);
+        --text-secondary: var(--app-body-color, #555561);
+        --text-muted: var(--app-muted-color, #686874);
+        --tag-bg: color-mix(
+            in srgb,
+            var(--app-widget-bg, #fff) 88%,
+            transparent
         );
-        --play-idle-fg: #ffffff;
-        --play-idle-border: rgba(47, 123, 255, 0.4);
-        --play-idle-shadow: 0 18px 38px rgba(47, 123, 255, 0.32);
-        --play-launching-bg: linear-gradient(
-            135deg,
-            #ffd36f 0%,
-            #ffb14c 46%,
-            #f57d35 100%
-        );
-        --play-launching-fg: #241103;
-        --play-launching-border: rgba(142, 66, 0, 0.2);
-        --play-launching-shadow: 0 22px 44px rgba(244, 136, 55, 0.32);
-        --play-stop-bg: linear-gradient(
-            135deg,
-            #ffd1c8 0%,
-            #ff9f8d 42%,
-            #ef5e64 100%
-        );
-        --play-stop-fg: #321012;
-        --play-stop-border: rgba(162, 38, 45, 0.18);
-        --play-stop-shadow: 0 22px 46px rgba(214, 74, 86, 0.26);
-        --play-icon-shell-bg: rgba(255, 255, 255, 0.32);
-        --play-icon-shell-border: rgba(255, 255, 255, 0.3);
-
+        --tag-border: var(--app-widget-border, rgba(24, 24, 30, 0.09));
+        --accent-color: var(--app-selection-color, #373743);
+        --content-max-width: 1440px;
+        --poster-shadow: 0 28px 64px -34px rgba(15, 15, 20, 0.48);
+        --play-idle-bg: var(--app-selection-color, #373743);
+        --play-idle-fg: var(--app-selection-on-color, #fff);
+        --play-idle-border: var(--app-selection-border, transparent);
+        --play-idle-shadow: 0 14px 30px -18px
+            var(--app-selection-glow, rgba(0, 0, 0, 0.5));
+        --play-launching-bg: #d8a73a;
+        --play-launching-fg: #211803;
+        --play-launching-border: rgba(216, 167, 58, 0.44);
+        --play-launching-shadow: 0 14px 30px -18px rgba(216, 167, 58, 0.72);
+        --play-stop-bg: #b95d66;
+        --play-stop-fg: #fff;
+        --play-stop-border: rgba(185, 93, 102, 0.5);
+        --play-stop-shadow: 0 14px 30px -18px rgba(185, 93, 102, 0.72);
+        display: block;
         width: 100%;
         height: 100%;
-        display: block;
         overflow: hidden;
         background: var(--surface-bg);
         color: var(--text-primary);
     }
 
-    // Dark theme overrides - cinematic dark mode
     :host-context(.dark-theme) {
-        --hero-gradient-start: rgba(20, 20, 20, 0);
-        --hero-gradient-mid: rgba(20, 20, 20, 0.7);
-        --hero-gradient-end: rgba(20, 20, 20, 1);
-        --surface-bg: #141414;
-        --text-primary: #fff;
-        --text-secondary: rgba(255, 255, 255, 0.7);
-        --text-muted: rgba(255, 255, 255, 0.5);
-        --accent-color: #78adff;
-        --tag-bg: rgba(255, 255, 255, 0.1);
-        --tag-border: rgba(255, 255, 255, 0.2);
-        --poster-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
-        --play-idle-bg: linear-gradient(
-            135deg,
-            #2f7bff 0%,
-            #4f8eff 58%,
-            #78adff 100%
-        );
-        --play-idle-fg: #ffffff;
-        --play-idle-border: rgba(120, 173, 255, 0.32);
-        --play-idle-shadow: 0 20px 42px rgba(47, 123, 255, 0.32);
-        --play-launching-bg: linear-gradient(
-            135deg,
-            #ffdd79 0%,
-            #ffb347 42%,
-            #ef6a3a 100%
-        );
-        --play-launching-fg: #1f1105;
-        --play-launching-border: rgba(255, 223, 136, 0.26);
-        --play-launching-shadow: 0 24px 50px rgba(255, 153, 71, 0.3);
-        --play-stop-bg: linear-gradient(
-            135deg,
-            #ffd7cf 0%,
-            #ff9b8b 40%,
-            #eb5961 100%
-        );
-        --play-stop-fg: #2d1012;
-        --play-stop-border: rgba(255, 205, 205, 0.24);
-        --play-stop-shadow: 0 24px 50px rgba(235, 89, 97, 0.24);
-        --play-icon-shell-bg: rgba(255, 255, 255, 0.28);
-        --play-icon-shell-border: rgba(255, 255, 255, 0.24);
+        --surface-bg: #18181d;
+        --poster-shadow: 0 32px 72px -28px rgba(0, 0, 0, 0.88);
     }
 
-    // ============================================================================
-    // Details Section - Content Elements
-    // ============================================================================
-
     .details {
-        // Styles for projected content elements
-
         &__tag {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 4px 12px;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            background: var(--tag-bg);
+            min-height: 26px;
+            box-sizing: border-box;
+            padding: 4px 10px;
             border: 1px solid var(--tag-border);
-            border-radius: 4px;
-            backdrop-filter: blur(8px);
-
+            border-radius: 999px;
+            background: var(--tag-bg);
+            color: var(--text-secondary);
+            font-size: 0.76rem;
+            font-weight: 650;
             &--rating {
-                color: #ffd700;
-                border-color: rgba(255, 215, 0, 0.3);
+                color: #c58a13;
             }
-
-            // Series production status — a state, not a fact about the
-            // title, so it reads quieter than the other tags
             &--status {
-                text-transform: uppercase;
-                font-size: 0.6875rem;
+                font-size: 0.68rem;
                 letter-spacing: 0.06em;
+                text-transform: uppercase;
             }
         }
 
         &__meta-item {
-            font-size: 0.875rem;
-
+            min-width: 110px;
+            font-size: 0.85rem;
             .label {
-                color: var(--text-muted);
-                font-weight: 400;
-                margin-bottom: 2px;
-                text-decoration: none;
                 display: block;
+                margin-bottom: 4px;
+                color: var(--text-muted);
+                font-size: 0.72rem;
+                font-weight: 650;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
             }
-
             .value {
                 color: var(--text-primary);
-                font-weight: 500;
+                font-weight: 600;
             }
         }
 
-        // Cast avatar chips (populated by TMDB enrichment)
         &__cast-strip {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px 12px;
-            margin-top: 4px;
+            gap: 8px 14px;
+            margin-top: 6px;
         }
-
         &__cast-chip {
-            align-items: center;
             display: inline-flex;
-            gap: 6px;
-            max-width: 160px;
-
-            &--clickable {
-                cursor: pointer;
-
-                &:hover .details__cast-name {
-                    text-decoration: underline;
-                }
-            }
+            align-items: center;
+            gap: 7px;
+            max-width: 180px;
         }
-
-        &__cast-avatar {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
-            flex-shrink: 0;
-            height: 32px;
-            object-fit: cover;
-            width: 32px;
-
-            &--fallback {
-                align-items: center;
-                color: var(--text-muted);
-                display: inline-flex;
-                font-size: 0.875rem;
-                font-weight: 600;
-                justify-content: center;
-                text-transform: uppercase;
-            }
+        &__cast-chip--clickable {
+            cursor: pointer;
         }
-
-        &__cast-name {
+        &__cast-chip--clickable:hover .details__cast-name {
             color: var(--text-primary);
-            font-size: 0.8125rem;
-            font-weight: 500;
+        }
+        &__cast-avatar {
+            width: 32px;
+            height: 32px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--tag-bg);
+        }
+        &__cast-avatar--fallback {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        &__cast-name {
             overflow: hidden;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        // "Similar" rail (TMDB recommendations matched to the catalog)
         &__similar {
-            margin-top: 24px;
-
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid var(--app-separator);
             h3 {
+                margin: 0 0 14px;
                 color: var(--text-primary);
                 font-size: 1rem;
-                font-weight: 600;
-                margin: 0 0 12px;
+                font-weight: 700;
             }
         }
-
         &__similar-strip {
-            display: flex;
-            gap: 12px;
+            display: grid;
+            grid-auto-columns: 116px;
+            grid-auto-flow: column;
+            gap: 14px;
             overflow-x: auto;
-            padding-bottom: 8px;
+            padding: 2px 2px 12px;
             scrollbar-width: thin;
-            scrollbar-color: color-mix(
-                    in srgb,
-                    var(--app-muted-color) 55%,
-                    transparent
-                )
-                transparent;
         }
-
         &__similar-card {
-            background: none;
-            border: none;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
-            gap: 6px;
+            gap: 7px;
+            width: 116px;
             padding: 0;
+            border: 0;
+            background: none;
+            color: inherit;
+            cursor: pointer;
             text-align: left;
-            width: 110px;
-
-            &:hover .details__similar-poster {
-                transform: scale(1.04);
-            }
         }
-
         &__similar-poster {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            height: 165px;
+            width: 116px;
+            height: 174px;
+            border: 1px solid var(--tag-border);
+            border-radius: 12px;
             object-fit: cover;
-            transition: transform 0.15s ease;
-            width: 110px;
-
-            &--fallback {
-                align-items: center;
-                color: var(--text-muted);
-                display: inline-flex;
-                font-size: 2rem;
-                font-weight: 600;
-                justify-content: center;
-                text-transform: uppercase;
-            }
+            background: var(--app-widget-bg);
+            transition:
+                transform 150ms ease,
+                border-color 150ms ease;
         }
-
+        &__similar-card:hover .details__similar-poster {
+            transform: translateY(-3px);
+            border-color: var(--app-selection-border);
+        }
+        &__similar-poster--fallback {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        &__similar-title,
+        &__similar-source {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         &__similar-title {
             color: var(--text-primary);
-            font-size: 0.8125rem;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 0.8rem;
+            font-weight: 650;
         }
-
-        // Source playlist badge on cross-portal similar cards
         &__similar-source {
             color: var(--text-muted);
-            font-size: 0.6875rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 0.68rem;
         }
     }
-
-    // ============================================================================
-    // Action Buttons - Play, Favorite
-    // ============================================================================
 
     .play-btn {
         --play-btn-bg: var(--play-idle-bg);
         --play-btn-fg: var(--play-idle-fg);
         --play-btn-border: var(--play-idle-border);
         --play-btn-shadow: var(--play-idle-shadow);
-
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
         display: inline-flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 24px 10px 18px;
-        min-height: 64px;
-        font-size: 1rem;
-        font-weight: 600;
-        letter-spacing: 0;
-        background: var(--play-btn-bg);
-        background-size: 140% 140%;
-        background-position: 0% 50%;
-        color: var(--play-btn-fg);
+        gap: 10px;
+        min-height: 54px;
+        padding: 8px 22px 8px 14px;
         border: 1px solid var(--play-btn-border);
-        border-radius: 16px;
+        border-radius: 14px;
+        background: var(--play-btn-bg);
+        color: var(--play-btn-fg);
         box-shadow: var(--play-btn-shadow);
         cursor: pointer;
+        font: inherit;
+        font-weight: 700;
         transition:
-            transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-            background-position 280ms ease,
-            box-shadow 260ms ease,
-            border-color 220ms ease,
-            color 220ms ease,
-            filter 220ms ease;
-
-        &::before {
-            content: '';
-            position: absolute;
-            inset: 1px;
-            border-radius: inherit;
-            background:
-                linear-gradient(
-                    115deg,
-                    rgba(255, 255, 255, 0.34),
-                    transparent 36%
-                ),
-                linear-gradient(
-                    180deg,
-                    rgba(255, 255, 255, 0.18),
-                    transparent 62%
-                );
-            opacity: 0.7;
-            transition: opacity 220ms ease;
-            z-index: -1;
-        }
-
+            transform 160ms ease,
+            filter 160ms ease,
+            box-shadow 160ms ease;
         &:hover:not(:disabled) {
             transform: translateY(-2px);
-            background-position: 100% 50%;
-            box-shadow:
-                var(--play-btn-shadow),
-                0 10px 20px rgba(255, 255, 255, 0.16) inset;
+            filter: brightness(1.06);
         }
-
-        &:hover:not(:disabled)::before {
-            opacity: 0.95;
-        }
-
         &:active:not(:disabled) {
             transform: translateY(0);
-            box-shadow: var(--play-btn-shadow);
         }
-
         &:disabled {
             cursor: progress;
-            opacity: 1;
-            filter: saturate(1.05);
         }
-
         mat-icon {
-            font-size: 24px;
-            width: 24px;
-            height: 24px;
-            transition:
-                transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-                color 220ms ease,
-                filter 220ms ease;
+            width: 22px;
+            height: 22px;
+            font-size: 22px;
         }
-
-        &:hover:not(:disabled) .play-btn__icon {
-            transform: scale(1.08);
-        }
-
         &__icon-shell {
-            flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 34px;
             height: 34px;
-            border-radius: 999px;
-            background: var(--play-icon-shell-bg);
-            border: 1px solid var(--play-icon-shell-border);
-            box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, 0.38),
-                0 6px 14px rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(10px);
-            transition:
-                transform 220ms ease,
-                background-color 220ms ease,
-                border-color 220ms ease,
-                box-shadow 220ms ease;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: color-mix(in srgb, currentColor 14%, transparent);
         }
-
         @include detail-actions.play-button-copy(var(--play-btn-fg));
-
-        &--state-launching,
-        &--state-stop {
-            color: var(--play-btn-fg);
-        }
-
         &--state-launching {
             --play-btn-bg: var(--play-launching-bg);
             --play-btn-fg: var(--play-launching-fg);
             --play-btn-border: var(--play-launching-border);
             --play-btn-shadow: var(--play-launching-shadow);
-            animation: playButtonPulse 1.8s ease-in-out infinite;
-
-            .play-btn__icon-shell {
-                box-shadow:
-                    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-                    0 10px 22px rgba(184, 89, 26, 0.2);
-            }
-
-            .play-btn__icon {
-                animation: playIconLaunch 1.15s cubic-bezier(0.55, 0, 0.45, 1)
-                    infinite;
-            }
         }
-
         &--state-stop {
             --play-btn-bg: var(--play-stop-bg);
             --play-btn-fg: var(--play-stop-fg);
             --play-btn-border: var(--play-stop-border);
             --play-btn-shadow: var(--play-stop-shadow);
-
-            .play-btn__icon-shell {
-                box-shadow:
-                    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-                    0 12px 24px rgba(145, 38, 53, 0.18);
-            }
-
-            .play-btn__icon {
-                animation: playIconStop 1.2s ease-in-out infinite;
-            }
-        }
-    }
-
-    @keyframes playButtonPulse {
-        0%,
-        100% {
-            box-shadow: var(--play-btn-shadow);
-        }
-
-        50% {
-            box-shadow:
-                var(--play-btn-shadow),
-                0 0 0 6px rgba(255, 190, 92, 0.14);
-        }
-    }
-
-    @keyframes playIconLaunch {
-        0%,
-        100% {
-            transform: rotate(0deg) scale(1);
-        }
-
-        50% {
-            transform: rotate(18deg) scale(1.1);
-        }
-    }
-
-    @keyframes playIconStop {
-        0%,
-        100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.08);
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .play-btn,
-        .play-btn::before,
-        .play-btn mat-icon,
-        .play-btn__icon-shell {
-            animation: none !important;
-            transition-duration: 1ms !important;
         }
     }
 
@@ -503,85 +270,63 @@
     .download-btn {
         @include detail-actions.secondary-action-button;
     }
-
     .favorite-btn {
         @include detail-actions.favorite-button-state;
     }
-
     .download-btn {
         @include detail-actions.download-button-state;
     }
-
     .icon-action-btn {
         @include detail-actions.icon-action-button;
         @include detail-actions.icon-action-button-states;
         @include detail-actions.download-progress-ring;
     }
-
     @include detail-actions.icon-action-keyframes;
 
-    // ============================================================================
-    // Content Sections - Below the hero fold
-    // ============================================================================
-
     .content-section {
-        padding: 20px 0;
         width: 100%;
         box-sizing: border-box;
-
+        padding: 26px 0;
         &__title {
+            margin: 0 0 18px;
+            color: var(--text-primary);
             font-size: $season-title-font-size;
             font-weight: $season-title-font-weight;
             letter-spacing: $season-title-letter-spacing;
-            margin: 0 0 20px 0;
-            color: var(--text-primary);
         }
     }
 
-    // ============================================================================
-    // Seasons & Episodes - Inside details section
-    // ============================================================================
-
     .seasons {
-        margin-top: 24px;
         width: 100%;
-
+        margin-top: 28px;
         .season-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            min-height: 52px;
+            padding: 0 14px;
+            border: 1px solid var(--tag-border);
+            border-radius: 12px;
+            background: var(--app-widget-bg);
             cursor: pointer;
-            transition: opacity 0.2s ease;
-
-            &:hover {
-                opacity: 0.8;
-            }
-
-            h4 {
-                margin: 0;
-                font-size: 1rem;
-                font-weight: 600;
-            }
-
-            .expand-icon {
-                font-size: 0.75rem;
-                color: var(--text-muted);
-            }
         }
-
+        .season-header:hover {
+            background: var(--app-card-hover-bg);
+        }
+        .season-header h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+        .expand-icon {
+            color: var(--text-muted);
+        }
         .episodes {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            padding: 8px 0 16px;
-
-            button {
-                margin: 0;
-                font-weight: 500;
-            }
+            padding: 12px 4px 18px;
         }
-
         .episodes-loading,
         .seasons-loading {
             display: flex;
@@ -590,141 +335,85 @@
             padding: 20px 0;
             color: var(--text-secondary);
         }
-
         .no-episodes {
+            padding: 16px 0;
             color: var(--text-muted);
-            font-style: italic;
-            padding: 8px 0;
         }
     }
 
-    // Seasons loading when inside details
     .details .seasons-loading {
         display: flex;
         align-items: center;
         gap: 12px;
+        margin-top: 24px;
         padding: 20px 0;
         color: var(--text-secondary);
-        margin-top: 24px;
     }
-
-    // Season container when inside details section
     .details app-season-container {
         display: block;
         width: 100%;
-        margin-top: 24px;
         box-sizing: border-box;
+        margin-top: 28px;
     }
-
-    // ============================================================================
-    // YouTube Trailer Section - Inside details
-    // ============================================================================
 
     .youtube-trailer {
-        margin-top: 24px;
         width: 100%;
-
+        margin-top: 30px;
+        padding-top: 24px;
+        border-top: 1px solid var(--app-separator);
         h3 {
-            font-size: $episode-title-font-size;
-            font-weight: 600;
-            letter-spacing: $episode-title-letter-spacing;
-            margin: 0 0 12px 0;
+            margin: 0 0 14px;
             color: var(--text-primary);
+            font-size: $episode-title-font-size;
+            font-weight: 700;
+            letter-spacing: $episode-title-letter-spacing;
         }
-
         .trailer-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 560px;
+            width: min(720px, 100%);
             aspect-ratio: 16 / 9;
-            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-
-            iframe {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                border: none;
-            }
+            border: 1px solid var(--tag-border);
+            border-radius: 16px;
+            background: #000;
+        }
+        iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
     }
-
-    // ============================================================================
-    // Legacy container support (for gradual migration)
-    // ============================================================================
 
     .container {
         display: contents;
     }
-
     .image {
-        display: none; // Hidden - now using .poster in hero
+        display: none;
     }
-
-    // ============================================================================
-    // Mobile Responsive - Option A: Keep poster grid layout
-    // ============================================================================
+    .label {
+        padding: 0;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
 
     @media (max-width: 800px) {
-        :host {
-            --poster-width: 120px;
-        }
-
-        .action-buttons {
-            width: 100%;
-            // This class is in ContentHeroComponent now, but these rules apply to children?
-            // No, .play-btn is a child of the PROJECTED content.
-            // So we should target the buttons directly for mobile
-        }
-
         @include detail-actions.mobile-action-buttons;
-
         .youtube-trailer {
-            margin-top: 16px;
-
-            .trailer-wrapper {
-                max-width: 100%;
-                border-radius: 4px;
-            }
+            margin-top: 22px;
         }
-
         .seasons {
-            padding: 16px 0 0;
+            margin-top: 20px;
         }
     }
 
-    // ============================================================================
-    // Animations
-    // ============================================================================
-
-    .youtube-trailer {
-        animation: fadeInUp 0.5s ease-out 0.4s both;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+    @media (prefers-reduced-motion: reduce) {
+        .play-btn,
+        .details__similar-poster {
+            transition-duration: 1ms !important;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    // ============================================================================
-    // Utility - keep .label for backwards compatibility
-    // ============================================================================
-
-    .label {
-        font-weight: 400;
-        font-size: 0.8125rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        padding: 0;
-        opacity: 1;
     }
 }

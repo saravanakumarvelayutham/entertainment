@@ -6,8 +6,7 @@
 @include mat.app-background();
 
 // ─── Typography ─────────────────────────────────────────────────────────────
-$app-font-stack:
-    "'DM Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
+$app-font-stack: "'DM Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
 
 $my-typography: mat.m2-define-typography-config(
     $font-family: $app-font-stack,
@@ -15,9 +14,8 @@ $my-typography: mat.m2-define-typography-config(
 @include mat.typography-hierarchy($my-typography);
 
 // ─── M3 Themes ───────────────────────────────────────────────────────────────
-// One primary color across the app. Azure is the closest M3 prebuilt to the
-// product's "active/selection" blue (#2f7bff / #78adff), so checkboxes, radio
-// buttons, raised CTAs, etc. now read as the same blue as rail selection.
+// Material controls retain the blue interaction family; application chrome
+// uses neutral charcoal and silver. Provider identity colors stay separate.
 //
 // Cyan stays on tertiary so the EPG "now" indicator (which uses Material
 // tertiary surfaces) keeps its existing visual role.
@@ -54,17 +52,19 @@ html {
     @include mat.all-component-themes($light-theme);
 
     // ── Light theme design tokens ─────────────────────────────────────────
-    --app-shell-bg: #eef0f3;
-    --app-rail-bg: #eef0f3;
-    --app-header-bg: #eef0f3;
-    --app-content-bg: #f5f6f8;
-    --app-rail-border: transparent;
+    --app-shell-bg: #e9e9ed;
+    --app-rail-bg: #f0f0f3;
+    --app-header-bg: #f0f0f3;
+    --app-content-bg: #fafafa;
+    --app-rail-border: rgba(24, 24, 30, 0.09);
     --app-on-surface: #1d1b1e;
     --app-hover-overlay: rgba(0, 0, 0, 0.06);
     --app-search-bg: rgba(255, 255, 255, 0.7);
     --app-search-border: rgba(0, 0, 0, 0.1);
-    --app-selection-color: #2f7bff;
-    --app-selection-on-color: #eef4ff;
+    --app-selection-color: #373743;
+    --app-selection-on-color: #ffffff;
+    --app-feature-accent: #f4f4f6;
+    --app-feature-on-accent: #17171c;
     --app-selection-surface: color-mix(
         in srgb,
         var(--app-selection-color) 14%,
@@ -94,18 +94,19 @@ html {
 
     // Widget surfaces — no borders, layered backgrounds
     --app-widget-bg: #ffffff;
-    --app-widget-header-bg: #fafbfc;
-    --app-widget-border: transparent;
-    --app-widget-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+    --app-widget-header-bg: #f4f4f6;
+    --app-widget-border: rgba(24, 24, 30, 0.09);
+    --app-widget-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
     --app-widget-header-border: rgba(0, 0, 0, 0.06);
-    --app-card-hover-bg: #f0f2f5;
+    --app-card-hover-bg: #ededf1;
     --app-separator: rgba(0, 0, 0, 0.14);
 
     // Typography — subdued, not pure black
-    --app-heading-color: #1a1d23;
-    --app-body-color: #4a5060;
-    --app-muted-color: #8891a4;
-    --app-eyebrow-color: #7c8495;
+    --app-heading-color: #202027;
+    --app-body-color: #555561;
+    --app-muted-color: #686874;
+    --app-eyebrow-color: #60606d;
 
     // Provider accent colors
     --app-provider-xtream: #2f7bff;
@@ -123,31 +124,29 @@ html {
     // Hero
     --app-accent-gradient: linear-gradient(
         135deg,
-        rgba(47, 123, 255, 0.08) 0%,
-        rgba(92, 214, 255, 0.05) 100%
+        rgba(60, 60, 75, 0.06) 0%,
+        rgba(60, 60, 75, 0.02) 100%
     );
-    --app-hero-surface: rgba(47, 123, 255, 0.04);
+    --app-hero-surface: rgba(60, 60, 75, 0.04);
 
     .dark-theme {
         @include mat.all-component-colors($dark-theme);
 
         // ── Dark graphite theme ────────────────────────────────────────────
-        // Inspired by both Slack (sidebar distinction) and GitButler (data density)
-        // Key principle: clearly distinct surface layers using graphite steps
-        // Darkest → lightest: #0d0f12 → #141720 → #1c2030 → #222840
+        // Neutral dark layers let source artwork supply the page's color.
 
         // App shell & navigation
-        --app-shell-bg: #0d0f12;
-        --app-rail-bg: #111318;
-        --app-header-bg: #111318;
-        --app-content-bg: #161a22;
-        --app-rail-border: transparent;
-        --app-on-surface: #e6e1e5;
+        --app-shell-bg: #0c0c0f;
+        --app-rail-bg: #111114;
+        --app-header-bg: #111114;
+        --app-content-bg: #19191e;
+        --app-rail-border: rgba(255, 255, 255, 0.08);
+        --app-on-surface: #ededf0;
         --app-hover-overlay: rgba(255, 255, 255, 0.08);
         --app-search-bg: rgba(255, 255, 255, 0.05);
         --app-search-border: rgba(255, 255, 255, 0.09);
-        --app-selection-color: #78adff;
-        --app-selection-on-color: #071225;
+        --app-selection-color: #e3e3eb;
+        --app-selection-on-color: #18181d;
         --app-selection-surface: color-mix(
             in srgb,
             var(--app-selection-color) 18%,
@@ -175,21 +174,20 @@ html {
         // Content area
         --app-content-shadow: -4px 8px 20px rgba(0, 0, 0, 0.18);
 
-        // Widget surfaces — NO border, surface contrast does the work
-        // Widgets sit on content-bg (#161a22), so widget-bg is notably lighter
-        --app-widget-bg: #1e2330;
-        --app-widget-header-bg: #232840;
-        --app-widget-border: transparent;
-        --app-widget-shadow: none;
+        // Raised surfaces use a quiet hairline and a restrained shadow.
+        --app-widget-bg: #232329;
+        --app-widget-header-bg: #2b2b33;
+        --app-widget-border: rgba(255, 255, 255, 0.08);
+        --app-widget-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.6);
         --app-widget-header-border: rgba(255, 255, 255, 0.05);
-        --app-card-hover-bg: #252b3a;
+        --app-card-hover-bg: #303038;
         --app-separator: rgba(255, 255, 255, 0.14);
 
         // Typography — NOT pure white. Warm graphite-tinted whites
-        --app-heading-color: #d8dce8;       // soft off-white, not #fff
-        --app-body-color: #8b93a8;          // muted blue-grey
-        --app-muted-color: #5c6478;         // dimmed
-        --app-eyebrow-color: #6b7494;       // eyebrow labels
+        --app-heading-color: #f4f4f6;
+        --app-body-color: #b9b9c5;
+        --app-muted-color: #9898a7;
+        --app-eyebrow-color: #aaaab8;
 
         // Provider accents (slightly brighter for dark bg)
         --app-provider-xtream: #78adff;
@@ -210,10 +208,10 @@ html {
         // Hero section
         --app-accent-gradient: linear-gradient(
             135deg,
-            rgba(120, 173, 255, 0.12) 0%,
-            rgba(92, 214, 255, 0.07) 100%
+            rgba(255, 255, 255, 0.06) 0%,
+            rgba(255, 255, 255, 0.02) 100%
         );
-        --app-hero-surface: rgba(30, 35, 48, 0.9);
+        --app-hero-surface: rgba(35, 35, 41, 0.9);
     }
 }
 
@@ -221,17 +219,25 @@ html {
 // Applied app-wide AFTER mat.all-component-themes so these overrides win the
 // cascade. Pairs with MAT_FORM_FIELD_DEFAULT_OPTIONS (outline + dynamic) set
 // in app.config.ts.
-$app-refined-input-density: mat.define-theme((
-    density: (scale: -2),
-));
+$app-refined-input-density: mat.define-theme(
+    (
+        density: (
+            scale: -2,
+        ),
+    )
+);
 
 html {
     @include mat.form-field-density($app-refined-input-density);
 
     .mat-mdc-form-field {
-        --mdc-outlined-text-field-outline-color: var(--app-widget-header-border);
+        --mdc-outlined-text-field-outline-color: var(
+            --app-widget-header-border
+        );
         --mdc-outlined-text-field-hover-outline-color: var(--app-muted-color);
-        --mdc-outlined-text-field-focus-outline-color: var(--app-selection-color);
+        --mdc-outlined-text-field-focus-outline-color: var(
+            --app-selection-color
+        );
         --mdc-outlined-text-field-container-shape: 10px;
         --mdc-outlined-text-field-label-text-color: var(--app-muted-color);
         --mdc-outlined-text-field-input-text-color: var(--app-heading-color);

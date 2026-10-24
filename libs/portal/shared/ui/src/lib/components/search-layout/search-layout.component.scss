@@ -22,16 +22,23 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    padding: 0 20px 0 20px;
+    padding: 0 clamp(16px, 3vw, 40px);
 }
 
 .header {
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 20px 0 10px 0;
+    padding: clamp(22px, 3.5vw, 42px) 0 16px;
     margin-bottom: 2px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid var(--app-separator);
+    background:
+        radial-gradient(
+            circle at 6% -80%,
+            color-mix(in srgb, var(--app-selection-color) 16%, transparent),
+            transparent 50%
+        ),
+        var(--app-content-bg);
 
     display: flex;
     flex-direction: column;
@@ -41,24 +48,15 @@
     .header-top {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 20px;
+        align-items: flex-end;
+        gap: 24px;
     }
 
-    .header-left {
+    .header-title-group {
         display: flex;
         align-items: center;
-        gap: 32px;
-        flex: 1;
-        flex-wrap: wrap;
-
-        // Keep the back arrow and title tightly grouped, independent of the
-        // wide gap between the title group and the filters (RTL-safe)
-        .header-title-group {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        gap: 6px;
+        min-width: 0;
 
         .header-back {
             flex-shrink: 0;
@@ -66,11 +64,24 @@
 
         h2 {
             margin: 0;
-            white-space: nowrap;
-            font-size: 1.2rem;
-            font-weight: 650;
-            letter-spacing: -0.02em;
+            font-size: clamp(1.8rem, 3vw, 3rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.045em;
         }
+    }
+
+    .header-tool-shelf {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 16px;
+        min-height: 44px;
+        padding: 5px 7px 5px 12px;
+        border: 1px solid var(--app-widget-border, var(--app-separator));
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--app-widget-bg) 88%, transparent);
+        app-region: no-drag;
 
         .type-filters {
             display: flex;
@@ -98,7 +109,8 @@
     }
 
     .search-input-container {
-        margin-bottom: 0;
+        margin-bottom: 2px;
+        max-width: 920px;
     }
 }
 
@@ -106,6 +118,7 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    padding-top: 18px;
 }
 
 .loading-state {
@@ -180,8 +193,11 @@
         gap: 12px;
     }
 
-    .header .header-left {
-        gap: 12px;
+    .header .header-tool-shelf {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
     }
 
     .header .header-right {

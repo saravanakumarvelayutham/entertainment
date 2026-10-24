@@ -79,6 +79,11 @@ describe('XtreamCatalogFacadeService', () => {
         getProgressPercent: jest.fn().mockReturnValue(40),
     };
 
+    it('reads the provider category name for the catalog heading', () => {
+        selectedCategory.set({ category_id: '11', category_name: 'Action' });
+        expect(service.selectedCategoryTitle()).toBe('Action');
+    });
+
     beforeEach(() => {
         localStorage.removeItem('xtream-category-sort-mode');
         contentType.set('vod');

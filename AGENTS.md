@@ -2,6 +2,14 @@
 
 This file provides guidance to coding agents working in this repository.
 
+## Workspace Visual Language
+
+Workspace chrome uses neutral charcoal/silver app tokens and the app sans-serif
+stack. Global navigation sits above provider/source tabs, with labels above
+640px. The dashboard pairs a feature card with a separate history deck; catalog,
+detail, live, Sources and Settings pages use distinct compositions.
+Canonical palette and interaction rules: `docs/architecture/iptvnator-ui-guidelines.md`.
+
 ## Plan Mode
 
 - When an agent is in Plan Mode and produces a final `<proposed_plan>`, it must also save that finalized plan as a Markdown file in the repo-root `.plans/` directory.

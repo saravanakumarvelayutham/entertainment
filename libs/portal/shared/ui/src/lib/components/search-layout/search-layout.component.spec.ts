@@ -60,9 +60,7 @@ describe('SearchLayoutComponent', () => {
 
     it('shows the back button only when showBackButton is set and emits backClick', () => {
         fixture.detectChanges();
-        expect(
-            fixture.debugElement.query(By.css('.header-back'))
-        ).toBeNull();
+        expect(fixture.debugElement.query(By.css('.header-back'))).toBeNull();
 
         fixture.componentRef.setInput('showBackButton', true);
         fixture.detectChanges();
@@ -76,6 +74,18 @@ describe('SearchLayoutComponent', () => {
         );
         (backButton.nativeElement as HTMLButtonElement).click();
         expect(emitted).toHaveLength(1);
+    });
+
+    it('keeps page identity and search tools in separate header regions', () => {
+        fixture.componentRef.setInput('resultsCount', 4);
+        fixture.detectChanges();
+
+        const header = fixture.debugElement.query(By.css('.header'));
+        expect(header.query(By.css('.header-title-group h2'))).not.toBeNull();
+        expect(header.query(By.css('.header-tool-shelf'))).not.toBeNull();
+        expect(
+            header.query(By.css('.header-tool-shelf .results-count'))
+        ).not.toBeNull();
     });
 
     it('emits nearEnd when the results container is scrolled near the bottom', () => {
@@ -142,8 +152,9 @@ describe('SearchLayoutComponent', () => {
         });
         const scrollTo = jest.fn(
             (options: { top: number }) =>
-                ((resultsContainer as unknown as { scrollTop: number }).scrollTop =
-                    options.top)
+                ((
+                    resultsContainer as unknown as { scrollTop: number }
+                ).scrollTop = options.top)
         );
         Object.defineProperty(resultsContainer, 'scrollTo', {
             configurable: true,

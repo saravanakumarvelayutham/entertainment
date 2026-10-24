@@ -111,6 +111,7 @@ function normalizeArtworkUrl(value: string | undefined): string | undefined {
                     @let title = channelTitle(i);
                     <mat-card
                         [class.grid-card--logo]="variant() === 'logo'"
+                        [class.grid-card--live]="isLiveGrid()"
                         role="button"
                         tabindex="0"
                         [attr.aria-label]="title"
@@ -119,7 +120,8 @@ function normalizeArtworkUrl(value: string | undefined): string | undefined {
                         (keydown.space)="onSpaceKey($event, item)"
                     >
                         @let poster = resolvePoster(i);
-                        @let artworkMissing = !poster || hasArtworkFailed(poster);
+                        @let artworkMissing =
+                            !poster || hasArtworkFailed(poster);
                         <div class="card-thumbnail-container">
                             @if (!artworkMissing) {
                                 <img
@@ -281,7 +283,10 @@ function normalizeArtworkUrl(value: string | undefined): string | undefined {
         ProgressCapsuleComponent,
         WatchedBadgeComponent,
     ],
-    host: { '[class.grid-list--posters-only]': 'postersOnly()' },
+    host: {
+        '[class.grid-list--posters-only]': 'postersOnly()',
+        '[class.grid-list--live]': 'isLiveGrid()',
+    },
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GridListComponent {
@@ -312,7 +317,7 @@ export class GridListComponent {
         () => (this.searchTerm() ?? '').trim().length > 0
     );
     /** Prefix stripping applies to channel grids only, never VOD/series. */
-    private readonly isLiveGrid = computed(() =>
+    protected readonly isLiveGrid = computed(() =>
         ['live', 'itv', 'radio'].includes(this.type())
     );
     /**

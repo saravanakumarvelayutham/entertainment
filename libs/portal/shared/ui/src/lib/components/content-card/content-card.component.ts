@@ -26,7 +26,10 @@ const LABELLED_CONTENT_TYPES: ReadonlySet<string> = new Set(['live', 'radio']);
     imports: [DatePipe, MatIcon, MatIconButton, MatTooltip],
     templateUrl: './content-card.component.html',
     styleUrl: './content-card.component.scss',
-    host: { '[class.content-card--posters-only]': 'postersOnly()' },
+    host: {
+        '[class.content-card--posters-only]': 'postersOnly()',
+        '[class.content-card--landscape]': 'landscapeCard()',
+    },
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContentCardComponent {
@@ -87,6 +90,9 @@ export class ContentCardComponent {
             this.allowPostersOnly() &&
             this.coverTitles.postersOnly() &&
             !LABELLED_CONTENT_TYPES.has(this.type() ?? '')
+    );
+    protected readonly landscapeCard = computed(() =>
+        LABELLED_CONTENT_TYPES.has(this.type() ?? '')
     );
     readonly currentLocale = computed(() => {
         this.languageTick();

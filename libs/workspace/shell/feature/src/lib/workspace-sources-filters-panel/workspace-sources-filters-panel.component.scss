@@ -1,6 +1,7 @@
 @use '../../nav-list.scss';
 
-:host {
+:host,
+.context-column {
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -8,50 +9,63 @@
 }
 
 .context-column {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    height: 100%;
+    gap: 14px;
     overflow: hidden;
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────────
 .context-header {
-    padding: 4px 6px 10px;
     flex-shrink: 0;
+    padding: 14px;
+    border: 1px solid var(--app-widget-border);
+    border-radius: 16px;
+    background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--app-selection-surface) 34%, transparent),
+        var(--app-widget-bg)
+    );
 }
 
 .context-header__top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 11px;
+    min-width: 0;
 
     h2 {
         margin: 0;
-        font-size: 0.94rem;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        color: var(--mat-sys-on-surface);
+        color: var(--app-on-surface);
+        font-size: 0.96rem;
+        font-weight: 650;
+        letter-spacing: -0.015em;
+    }
+
+    p {
+        margin: 3px 0 0;
+        color: var(--app-eyebrow-color);
+        font-size: 0.75rem;
+        line-height: 1.35;
     }
 }
 
-.context-header p {
-    margin: 4px 0 0;
-    font-size: 0.78rem;
-    color: var(--mat-sys-on-surface-variant);
+.context-header__icon {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--app-selection-surface);
+    color: var(--app-selection-color);
+
+    mat-icon {
+        width: 19px;
+        height: 19px;
+        font-size: 19px;
+    }
 }
 
-// ─── Divider ──────────────────────────────────────────────────────────────────
-.context-divider {
-    height: 1px;
-    background: var(--mat-sys-outline-variant);
-    margin: 0 0 6px;
-    opacity: 0.6;
-    flex-shrink: 0;
-}
-
-.panel-section {
+.panel-section,
+.option-list {
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -59,22 +73,29 @@
 
 .option-list {
     overflow-y: auto;
-    min-height: 0;
+}
+
+.panel-section-title {
+    margin: 0;
+    padding: 4px 10px 8px;
+    color: var(--app-eyebrow-color);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
 }
 
 .option-row {
+    min-height: 44px;
+    border: 1px solid transparent;
     border-radius: 12px;
     transition:
+        border-color 0.18s ease,
         box-shadow 0.18s ease,
         transform 0.18s ease;
 
-    .option-label,
-    .option-meta,
-    mat-icon {
-        transition: color 0.18s ease, opacity 0.18s ease;
-    }
-
     &.selected {
+        border-color: var(--app-selection-border);
         box-shadow: 0 10px 20px -18px var(--app-selection-glow);
         transform: translateY(-1px);
 
@@ -83,20 +104,15 @@
         mat-icon {
             color: var(--app-selection-color) !important;
         }
-
-        .option-meta {
-            opacity: 0.95;
-        }
     }
 }
 
-.panel-section-title {
-    margin: 0;
-    padding: 10px 10px 6px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--mat-sys-on-surface-variant);
-    opacity: 0.85;
+.option-meta {
+    min-width: 27px;
+    padding: 2px 7px;
+    border: 1px solid var(--app-widget-border);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--app-card-hover-bg) 68%, transparent);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
 }

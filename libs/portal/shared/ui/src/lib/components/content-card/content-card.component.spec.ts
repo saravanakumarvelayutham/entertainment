@@ -44,9 +44,7 @@ describe('ContentCardComponent', () => {
             'content-card--posters-only'
         );
         expect(info()).toBeNull();
-        expect(overlay().nativeElement.textContent.trim()).toBe(
-            'Blade Runner'
-        );
+        expect(overlay().nativeElement.textContent.trim()).toBe('Blade Runner');
     });
 
     it('keeps the info row when the host opts the card out (search results)', () => {
@@ -67,6 +65,9 @@ describe('ContentCardComponent', () => {
 
             expect(info()).not.toBeNull();
             expect(overlay()).toBeNull();
+            expect(fixture.nativeElement.classList).toContain(
+                'content-card--landscape'
+            );
         }
     );
 

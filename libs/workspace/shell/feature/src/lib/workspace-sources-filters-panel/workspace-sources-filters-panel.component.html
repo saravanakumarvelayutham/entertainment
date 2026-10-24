@@ -1,12 +1,15 @@
 <div class="context-column">
     <header class="context-header">
         <div class="context-header__top">
-            <h2>{{ 'WORKSPACE.SOURCES.TITLE' | translate }}</h2>
+            <span class="context-header__icon" aria-hidden="true">
+                <mat-icon>tune</mat-icon>
+            </span>
+            <div>
+                <h2>{{ 'WORKSPACE.SOURCES.TITLE' | translate }}</h2>
+                <p>{{ 'WORKSPACE.SOURCES.SUBTITLE' | translate }}</p>
+            </div>
         </div>
-        <p>{{ 'WORKSPACE.SOURCES.SUBTITLE' | translate }}</p>
     </header>
-
-    <div class="context-divider"></div>
 
     <section class="panel-section">
         <div class="nav-list option-list">

@@ -1,5 +1,3 @@
-@use '../../../../../../ui/styles/panel-header' as panel;
-
 :host {
     display: flex;
     flex-direction: column;
@@ -19,47 +17,83 @@
 
 // ─── Sticky header bar — styled like a widget header ─────────────────────────
 .category-content-header {
-    @include panel.standard-panel-header($sticky: true);
+    position: relative;
+    z-index: 2;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, auto) auto;
-    grid-template-areas: 'meta refinements refine';
-    align-items: center;
-    justify-content: stretch;
-    gap: 8px 12px;
+    grid-template-columns: minmax(240px, 1fr) auto;
+    grid-template-areas: 'meta tools';
+    align-items: end;
+    gap: 20px;
+    padding: clamp(22px, 3.5vw, 46px) clamp(20px, 3vw, 40px) 18px;
+    flex-shrink: 0;
+    color: var(--app-heading-color, var(--mat-sys-on-surface));
+    background:
+        radial-gradient(
+            circle at 8% -70%,
+            color-mix(in srgb, var(--app-selection-color) 18%, transparent),
+            transparent 58%
+        ),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--app-content-bg) 88%, transparent),
+            var(--app-content-bg)
+        );
+    border-bottom: 1px solid var(--app-separator);
 }
 
 // ─── Category meta (title + subtitle) ────────────────────────────────────────
 .category-meta {
-    @include panel.standard-panel-meta();
     grid-area: meta;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px;
+    gap: 7px;
+    min-width: 0;
 }
 
 .category-title {
-    @include panel.standard-panel-title();
+    margin: 0;
+    max-width: 18ch;
+    font-size: clamp(1.75rem, 3.2vw, 3.15rem);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    white-space: normal;
 }
 
-.category-subtitle {
-    @include panel.standard-panel-subtitle();
-    padding: 0;
-    border-radius: 0;
-    line-height: 1.2;
-    background: transparent;
+.category-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--app-muted-color, var(--mat-sys-on-surface-variant));
+}
+
+.category-content-header__tools {
+    grid-area: tools;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 7px;
+    max-width: min(620px, 50vw);
+    border: 1px solid var(--app-widget-border, var(--app-separator));
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--app-widget-bg) 88%, transparent);
+    box-shadow: 0 14px 32px -26px rgba(0, 0, 0, 0.7);
+    app-region: no-drag;
 }
 
 // ─── Refine controls — show current sort/filter state compactly ──────────────
 .active-refinements {
-    grid-area: refinements;
-    justify-self: end;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 6px;
     flex: 0 1 auto;
     min-width: 0;
-    max-width: min(430px, 36cqi);
+    max-width: min(430px, 34cqi);
     flex-wrap: wrap;
     app-region: no-drag;
 }
@@ -126,8 +160,6 @@
 }
 
 .refine-action {
-    grid-area: refine;
-    justify-self: end;
     padding: 0 12px;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -167,12 +199,17 @@
 
 @container category-content (max-width: 920px) {
     .category-content-header {
-        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
-            'meta meta meta'
-            'refinements refinements refine';
-        padding: 8px 16px;
-        min-height: unset;
+            'meta'
+            'tools';
+        align-items: stretch;
+        padding: 20px 20px 14px;
+    }
+
+    .category-content-header__tools {
+        justify-content: space-between;
+        max-width: none;
     }
 
     .active-refinements {
@@ -192,13 +229,6 @@
 }
 
 @container category-content (max-width: 640px) {
-    .category-content-header {
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-areas:
-            'meta meta'
-            'refinements refine';
-    }
-
     .category-meta {
         width: 100%;
     }
@@ -215,6 +245,9 @@
         justify-self: end;
     }
 
+    .category-content-header__tools {
+        padding: 5px;
+    }
 }
 
 // ─── Grid scroll area ─────────────────────────────────────────────────────────
@@ -222,7 +255,7 @@ app-grid-list {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 16px 20px 20px;
+    padding: 18px clamp(16px, 3vw, 40px) 36px;
     display: block;
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--app-muted-color) 55%, transparent)

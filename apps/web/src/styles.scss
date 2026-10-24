@@ -96,13 +96,6 @@ app-root.macos-platform .current-playlist {
     padding-top: 30px;
 }
 
-// Windows/Linux frameless title bar: reserve room in top-aligned drag
-// regions for the renderer-drawn window controls (3 × 46px buttons).
-// Body-level class so it also reaches cdk-overlay content (dialogs, menus).
-body.frameless-platform .workspace-header {
-    padding-right: 150px;
-}
-
 // ─── Base ─────────────────────────────────────────────────────────────────────
 // Native UI (scrollbars, form controls, popups) must follow the app theme,
 // not the OS preference. Chromium colors unstyled/native scrollbars from the

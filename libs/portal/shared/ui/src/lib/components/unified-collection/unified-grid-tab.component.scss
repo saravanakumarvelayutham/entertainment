@@ -39,10 +39,10 @@
     display: grid;
     grid-template-columns: repeat(
         auto-fill,
-        minmax(var(--cover-grid-min-width, 148px), 1fr)
+        minmax(var(--cover-grid-min-width, 138px), 1fr)
     );
-    gap: var(--cover-gap, 16px);
-    padding: 16px;
+    gap: clamp(10px, 1.35vw, 16px);
+    padding: 20px clamp(16px, 3vw, 38px) 36px;
     align-content: start;
 }
 
