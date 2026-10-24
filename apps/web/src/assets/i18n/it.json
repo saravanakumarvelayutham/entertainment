@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "In onda ora",
+        "ACROSS_FAVORITE": "Sul tuo canale preferito",
+        "ACROSS_FAVORITES": "Sui tuoi {{count}} canali preferiti",
+        "FROM_CATEGORY": "{{count}} canali in {{category}}",
+        "MINUTES_LEFT": "{{count}} min rimasti",
+        "ENDS_AT": "Termina alle {{time}}",
+        "LAST_WATCHED": "Ultimo canale visto",
+        "TUNE_IN": "Sintonizza",
+        "JUST_NOW": "proprio ora",
+        "MINUTES_AGO": "{{count}} min fa",
+        "HOURS_AGO": "{{count}} h fa",
+        "TODAY_AT": "oggi alle {{time}}",
+        "YESTERDAY_AT": "ieri alle {{time}}",
+        "ON_DATE": "il {{date}}"
     }
 }

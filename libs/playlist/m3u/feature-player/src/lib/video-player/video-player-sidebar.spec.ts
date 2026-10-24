@@ -42,6 +42,8 @@ import {
     VideoPlayer,
 } from '@iptvnator/shared/interfaces';
 import type { VideoPlayerComponent as VideoPlayerComponentInstance } from './video-player.component';
+import { M3uLiveOnNowService } from './m3u-live-on-now.service';
+import { createLiveOnNowServiceStub } from './video-player.spec-stubs';
 import { translateServiceProvider } from './video-player.spec-harness';
 import { StubSidebarComponent } from './video-player.spec-stubs';
 
@@ -273,6 +275,9 @@ describe('VideoPlayerComponent — collapsible channels rail', () => {
                     schemas: [NO_ERRORS_SCHEMA],
                 },
             })
+            .overrideProvider(M3uLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
+            })
             .compileComponents();
 
         fixture = TestBed.createComponent(VideoPlayerComponent);
@@ -285,7 +290,7 @@ describe('VideoPlayerComponent — collapsible channels rail', () => {
         clearSidebarStorage();
     });
 
-    it('starts with the rail visible and the "select a channel" empty state', () => {
+    it('starts with the rail visible and the "On now" stage in the content area', () => {
         fixture.detectChanges();
 
         expect(component.isSidebarCollapsed()).toBe(false);
@@ -293,11 +298,11 @@ describe('VideoPlayerComponent — collapsible channels rail', () => {
             false
         );
         expect(query('.sidebar-restore')).toBeNull();
-        expect(query('app-portal-empty-state')).not.toBeNull();
+        expect(query('app-live-on-now-stage')).not.toBeNull();
         expect(hiddenState()).toBeNull();
     });
 
-    it('hides the rail through the shared per-surface state and swaps the empty state for a full-size way back', () => {
+    it('hides the rail through the shared per-surface state and swaps the stage for a full-size way back', () => {
         fixture.detectChanges();
 
         component.toggleSidebar();
@@ -308,7 +313,7 @@ describe('VideoPlayerComponent — collapsible channels rail', () => {
             true
         );
         expect(query('.sidebar-restore')).not.toBeNull();
-        expect(query('app-portal-empty-state')).toBeNull();
+        expect(query('app-live-on-now-stage')).toBeNull();
         expect(hiddenState()).not.toBeNull();
         expect(localStorage.getItem(liveSidebarStateStorageKey('m3u'))).toBe(
             'collapsed'
@@ -320,7 +325,7 @@ describe('VideoPlayerComponent — collapsible channels rail', () => {
         expect(component.isSidebarCollapsed()).toBe(false);
         expect(query('.sidebar-restore')).toBeNull();
         expect(hiddenState()).toBeNull();
-        expect(query('app-portal-empty-state')).not.toBeNull();
+        expect(query('app-live-on-now-stage')).not.toBeNull();
         expect(localStorage.getItem(liveSidebarStateStorageKey('m3u'))).toBe(
             'expanded'
         );

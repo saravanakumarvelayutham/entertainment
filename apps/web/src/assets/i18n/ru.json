@@ -2000,5 +2000,21 @@
             "failed": "Не удалось удалить — выберите для повтора"
         },
         "DELETE_PROGRESS": "Обработано {{done}} из {{total}} выбранных источников"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Сейчас в эфире",
+        "ACROSS_FAVORITE": "На вашем любимом канале",
+        "ACROSS_FAVORITES": "На ваших любимых каналах ({{count}})",
+        "FROM_CATEGORY": "Каналов в {{category}}: {{count}}",
+        "MINUTES_LEFT": "осталось {{count}} мин",
+        "ENDS_AT": "Закончится в {{time}}",
+        "LAST_WATCHED": "Последний просмотр",
+        "TUNE_IN": "Включить",
+        "JUST_NOW": "только что",
+        "MINUTES_AGO": "{{count}} мин назад",
+        "HOURS_AGO": "{{count}} ч назад",
+        "TODAY_AT": "сегодня в {{time}}",
+        "YESTERDAY_AT": "вчера в {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

@@ -3,7 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { PortalEmptyStateComponent } from '@iptvnator/portal/shared/ui';
+import {
+    LiveOnNowStageComponent,
+    PortalEmptyStateComponent,
+} from '@iptvnator/portal/shared/ui';
 import {
     LIVE_EPG_PANEL_STATE_STORAGE_KEY,
     PORTAL_PLAYER,
@@ -40,7 +43,10 @@ import {
     StubPortalEmptyStateComponent,
     StubResizableDirective,
     StubWebPlayerViewComponent,
+    createLiveOnNowServiceStub,
+    StubLiveOnNowStageComponent,
 } from './stalker-live-stream-layout.spec-stubs';
+import { StalkerLiveOnNowService } from './stalker-live-on-now.service';
 
 describe('StalkerLiveStreamLayoutComponent', () => {
     let fixture: ComponentFixture<StalkerLiveStreamLayoutComponent>;
@@ -322,6 +328,7 @@ describe('StalkerLiveStreamLayoutComponent', () => {
             .overrideComponent(StalkerLiveStreamLayoutComponent, {
                 remove: {
                     imports: [
+                        LiveOnNowStageComponent,
                         ChannelListItemComponent,
                         AudioPlayerComponent,
                         EpgListViewComponent,
@@ -334,6 +341,7 @@ describe('StalkerLiveStreamLayoutComponent', () => {
                 },
                 add: {
                     imports: [
+                        StubLiveOnNowStageComponent,
                         StubChannelListItemComponent,
                         StubAudioPlayerComponent,
                         StubEpgTimelineComponent,
@@ -346,6 +354,9 @@ describe('StalkerLiveStreamLayoutComponent', () => {
                         StubWebPlayerViewComponent,
                     ],
                 },
+            })
+            .overrideProvider(StalkerLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
 
@@ -782,35 +793,38 @@ describe('StalkerLiveStreamLayoutComponent', () => {
         ).toEqual([]);
     });
 
-    it.each([true, false])('grows the render window for remote/numeric selection (cached=%s)', async (cached) => {
-        const full = Array.from({ length: 250 }, (_, index) => ({
-            id: `ch-${index}`,
-            cmd: `ffrt4://itv/${index}`,
-            name: `Channel ${index}`,
-            o_name: `Channel ${index}`,
-            logo: '',
-        }));
-        itvFullListActive.set(true);
-        itvSelectedCategoryFromCache.set(cached);
-        itvChannels.set(full);
-        itvFullChannelList.set(cached ? full : []);
-        searchPhrase.set('channel');
-        fixture.detectChanges();
+    it.each([true, false])(
+        'grows the render window for remote/numeric selection (cached=%s)',
+        async (cached) => {
+            const full = Array.from({ length: 250 }, (_, index) => ({
+                id: `ch-${index}`,
+                cmd: `ffrt4://itv/${index}`,
+                name: `Channel ${index}`,
+                o_name: `Channel ${index}`,
+                logo: '',
+            }));
+            itvFullListActive.set(true);
+            itvSelectedCategoryFromCache.set(cached);
+            itvChannels.set(full);
+            itvFullChannelList.set(cached ? full : []);
+            searchPhrase.set('channel');
+            fixture.detectChanges();
 
-        expect(component.visibleChannels()).toHaveLength(100);
+            expect(component.visibleChannels()).toHaveLength(100);
 
-        // Selecting channel index 150 (outside the 100-item window) must grow
-        // the window so it is rendered and can be highlighted/scrolled to.
-        await component.playChannel(full[150], false);
-        fixture.detectChanges();
+            // Selecting channel index 150 (outside the 100-item window) must grow
+            // the window so it is rendered and can be highlighted/scrolled to.
+            await component.playChannel(full[150], false);
+            fixture.detectChanges();
 
-        expect(component.visibleChannels().length).toBeGreaterThan(150);
-        expect(
-            component
-                .visibleChannels()
-                .some((channel) => channel.id === 'ch-150')
-        ).toBe(true);
-    });
+            expect(component.visibleChannels().length).toBeGreaterThan(150);
+            expect(
+                component
+                    .visibleChannels()
+                    .some((channel) => channel.id === 'ch-150')
+            ).toBe(true);
+        }
+    );
 
     it('does not clear cached channels when switching category in full-list mode', async () => {
         // Regression: the category-change reset effect used to setItvChannels([])

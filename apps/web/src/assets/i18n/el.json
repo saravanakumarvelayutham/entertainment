@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Τώρα στον αέρα",
+        "ACROSS_FAVORITE": "Στο αγαπημένο σας κανάλι",
+        "ACROSS_FAVORITES": "Στα {{count}} αγαπημένα σας κανάλια",
+        "FROM_CATEGORY": "{{count}} κανάλια στο {{category}}",
+        "MINUTES_LEFT": "απομένουν {{count}} λεπτά",
+        "ENDS_AT": "Τελειώνει στις {{time}}",
+        "LAST_WATCHED": "Τελευταία προβολή",
+        "TUNE_IN": "Συντονισμός",
+        "JUST_NOW": "μόλις τώρα",
+        "MINUTES_AGO": "πριν {{count}} λεπτά",
+        "HOURS_AGO": "πριν {{count}} ώρες",
+        "TODAY_AT": "σήμερα στις {{time}}",
+        "YESTERDAY_AT": "χθες στις {{time}}",
+        "ON_DATE": "στις {{date}}"
     }
 }

@@ -17,6 +17,8 @@ import {
 } from '@iptvnator/services';
 import { ElectronStreamHeadersService } from '@iptvnator/ui/playback';
 import { StalkerLiveStreamLayoutComponent } from './stalker-live-stream-layout.component';
+import { createLiveOnNowServiceStub } from './stalker-live-stream-layout.spec-stubs';
+import { StalkerLiveOnNowService } from './stalker-live-on-now.service';
 
 const FILL_CHECK_DELAY_MS = 100;
 
@@ -152,7 +154,11 @@ describe('StalkerLiveStreamLayoutComponent fullscreen panel search', () => {
                 { provide: MatDialog, useValue: { open: jest.fn() } },
                 { provide: MatSnackBar, useValue: { open: jest.fn() } },
             ],
-        }).compileComponents();
+        })
+            .overrideProvider(StalkerLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
+            })
+            .compileComponents();
 
         fixture = TestBed.createComponent(StalkerLiveStreamLayoutComponent);
         component = fixture.componentInstance;

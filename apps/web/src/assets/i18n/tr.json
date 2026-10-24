@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Şu an yayında",
+        "ACROSS_FAVORITE": "Favori kanalınızda",
+        "ACROSS_FAVORITES": "{{count}} favori kanalınızda",
+        "FROM_CATEGORY": "{{category}} içinde {{count}} kanal",
+        "MINUTES_LEFT": "{{count}} dk kaldı",
+        "ENDS_AT": "{{time}} sona erer",
+        "LAST_WATCHED": "Son izlenen",
+        "TUNE_IN": "İzle",
+        "JUST_NOW": "az önce",
+        "MINUTES_AGO": "{{count}} dk önce",
+        "HOURS_AGO": "{{count}} sa önce",
+        "TODAY_AT": "bugün {{time}}",
+        "YESTERDAY_AT": "dün {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

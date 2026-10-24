@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "지금 방송 중",
+        "ACROSS_FAVORITE": "즐겨찾는 채널",
+        "ACROSS_FAVORITES": "즐겨찾는 채널 {{count}}개",
+        "FROM_CATEGORY": "{{category}}의 채널 {{count}}개",
+        "MINUTES_LEFT": "{{count}}분 남음",
+        "ENDS_AT": "{{time}} 종료",
+        "LAST_WATCHED": "마지막 시청",
+        "TUNE_IN": "시청하기",
+        "JUST_NOW": "방금 전",
+        "MINUTES_AGO": "{{count}}분 전",
+        "HOURS_AGO": "{{count}}시간 전",
+        "TODAY_AT": "오늘 {{time}}",
+        "YESTERDAY_AT": "어제 {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

@@ -18,6 +18,8 @@ import {
 import type { EpgItem, EpgProgram } from '@iptvnator/shared/interfaces';
 import { ElectronStreamHeadersService } from '@iptvnator/ui/playback';
 import { StalkerLiveStreamLayoutComponent } from './stalker-live-stream-layout.component';
+import { createLiveOnNowServiceStub } from './stalker-live-stream-layout.spec-stubs';
+import { StalkerLiveOnNowService } from './stalker-live-on-now.service';
 
 /**
  * Race regressions for the short-EPG fallback:
@@ -183,6 +185,9 @@ describe('StalkerLiveStreamLayoutComponent EPG fallback races', () => {
         })
             .overrideComponent(StalkerLiveStreamLayoutComponent, {
                 set: { template: '' },
+            })
+            .overrideProvider(StalkerLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
         fixture = TestBed.createComponent(StalkerLiveStreamLayoutComponent);

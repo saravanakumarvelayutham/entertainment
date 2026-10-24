@@ -19,6 +19,8 @@ import {
 import type { ResolvedPortalPlayback } from '@iptvnator/shared/interfaces';
 import { ElectronStreamHeadersService } from '@iptvnator/ui/playback';
 import { StalkerLiveStreamLayoutComponent } from './stalker-live-stream-layout.component';
+import { createLiveOnNowServiceStub } from './stalker-live-stream-layout.spec-stubs';
+import { StalkerLiveOnNowService } from './stalker-live-on-now.service';
 
 function deferred<T>() {
     let resolve!: (value: T) => void;
@@ -156,6 +158,9 @@ describe('StalkerLiveStreamLayoutComponent playback session ownership', () => {
         })
             .overrideComponent(StalkerLiveStreamLayoutComponent, {
                 set: { template: '' },
+            })
+            .overrideProvider(StalkerLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
         fixture = TestBed.createComponent(StalkerLiveStreamLayoutComponent);

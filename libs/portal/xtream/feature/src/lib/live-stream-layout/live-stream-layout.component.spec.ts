@@ -38,7 +38,10 @@ import {
     EpgProgram,
     ResolvedPortalPlayback,
 } from '@iptvnator/shared/interfaces';
-import { GridListComponent } from '@iptvnator/portal/shared/ui';
+import {
+    GridListComponent,
+    LiveOnNowStageComponent,
+} from '@iptvnator/portal/shared/ui';
 import { PortalChannelsListComponent } from '../portal-channels-list/portal-channels-list.component';
 import { LiveStreamLayoutComponent } from './live-stream-layout.component';
 import { RuntimeCapabilitiesService, SettingsStore } from '@iptvnator/services';
@@ -52,7 +55,10 @@ import {
     StubPortalChannelsListComponent,
     StubResizableDirective,
     StubWebPlayerViewComponent,
+    liveOnNowStubProvider,
+    StubLiveOnNowStageComponent,
 } from './live-stream-layout-stubs.spec-data';
+import { XtreamLiveOnNowService } from './xtream-live-on-now.service';
 
 const LIVE_CHANNEL_SORT_STORAGE_KEY = 'xtream-live-channel-sort-mode';
 
@@ -246,6 +252,7 @@ describe('LiveStreamLayoutComponent', () => {
             .overrideComponent(LiveStreamLayoutComponent, {
                 remove: {
                     imports: [
+                        LiveOnNowStageComponent,
                         EpgArchiveCopyService,
                         EpgListViewComponent,
                         EpgTimelineComponent,
@@ -258,6 +265,7 @@ describe('LiveStreamLayoutComponent', () => {
                 },
                 add: {
                     imports: [
+                        StubLiveOnNowStageComponent,
                         StubEpgTimelineComponent,
                         StubGridListComponent,
                         StubPortalChannelsListComponent,
@@ -270,6 +278,7 @@ describe('LiveStreamLayoutComponent', () => {
                     ],
                 },
             })
+            .overrideProvider(XtreamLiveOnNowService, liveOnNowStubProvider())
             .compileComponents();
 
         fixture = TestBed.createComponent(LiveStreamLayoutComponent);

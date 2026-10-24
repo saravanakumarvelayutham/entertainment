@@ -1,0 +1,130 @@
+@if (hasContent()) {
+    <section
+        class="stage"
+        data-test-id="live-on-now-stage"
+        [attr.aria-label]="'LIVE_ON_NOW.TITLE' | translate"
+    >
+        <header class="stage__header">
+            <h2 class="stage__title">{{ 'LIVE_ON_NOW.TITLE' | translate }}</h2>
+            <p class="stage__subline">
+                @if (tiles().length > 0) {
+                    <span>{{ sublineKey() | translate: sublineParams() }}</span>
+                    <span class="stage__dot" aria-hidden="true">·</span>
+                }
+                <time class="stage__clock">{{ clockLabel() }}</time>
+            </p>
+        </header>
+
+        @if (tiles().length > 0) {
+            <div class="stage__grid" role="list">
+                @for (tile of tiles(); track tile.id; let first = $first) {
+                    <button
+                        type="button"
+                        role="listitem"
+                        class="tile"
+                        [class.tile--hero]="first"
+                        [style.--tile-hue]="tileHue(tile)"
+                        data-test-id="live-on-now-tile"
+                        [attr.data-channel-id]="tile.id"
+                        [attr.aria-label]="
+                            tile.program
+                                ? tile.name + ': ' + tile.program.title
+                                : tile.name
+                        "
+                        (click)="select(tile.id)"
+                    >
+                        <span class="tile__scrim" aria-hidden="true"></span>
+                        <span class="tile__channel">
+                            <span
+                                class="tile__logo"
+                                [class.tile__logo--fallback]="!showsLogo(tile)"
+                                aria-hidden="true"
+                            >
+                                @if (showsLogo(tile)) {
+                                    <img
+                                        [src]="tile.logoUrl"
+                                        alt=""
+                                        loading="lazy"
+                                        decoding="async"
+                                        (error)="markLogoFailed(tile)"
+                                    />
+                                } @else {
+                                    {{ tileInitials(tile) }}
+                                }
+                            </span>
+                            <span class="tile__name">{{ tile.name }}</span>
+                            @if (first && tile.program) {
+                                <span class="tile__live-chip">LIVE</span>
+                            }
+                        </span>
+                        @if (tile.program; as program) {
+                            <span class="tile__headline">{{
+                                program.title
+                            }}</span>
+                            @if (program.timeRange) {
+                                <span class="tile__time">
+                                    @if (first) {
+                                        {{ program.timeRange }}
+                                        @if (program.minutesLeft !== null) {
+                                            <span
+                                                class="stage__dot"
+                                                aria-hidden="true"
+                                                >·</span
+                                            >
+                                            {{
+                                                'LIVE_ON_NOW.MINUTES_LEFT'
+                                                    | translate
+                                                        : {
+                                                              count: program.minutesLeft,
+                                                          }
+                                            }}
+                                        }
+                                    } @else {
+                                        {{
+                                            'LIVE_ON_NOW.ENDS_AT'
+                                                | translate
+                                                    : { time: program.endsAt }
+                                        }}
+                                    }
+                                </span>
+                            }
+                            @if (program.progress !== null) {
+                                <span class="tile__progress" aria-hidden="true">
+                                    <i [style.width.%]="program.progress"></i>
+                                </span>
+                            }
+                        }
+                    </button>
+                }
+            </div>
+        }
+
+        @if (lastWatched(); as last) {
+            <div class="last-watched" data-test-id="live-on-now-last-watched">
+                <mat-icon aria-hidden="true">history</mat-icon>
+                <span class="last-watched__text">
+                    {{ 'LIVE_ON_NOW.LAST_WATCHED' | translate }}
+                    <strong>{{ last.name }}</strong>
+                    @if (lastWatchedRelative(); as relative) {
+                        {{ relative.key | translate: relative.params ?? {} }}
+                    }
+                </span>
+                <button
+                    type="button"
+                    class="last-watched__action"
+                    data-test-id="live-on-now-tune-in"
+                    [attr.data-channel-id]="last.id"
+                    (click)="select(last.id)"
+                >
+                    <mat-icon aria-hidden="true">play_arrow</mat-icon>
+                    {{ 'LIVE_ON_NOW.TUNE_IN' | translate }}
+                </button>
+            </div>
+        }
+    </section>
+} @else {
+    <app-portal-empty-state
+        icon="live_tv"
+        [message]="'CHANNELS.SELECT_CHANNEL_PLAYBACK' | translate"
+    />
+}

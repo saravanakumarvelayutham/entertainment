@@ -184,10 +184,19 @@
         }
     } @else if (isSidebarCollapsed()) {
         <app-channel-list-hidden-state (restore)="livePanels.toggleSidebar()" />
-    } @else {
+    } @else if (isRadioMode()) {
         <app-portal-empty-state
-            icon="live_tv"
+            icon="radio"
             [message]="'CHANNELS.SELECT_CHANNEL_PLAYBACK' | translate"
+        />
+    } @else {
+        <app-live-on-now-stage
+            [tiles]="liveOnNow.tiles()"
+            [lastWatched]="liveOnNow.lastWatched()"
+            [source]="liveOnNow.source()"
+            [sourceLabel]="selectedCategoryTitle() ?? ''"
+            [nowMs]="liveOnNow.nowMs()"
+            (channelSelected)="onOnNowChannelSelected($event)"
         />
     }
 </div>

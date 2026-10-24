@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "يُعرض الآن",
+        "ACROSS_FAVORITE": "على قناتك المفضلة",
+        "ACROSS_FAVORITES": "على قنواتك المفضلة ({{count}})",
+        "FROM_CATEGORY": "{{count}} قناة في {{category}}",
+        "MINUTES_LEFT": "بقي {{count}} دقيقة",
+        "ENDS_AT": "ينتهي في {{time}}",
+        "LAST_WATCHED": "آخر مشاهدة",
+        "TUNE_IN": "شاهد الآن",
+        "JUST_NOW": "الآن",
+        "MINUTES_AGO": "قبل {{count}} دقيقة",
+        "HOURS_AGO": "قبل {{count}} ساعة",
+        "TODAY_AT": "اليوم في {{time}}",
+        "YESTERDAY_AT": "أمس في {{time}}",
+        "ON_DATE": "في {{date}}"
     }
 }

@@ -33,6 +33,8 @@ import {
 import type { PlaybackFallbackRequest } from '@iptvnator/ui/playback';
 import { createPlaybackSessionKey } from '@iptvnator/playback/util';
 import type { VideoPlayerComponent as VideoPlayerComponentInstance } from './video-player.component';
+import { M3uLiveOnNowService } from './m3u-live-on-now.service';
+import { createLiveOnNowServiceStub } from './video-player.spec-stubs';
 import {
     activeChannel,
     activeEpgProgram,
@@ -67,6 +69,7 @@ import {
     StubEpgGuideComponent,
     StubEpgGuideNowPlayingComponent,
     StubEpgTimelineComponent,
+    StubLiveOnNowStageComponent,
     StubPortalEmptyStateComponent,
     StubResizableDirective,
     StubSidebarComponent,
@@ -229,6 +232,7 @@ describe('VideoPlayerComponent', () => {
                         StubEpgGuideNowPlayingComponent,
                         StubEpgTimelineComponent,
                         StubPortalEmptyStateComponent,
+                        StubLiveOnNowStageComponent,
                         StubResizableDirective,
                         StubSidebarComponent,
                         StubWebPlayerViewComponent,
@@ -238,6 +242,9 @@ describe('VideoPlayerComponent', () => {
                         ),
                     ],
                 },
+            })
+            .overrideProvider(M3uLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
 
@@ -1246,15 +1253,14 @@ describe('VideoPlayerComponent', () => {
         expect(localStorage.getItem('m3u-sidebar-width')).toBe('600');
     });
 
-    it('renders the shared empty state when no channel is active', () => {
+    it('renders the "On now" stage instead of an empty state when no channel is active', () => {
         fixture.detectChanges();
 
-        const emptyState = fixture.nativeElement.querySelector(
-            'app-portal-empty-state'
-        ) as HTMLElement | null;
+        const host: HTMLElement = fixture.nativeElement;
 
-        expect(emptyState).not.toBeNull();
-        expect(emptyState?.textContent).toContain(
+        expect(host.querySelector('app-live-on-now-stage')).not.toBeNull();
+        expect(host.querySelector('app-portal-empty-state')).toBeNull();
+        expect(host.textContent).not.toContain(
             'CHANNELS.SELECT_CHANNEL_PLAYBACK'
         );
     });

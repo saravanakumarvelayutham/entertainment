@@ -98,7 +98,7 @@ import {
 } from '@iptvnator/portal/shared/util';
 import {
     ChannelListHiddenStateComponent,
-    PortalEmptyStateComponent,
+    LiveOnNowStageComponent,
 } from '@iptvnator/portal/shared/ui';
 import {
     AudioPlayerComponent,
@@ -142,6 +142,7 @@ import {
     VideoPlayer,
 } from '@iptvnator/shared/interfaces';
 import { M3uEpgGuideSourceService } from '../epg-guide/m3u-epg-guide-source.service';
+import { M3uLiveOnNowService } from './m3u-live-on-now.service';
 import { M3uVodDetailComponent } from '../m3u-vod-detail/m3u-vod-detail.component';
 import { M3uFullscreenChannelListComponent } from './fullscreen-channel-list/m3u-fullscreen-channel-list.component';
 import { createM3uChannelPlaybackRequest } from './m3u-channel-playback-actions';
@@ -210,13 +211,14 @@ function isInsideScrollableRegion(
         MatIconModule,
         MatTooltipModule,
         ChannelListHiddenStateComponent,
-        PortalEmptyStateComponent,
+        LiveOnNowStageComponent,
         ResizableDirective,
         SidebarComponent,
         TranslatePipe,
         WebPlayerViewComponent,
     ],
     providers: [
+        M3uLiveOnNowService,
         // The fullscreen channel panel inside the player renders this page's
         // channel list (see the `fullscreenChannelPanel` template).
         {
@@ -550,6 +552,14 @@ export class VideoPlayerComponent
     /** Shared with the workspace header toggle; persisted per surface. */
     readonly isSidebarCollapsed =
         this.liveSidebarStateService.isCollapsedFor('m3u');
+    /** "On now" stage data; rendered while nothing is selected and the rail shows. */
+    readonly liveOnNow = inject(M3uLiveOnNowService);
+    readonly showsOnNowStage = computed(
+        () =>
+            !this.activeChannel() &&
+            !this.isSidebarCollapsed() &&
+            !this.guideOpen()
+    );
 
     /** Channels list */
     readonly channels$: Observable<Channel[]> = this.store.select(
@@ -736,6 +746,10 @@ export class VideoPlayerComponent
     });
 
     constructor() {
+        effect(() => this.liveOnNow.active.set(this.showsOnNowStage()));
+        effect(() =>
+            this.liveOnNow.selectedGroup.set(this.selectedSidebarGroup())
+        );
         this.guideSource.bind({
             channels: this.guideChannels,
             favoriteKeys: this.store.selectSignal(selectFavorites),
@@ -1196,6 +1210,19 @@ export class VideoPlayerComponent
             M3U_SIDEBAR_MIN_WIDTH,
             Math.min(M3U_SIDEBAR_MAX_WIDTH, width)
         );
+    }
+
+    /** A stage tile or its Tune in: the same path as a channel-list click. */
+    onOnNowChannelSelected(id: string): void {
+        const channel = this.liveOnNow.resolveChannel(id);
+        if (channel) {
+            this.store.dispatch(
+                ChannelActions.setActiveChannel({
+                    channel,
+                    startPlayback: true,
+                })
+            );
+        }
     }
 
     private async persistRecentlyViewedChannel(

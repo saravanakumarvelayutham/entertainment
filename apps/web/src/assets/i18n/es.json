@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "Ahora en emisión",
+        "ACROSS_FAVORITE": "En tu canal favorito",
+        "ACROSS_FAVORITES": "En tus {{count}} canales favoritos",
+        "FROM_CATEGORY": "{{count}} canales en {{category}}",
+        "MINUTES_LEFT": "quedan {{count}} min",
+        "ENDS_AT": "Termina a las {{time}}",
+        "LAST_WATCHED": "Visto por última vez",
+        "TUNE_IN": "Sintonizar",
+        "JUST_NOW": "ahora mismo",
+        "MINUTES_AGO": "hace {{count}} min",
+        "HOURS_AGO": "hace {{count}} h",
+        "TODAY_AT": "hoy a las {{time}}",
+        "YESTERDAY_AT": "ayer a las {{time}}",
+        "ON_DATE": "el {{date}}"
     }
 }

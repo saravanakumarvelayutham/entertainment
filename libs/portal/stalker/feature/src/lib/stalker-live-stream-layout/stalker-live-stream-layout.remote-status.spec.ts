@@ -15,6 +15,8 @@ import { EpgProgram } from '@iptvnator/shared/interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { StalkerLiveStreamLayoutComponent } from './stalker-live-stream-layout.component';
+import { createLiveOnNowServiceStub } from './stalker-live-stream-layout.spec-stubs';
+import { StalkerLiveOnNowService } from './stalker-live-on-now.service';
 
 /**
  * Focused spec for the remote-control status lifecycle (ITV + radio modes
@@ -237,6 +239,9 @@ describe('StalkerLiveStreamLayoutComponent remote status', () => {
         })
             .overrideComponent(StalkerLiveStreamLayoutComponent, {
                 set: { template: '' },
+            })
+            .overrideProvider(StalkerLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
 

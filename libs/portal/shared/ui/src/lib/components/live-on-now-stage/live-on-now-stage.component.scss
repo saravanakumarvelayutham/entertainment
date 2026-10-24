@@ -1,0 +1,332 @@
+// "On now" stage: artwork-first tiles on the app surface. The tiles are
+// deliberately dark in both themes — like a video viewport they carry
+// light-on-dark text over a name-keyed tint — while the heading, subline
+// and the last-watched bar follow the app tokens (`m3-theme.scss`).
+:host {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+}
+
+.stage {
+    container-type: inline-size;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px 28px 28px;
+    overflow: auto;
+    background: radial-gradient(
+        900px 400px at 50% -10%,
+        color-mix(
+            in srgb,
+            var(--app-selection-color, #2f7bff) 10%,
+            transparent
+        ),
+        transparent 70%
+    );
+}
+
+.stage__header {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+}
+
+.stage__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--app-heading-color, #1a1d23);
+}
+
+.stage__subline {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--app-muted-color, #8891a4);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.stage__clock {
+    font-variant-numeric: tabular-nums;
+}
+
+.stage__dot {
+    opacity: 0.7;
+}
+
+.stage__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+// ── Tile ───────────────────────────────────────────────────────────────────
+.tile {
+    --tile-hue: 220;
+    --tile-ink: #f3f5fa;
+    --tile-muted: rgba(243, 245, 250, 0.78);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 4px;
+    min-height: 150px;
+    padding: 14px;
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    text-align: left;
+    font: inherit;
+    color: var(--tile-ink);
+    background: linear-gradient(
+        135deg,
+        hsl(var(--tile-hue) 48% 30%),
+        hsl(var(--tile-hue) 52% 14%) 65%,
+        hsl(var(--tile-hue) 40% 8%)
+    );
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.9);
+        outline-offset: 2px;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 22px -12px rgba(0, 0, 0, 0.55);
+    }
+
+    > * {
+        position: relative;
+    }
+}
+
+.tile--hero {
+    grid-column: span 2;
+    min-height: 236px;
+
+    .tile__headline {
+        font-size: 1.4rem;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+    }
+}
+
+// A single-column grid cannot host a two-column hero.
+@container (max-width: 460px) {
+    .tile--hero {
+        grid-column: auto;
+    }
+}
+
+.tile__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.72),
+        rgba(0, 0, 0, 0.04) 60%
+    );
+}
+
+.tile__channel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-bottom: 4px;
+}
+
+.tile__logo {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.92);
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    &--fallback {
+        background: rgba(255, 255, 255, 0.18);
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: var(--tile-ink);
+    }
+}
+
+.tile__name {
+    min-width: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--tile-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tile__live-chip {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(
+        --font-mono,
+        ui-monospace,
+        'SF Mono',
+        'JetBrains Mono',
+        Menlo,
+        monospace
+    );
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--app-live-color, #ff8f8f);
+
+    &::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--app-live-color, #ff8f8f);
+        box-shadow: 0 0 6px var(--app-live-color, #ff8f8f);
+    }
+}
+
+.tile__headline {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: 1.05rem;
+    font-weight: 650;
+    line-height: 1.25;
+    color: var(--tile-ink);
+}
+
+.tile__time {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--tile-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.tile__progress {
+    display: block;
+    height: 3px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
+    overflow: hidden;
+
+    i {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--app-live-color, #ff8f8f);
+        transition: width 0.4s ease;
+    }
+}
+
+// ── Last watched ───────────────────────────────────────────────────────────
+.last-watched {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: auto;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--app-widget-bg, #ffffff);
+    border: 1px solid var(--app-widget-header-border, rgba(0, 0, 0, 0.06));
+    color: var(--app-muted-color, #8891a4);
+
+    > mat-icon {
+        flex: 0 0 auto;
+        color: var(--app-selection-color, #2f7bff);
+    }
+}
+
+.last-watched__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.88rem;
+
+    strong {
+        font-weight: 600;
+        color: var(--app-heading-color, #1a1d23);
+    }
+}
+
+.last-watched__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 18px 0 12px;
+    border: 0;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--app-heading-color, #1a1d23);
+    color: var(--app-widget-bg, #ffffff);
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    &:hover {
+        filter: brightness(1.1);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--app-selection-color, #2f7bff);
+        outline-offset: 2px;
+    }
+}
+
+@media (max-width: 640px) {
+    .stage {
+        padding: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tile,
+    .tile__progress i {
+        transition: none;
+    }
+
+    .tile:hover,
+    .tile:focus-visible {
+        transform: none;
+    }
+}

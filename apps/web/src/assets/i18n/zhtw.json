@@ -2000,5 +2000,21 @@
             "failed": "Deletion failed — select to retry"
         },
         "DELETE_PROGRESS": "Processed {{done}} of {{total}} selected sources"
+    },
+    "LIVE_ON_NOW": {
+        "TITLE": "正在播出",
+        "ACROSS_FAVORITE": "您的收藏頻道",
+        "ACROSS_FAVORITES": "您的 {{count}} 個收藏頻道",
+        "FROM_CATEGORY": "{{category}} 中的 {{count}} 個頻道",
+        "MINUTES_LEFT": "剩餘 {{count}} 分鐘",
+        "ENDS_AT": "{{time}} 結束",
+        "LAST_WATCHED": "上次觀看",
+        "TUNE_IN": "立即觀看",
+        "JUST_NOW": "剛剛",
+        "MINUTES_AGO": "{{count}} 分鐘前",
+        "HOURS_AGO": "{{count}} 小時前",
+        "TODAY_AT": "今天 {{time}}",
+        "YESTERDAY_AT": "昨天 {{time}}",
+        "ON_DATE": "{{date}}"
     }
 }

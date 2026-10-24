@@ -22,6 +22,8 @@ import {
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { LiveStreamLayoutComponent } from './live-stream-layout.component';
 import { XtreamLiveChannelItem } from './xtream-live-channel-navigation.service';
+import { liveOnNowStubProvider } from './live-stream-layout-stubs.spec-data';
+import { XtreamLiveOnNowService } from './xtream-live-on-now.service';
 
 const target = { xtream_id: 202, category_id: '7', name: 'Search Channel' };
 const alpha = { xtream_id: 201, category_id: '7', name: 'Alpha' };
@@ -149,6 +151,7 @@ describe('Xtream live auto-open playback queue', () => {
             .overrideComponent(LiveStreamLayoutComponent, {
                 set: { template: '', imports: [] },
             })
+            .overrideProvider(XtreamLiveOnNowService, liveOnNowStubProvider())
             .compileComponents();
         fixture = TestBed.createComponent(LiveStreamLayoutComponent);
         component = fixture.componentInstance;

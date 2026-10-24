@@ -32,7 +32,7 @@ import {
     GridListComponent,
     InfiniteScrollDirective,
     ChannelListHiddenStateComponent,
-    PortalEmptyStateComponent,
+    LiveOnNowStageComponent,
 } from '@iptvnator/portal/shared/ui';
 import {
     createLivePanelsController,
@@ -99,6 +99,7 @@ import {
     SettingsStore,
 } from '@iptvnator/services';
 import { LiveStreamAutoOpenStateService } from './live-stream-auto-open-state.service';
+import { XtreamLiveOnNowService } from './xtream-live-on-now.service';
 import { createPlaybackSessionKey } from '@iptvnator/playback/util';
 
 import {
@@ -115,6 +116,7 @@ const LIVE_CHANNEL_SORT_STORAGE_KEY = 'xtream-live-channel-sort-mode';
     providers: [
         LiveStreamAutoOpenStateService,
         XtreamLiveChannelNavigationService,
+        XtreamLiveOnNowService,
         // The fullscreen channel panel inside the player renders this
         // category's channel list (see the `fullscreenChannelPanel` template).
         {
@@ -135,7 +137,7 @@ const LIVE_CHANNEL_SORT_STORAGE_KEY = 'xtream-live-channel-sort-mode';
         InfiniteScrollDirective,
         PortalChannelsListComponent,
         ChannelListHiddenStateComponent,
-        PortalEmptyStateComponent,
+        LiveOnNowStageComponent,
         ResizableDirective,
         TranslatePipe,
         WebPlayerViewComponent,
@@ -355,6 +357,14 @@ export class LiveStreamLayoutComponent
         restoreButton: this.restoreButton,
     });
     readonly isSidebarCollapsed = this.livePanels.isSidebarCollapsed;
+    /** "On now" stage data; rendered while a category is open and nothing plays. */
+    readonly liveOnNow = inject(XtreamLiveOnNowService);
+    readonly showsOnNowStage = computed(
+        () =>
+            !this.activeStreamUrl() &&
+            this.showLiveChannelSidebar() &&
+            !this.isSidebarCollapsed()
+    );
     readonly liveEpgPanelSummary = computed(() =>
         this.toLiveEpgPanelSummary(
             this.activeCatchupProgram() ?? this.currentEpgItem()
@@ -429,6 +439,7 @@ export class LiveStreamLayoutComponent
     favorites = new Map<number, boolean>();
 
     constructor() {
+        effect(() => this.liveOnNow.active.set(this.showsOnNowStage()));
         effect(() => {
             const playlistId = this.xtreamStore.currentPlaylist()?.id ?? null;
             if (this.activePlaylistId && this.activePlaylistId !== playlistId) {
@@ -660,6 +671,20 @@ export class LiveStreamLayoutComponent
 
     onLiveRootLoadMore(): void {
         this.xtreamStore.loadMoreContent();
+    }
+
+    /** A stage tile or its Tune in: the same path as a channel-list click. */
+    onOnNowChannelSelected(id: string): void {
+        const item = this.liveOnNow.resolveChannel(id);
+        if (!item) {
+            return;
+        }
+        const displayed = this.liveOnNow.displayedChannels();
+        this.playLive(
+            item,
+            true,
+            displayed.includes(item) ? displayed : undefined
+        );
     }
 
     onLiveRootItemClick(item: unknown): void {

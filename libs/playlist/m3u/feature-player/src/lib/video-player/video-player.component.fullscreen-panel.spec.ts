@@ -30,6 +30,8 @@ import {
     VideoPlayer,
 } from '@iptvnator/shared/interfaces';
 import type { VideoPlayerComponent as VideoPlayerComponentInstance } from './video-player.component';
+import { M3uLiveOnNowService } from './m3u-live-on-now.service';
+import { createLiveOnNowServiceStub } from './video-player.spec-stubs';
 import { translateServiceProvider } from './video-player.spec-harness';
 
 jest.unstable_mockModule('video.js', () => ({
@@ -234,6 +236,9 @@ describe('VideoPlayerComponent fullscreen channel panel + zapping', () => {
                     template:
                         '<ng-template #fullscreenChannelPanel></ng-template>',
                 },
+            })
+            .overrideProvider(M3uLiveOnNowService, {
+                useValue: createLiveOnNowServiceStub(),
             })
             .compileComponents();
 

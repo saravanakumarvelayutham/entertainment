@@ -7,18 +7,25 @@ import {
     closeElectronApp,
     defaultStalkerMacAddress,
     defaultStalkerPortalName,
+    defaultXtreamPassword,
     defaultXtreamPortalName,
+    defaultXtreamUsername,
+    channelItemByTitle,
+    clickCategoryByNameExact,
     expect,
     expectPortalDebugSuccess,
     goToDashboard,
     launchElectronApp,
+    openWorkspaceSection,
     resetMockServers,
     stalkerMockServer,
     test,
     waitForXtreamImportToFinish,
     waitForStalkerCatalog,
     waitForXtreamCatalog,
+    waitForXtreamWorkspaceReady,
 } from './electron-test-fixtures';
+import { fetchXtreamLiveFixture, getXtreamTitle } from './portal-mock-fixtures';
 
 test.describe('Electron Provider Smoke Tests', () => {
     test('@xtream @theme @electron keeps sync overlay text readable in both themes', async ({
@@ -34,9 +41,10 @@ test.describe('Electron Provider Smoke Tests', () => {
                 ipcMain.removeHandler('DB_GET_CATEGORIES');
                 ipcMain.handle(
                     'DB_GET_CATEGORIES',
-                    () => new Promise(() => {
-                        // Intentionally pending until this isolated app closes.
-                    })
+                    () =>
+                        new Promise(() => {
+                            // Intentionally pending until this isolated app closes.
+                        })
                 );
             });
             await addXtreamPortal(app.mainWindow);
@@ -262,3 +270,108 @@ async function refreshRecentXtreamSourceFromDashboard(
 
     await page.waitForSelector('mat-dialog-container', { state: 'detached' });
 }
+
+test.describe('Electron Live TV "On now" stage', () => {
+    test("@xtream @live @electron fills the player area with the category's channels before a pick and plays a tile", async ({
+        dataDir,
+        request,
+    }) => {
+        await resetMockServers(request, ['xtream']);
+        const liveFixture = await fetchXtreamLiveFixture(request, {
+            username: defaultXtreamUsername,
+            password: defaultXtreamPassword,
+        });
+        const app = await launchElectronApp(dataDir);
+
+        try {
+            await addXtreamPortal(app.mainWindow);
+            await waitForXtreamWorkspaceReady(app.mainWindow);
+            await openWorkspaceSection(app.mainWindow, 'Live TV');
+            await clickCategoryByNameExact(
+                app.mainWindow,
+                liveFixture.categoryName
+            );
+
+            // No favorites yet, so the open category's first channels fill
+            // the grid; the old "select a channel" placeholder is gone.
+            const stage = app.mainWindow.getByTestId('live-on-now-stage');
+            await expect(stage).toBeVisible();
+            await expect(stage).toContainText('On now');
+            await expect(stage).toContainText(liveFixture.categoryName);
+            await expect(
+                app.mainWindow.getByText(
+                    'Please select a channel to start playback'
+                )
+            ).toHaveCount(0);
+
+            const tiles = stage.getByTestId('live-on-now-tile');
+            await expect(tiles.first()).toBeVisible();
+            const fixtureTitles = liveFixture.items.map(getXtreamTitle);
+            const tileName = (
+                await tiles.first().locator('.tile__name').innerText()
+            ).trim();
+            expect(fixtureTitles).toContain(tileName);
+            // The first tile is the hero and spans two grid columns.
+            await expect(tiles.first()).toHaveClass(/tile--hero/);
+
+            // A tile click takes the channel list's own selection path: the
+            // sidebar row lights up, the player mounts, the stage leaves.
+            await tiles.first().click();
+            await expect(
+                app.mainWindow.locator('app-web-player-view').first()
+            ).toBeVisible({ timeout: 15000 });
+            await expect(stage).toHaveCount(0);
+            await expect(
+                channelItemByTitle(app.mainWindow, tileName).first()
+            ).toHaveClass(/active/);
+        } finally {
+            await closeElectronApp(app);
+        }
+    });
+
+    test('@stalker @live @electron shows the stage for an ITV category and a tile starts playback', async ({
+        dataDir,
+        request,
+    }) => {
+        await resetMockServers(request, ['stalker']);
+        const app = await launchElectronApp(dataDir);
+
+        try {
+            // Keep the public demo stream the mock redirects to off the wire.
+            await app.mainWindow.route(
+                'https://test-streams.mux.dev/**',
+                (route) => route.abort()
+            );
+            await addStalkerPortal(app.mainWindow);
+            await waitForStalkerCatalog(app.mainWindow);
+
+            await app.mainWindow
+                .getByRole('link', { name: /live|itv/i })
+                .click();
+            await app.mainWindow.waitForURL(/stalker.*itv/);
+            const categories = app.mainWindow.locator('.category-item');
+            await expect(categories.first()).toBeVisible({ timeout: 10_000 });
+            await categories.first().click();
+
+            const stage = app.mainWindow.getByTestId('live-on-now-stage');
+            await expect(stage).toBeVisible({ timeout: 20_000 });
+            const tiles = stage.getByTestId('live-on-now-tile');
+            await expect(tiles.first()).toBeVisible();
+            const tileName = (
+                await tiles.first().locator('.tile__name').innerText()
+            ).trim();
+            expect(tileName).not.toBe('');
+
+            await tiles.first().click();
+            await expect(
+                app.mainWindow.locator('app-web-player-view').first()
+            ).toBeVisible({ timeout: 15_000 });
+            await expect(stage).toHaveCount(0);
+            await expect(
+                channelItemByTitle(app.mainWindow, tileName).first()
+            ).toHaveClass(/active/);
+        } finally {
+            await closeElectronApp(app);
+        }
+    });
+});
