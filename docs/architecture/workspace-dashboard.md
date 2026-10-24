@@ -142,7 +142,10 @@ Render rules:
 3. Section headers are quiet: no rule under the title, the count renders as
    plain muted text and "See all" is a text link. The artwork, not the header,
    should draw the eye.
-4. Behavior: native horizontal flex track. Movie/series rows automatically roll
+4. Behavior: native horizontal flex track. Continue Watching explicitly disables
+   automatic rolling through the rail's `autoRoll` input: resuming a known title
+   needs a stable target. Its native scrolling, arrows and keyboard paging remain.
+   Other movie/series rows automatically roll
    at a constant 36 px/s in an endless forward loop. Angular renders a second
    pass and the scroll offset wraps by the measured distance between passes,
    preserving fractional overshoot with no visible reset. Repeated cards retain

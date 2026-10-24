@@ -153,10 +153,12 @@ export class DashboardRailComponent implements AfterViewInit, OnDestroy {
     readonly seeAllState = input<Record<string, unknown> | null>(null);
     readonly aspectRatio = input<string>('2 / 3');
     readonly layout = input<DashboardRailLayout>('cover');
+    readonly autoRoll = input(true);
     readonly testId = input<string | null>(null);
     readonly actionSelected = output<DashboardRailActionSelection>();
     readonly autoRollEligible = computed(
         () =>
+            this.autoRoll() &&
             this.layout() !== 'channel' &&
             this.items().some(
                 (card) =>

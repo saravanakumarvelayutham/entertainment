@@ -213,8 +213,14 @@ test('@web @redesign cinematic browsing reacts to the pointer and movie rows scr
     const continueTrack = page
         .locator('.rail__track[data-layout="landscape"]')
         .first();
-    // This fixture has one in-progress movie: a row without overflow stays still.
+    // Continue Watching is a stable resume target, even in Full motion.
     await expect(continueTrack).not.toHaveAttribute('data-auto-rolling');
+    await expect(continueTrack).not.toHaveClass(/rail__track--auto-roll/);
+    await expect(
+        page.locator(
+            '[data-test-id="dashboard-continue-watching-rail"] .rail__auto-roll'
+        )
+    ).toHaveCount(0);
     const rail = page.locator('[data-test-id="dashboard-favorite-vod-rail"]');
     const track = rail.locator('.rail__track');
     await rail.scrollIntoViewIfNeeded();

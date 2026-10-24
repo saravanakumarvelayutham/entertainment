@@ -131,7 +131,8 @@ horizontal history deck, glass navigation capsule and larger poster rails in all
 motion modes. Movie rails expose enabled left/right arrows and a focusable track
 with ArrowLeft/ArrowRight paging. Links retain their own keys; native touch and
 trackpad scrolling stay available. Smooth paging follows the motion preference.
-Movie/series rails also roll automatically in a seamless, constant-speed forward
+Continue Watching stays stationary for predictable resume selection, with manual
+scrolling and paging. Other movie/series rails roll in a seamless, constant-speed forward
 loop. A second rendered pass bridges the seam without repeating keyboard stops.
 Scrolling resets cursor effects only when that scroll owner contains the hovered
 card, so another rolling row cannot clear its tilt or lighting.

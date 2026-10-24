@@ -18,7 +18,8 @@ motion contract. Hero backgrounds stay stationary;
 detail posters and companion recommendations also respond to the cursor.
 Shared `SceneTransitionService` connects page navigation and inline detail
 open/return with native snapshots; active playback bypasses route snapshots.
-Movie/series rails loop endlessly forward with per-row pause/resume and interaction/visibility
+Continue Watching stays stationary with manual paging. Other movie/series rails
+loop endlessly forward with per-row pause/resume and interaction/visibility
 pauses; Reduced motion disables rolling. See the dashboard motion contract.
 
 Movie detail hosts project `MovieCompanionComponent` into the shell when existing

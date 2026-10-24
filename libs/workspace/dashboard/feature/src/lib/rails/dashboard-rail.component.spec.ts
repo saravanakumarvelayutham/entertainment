@@ -77,7 +77,10 @@ describe('DashboardRailComponent', () => {
             }).compileComponents();
             const fixture = TestBed.createComponent(DashboardRailComponent);
             fixture.componentRef.setInput('label', 'Movies');
-            fixture.componentRef.setInput('items', []);
+            fixture.componentRef.setInput('items', [
+                card({ contentType: 'movie' }),
+            ]);
+            fixture.componentRef.setInput('autoRoll', false);
             fixture.detectChanges();
             const track = fixture.nativeElement.querySelector(
                 '.rail__track'
@@ -101,6 +104,12 @@ describe('DashboardRailComponent', () => {
                 behavior: 'auto',
             });
             motion.set('full');
+            fixture.detectChanges();
+            expect(track.hasAttribute('data-auto-rolling')).toBe(false);
+            expect(
+                fixture.nativeElement.querySelector('.rail__auto-roll')
+            ).toBeNull();
+            expect(track.querySelectorAll('[data-rail-copy]')).toHaveLength(0);
             track.dispatchEvent(
                 new KeyboardEvent('keydown', {
                     key: 'ArrowLeft',
@@ -132,6 +141,27 @@ describe('DashboardRailComponent', () => {
 
     afterEach(() => {
         TestBed.resetTestingModule();
+    });
+
+    it('lets task-focused rows opt out of automatic rolling even for movies', async () => {
+        await TestBed.configureTestingModule({
+            imports: [DashboardRailComponent],
+            providers: [
+                {
+                    provide: SettingsStore,
+                    useValue: { stripCountryPrefix: signal(false) },
+                },
+            ],
+        }).compileComponents();
+        const fixture = TestBed.createComponent(DashboardRailComponent);
+        fixture.componentRef.setInput('label', 'Continue Watching');
+        fixture.componentRef.setInput('items', [
+            card({ contentType: 'movie' }),
+        ]);
+        expect(fixture.componentInstance.autoRollEligible()).toBe(true);
+        fixture.componentRef.setInput('autoRoll', false);
+        expect(fixture.componentInstance.autoRollEligible()).toBe(false);
+        fixture.destroy();
     });
 
     it('strips the prefix from live card titles when the setting is enabled', async () => {

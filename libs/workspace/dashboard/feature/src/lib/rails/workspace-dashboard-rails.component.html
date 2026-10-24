@@ -355,6 +355,7 @@
                         'WORKSPACE.DASHBOARD.CONTINUE_WATCHING' | translate
                     "
                     [items]="continueWatchingCards()"
+                    [autoRoll]="false"
                     [totalCount]="data.globalRecentVodItems().length"
                     [seeAllLink]="['/workspace/global-recent']"
                     [seeAllState]="continueWatchingSeeAllState()"
