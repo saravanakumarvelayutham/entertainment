@@ -1,0 +1,472 @@
+<section
+    class="insights"
+    data-test-id="insights-page"
+    aria-labelledby="insights-title"
+    [attr.aria-busy]="refreshing()"
+>
+    <section class="taste-hero" data-test-id="insights-hero">
+        @if (backdrop(); as image) {
+            <img
+                class="taste-hero__art"
+                [src]="image"
+                alt=""
+                (error)="markFailed(image)"
+                decoding="async"
+            />
+        }
+        <div class="taste-hero__scrim"></div>
+        <div class="taste-hero__copy">
+            <p class="eyebrow">
+                {{ 'WORKSPACE.INSIGHTS.EYEBROW' | translate }}
+            </p>
+            <h1 id="insights-title">
+                @if (strongestGenre(); as genre) {
+                    {{
+                        'WORKSPACE.INSIGHTS.HERO_INTEREST'
+                            | translate: { genre: genre.name }
+                    }}
+                    <em>{{ 'WORKSPACE.INSIGHTS.HERO_YOU' | translate }}</em>
+                } @else if (hasEvidence()) {
+                    {{ 'WORKSPACE.INSIGHTS.HERO_HISTORY' | translate }}
+                    <em>{{ 'WORKSPACE.INSIGHTS.HERO_NEXT' | translate }}</em>
+                } @else {
+                    {{ 'WORKSPACE.INSIGHTS.EMPTY_TITLE' | translate }}
+                }
+            </h1>
+            <p class="taste-hero__subtitle">
+                {{ 'WORKSPACE.INSIGHTS.SUBTITLE' | translate }}
+            </p>
+            <span class="history-badge"
+                ><mat-icon aria-hidden="true">history</mat-icon
+                >{{ 'WORKSPACE.INSIGHTS.AVAILABLE_HISTORY' | translate }}</span
+            >
+            @if (
+                !hasEvidence() &&
+                ready() &&
+                !data.globalRecentError() &&
+                !refreshError()
+            ) {
+                <a mat-flat-button routerLink="/workspace/sources">{{
+                    'WORKSPACE.INSIGHTS.BROWSE_SOURCES' | translate
+                }}</a>
+            }
+        </div>
+        <div class="taste-hero__posters" aria-hidden="true">
+            @for (item of posters(); track item.key) {
+                <figure>
+                    <img
+                        [src]="item.poster"
+                        alt=""
+                        (error)="markFailed(item.poster!)"
+                        decoding="async"
+                    />
+                    <figcaption>{{ item.title }}</figcaption>
+                </figure>
+            }
+        </div>
+    </section>
+
+    <div class="insights__body">
+        <div class="insights-toolbar">
+            <div class="insights-toolbar__filters">
+                <label
+                    >{{ 'WORKSPACE.INSIGHTS.ACTIVITY_PERIOD' | translate }}
+                    <select
+                        data-test-id="insights-period-filter"
+                        [value]="days()"
+                        (change)="setDays($event)"
+                    >
+                        <option value="0">
+                            {{
+                                'WORKSPACE.INSIGHTS.AVAILABLE_HISTORY'
+                                    | translate
+                            }}
+                        </option>
+                        <option value="30">
+                            {{ 'WORKSPACE.INSIGHTS.LAST_30' | translate }}
+                        </option>
+                        <option value="7">
+                            {{ 'WORKSPACE.INSIGHTS.LAST_7' | translate }}
+                        </option>
+                    </select>
+                </label>
+                <label
+                    >{{ 'WORKSPACE.INSIGHTS.CONTENT' | translate }}
+                    <select
+                        data-test-id="insights-content-filter"
+                        [value]="content()"
+                        (change)="setContent($event)"
+                    >
+                        <option value="all">
+                            {{ 'WORKSPACE.INSIGHTS.ALL_CONTENT' | translate }}
+                        </option>
+                        <option value="movie">
+                            {{ 'WORKSPACE.INSIGHTS.MOVIES' | translate }}
+                        </option>
+                        <option value="series">
+                            {{ 'WORKSPACE.INSIGHTS.SERIES' | translate }}
+                        </option>
+                        <option value="live">
+                            {{ 'WORKSPACE.INSIGHTS.LIVE_TV' | translate }}
+                        </option>
+                    </select>
+                </label>
+            </div>
+            <button
+                mat-button
+                type="button"
+                (click)="refresh()"
+                [disabled]="refreshing()"
+            >
+                <mat-icon>refresh</mat-icon
+                >{{ 'WORKSPACE.INSIGHTS.REFRESH' | translate }}
+            </button>
+        </div>
+
+        @if (data.globalRecentError() || refreshError()) {
+            <div class="insights-message" role="alert">
+                <mat-icon aria-hidden="true">error_outline</mat-icon>
+                <span>{{
+                    'WORKSPACE.INSIGHTS.HISTORY_ERROR' | translate
+                }}</span>
+                <button
+                    mat-button
+                    type="button"
+                    (click)="refresh()"
+                    [disabled]="refreshing()"
+                >
+                    {{ 'WORKSPACE.INSIGHTS.RETRY' | translate }}
+                </button>
+            </div>
+        } @else if (!ready()) {
+            <p class="insights-message" role="status">
+                {{ 'WORKSPACE.INSIGHTS.LOADING_HISTORY' | translate }}
+            </p>
+        } @else {
+            <section
+                class="story-band"
+                aria-labelledby="insights-story-heading"
+            >
+                <div class="story-band__totals">
+                    <h2 id="insights-story-heading">
+                        {{ 'WORKSPACE.INSIGHTS.STORY' | translate }}
+                    </h2>
+                    <div class="story-counts" aria-live="polite">
+                        <div>
+                            <strong data-test-id="insights-history-movies">{{
+                                stats().movies | number
+                            }}</strong
+                            ><span>{{
+                                'WORKSPACE.INSIGHTS.MOVIES_EXPLORED' | translate
+                            }}</span>
+                        </div>
+                        <div>
+                            <strong data-test-id="insights-history-series">{{
+                                stats().series | number
+                            }}</strong
+                            ><span>{{
+                                'WORKSPACE.INSIGHTS.SERIES_CONTINUED'
+                                    | translate
+                            }}</span>
+                        </div>
+                        <div>
+                            <strong data-test-id="insights-history-live">{{
+                                stats().live | number
+                            }}</strong
+                            ><span>{{
+                                'WORKSPACE.INSIGHTS.CHANNELS_VISITED'
+                                    | translate
+                            }}</span>
+                        </div>
+                    </div>
+                    <p class="coverage-note">
+                        {{ 'WORKSPACE.INSIGHTS.RECORDS_NOTE' | translate }}
+                    </p>
+                    @if (external.entries().length) {
+                        <p class="coverage-note">
+                            {{
+                                'WORKSPACE.INSIGHTS.IMPORTED_NOTE'
+                                    | translate
+                                        : { count: external.entries().length }
+                            }}
+                        </p>
+                    }
+                </div>
+                <div class="story-band__mix">
+                    <div
+                        class="viewing-ring"
+                        [style.--movie-share]="stats().movieShare + '%'"
+                        [class.viewing-ring--empty]="
+                            !stats().movies && !stats().series
+                        "
+                        aria-hidden="true"
+                    >
+                        <mat-icon>local_movies</mat-icon>
+                    </div>
+                    <div>
+                        <h2>{{ 'WORKSPACE.INSIGHTS.YOUR_MIX' | translate }}</h2>
+                        <p>
+                            {{
+                                'WORKSPACE.INSIGHTS.MIX_COUNTS'
+                                    | translate
+                                        : {
+                                              movies: stats().movies,
+                                              series: stats().series,
+                                          }
+                            }}
+                        </p>
+                        <span>{{
+                            'WORKSPACE.INSIGHTS.NOT_DURATION' | translate
+                        }}</span>
+                    </div>
+                </div>
+            </section>
+        }
+
+        <section
+            class="genre-section"
+            data-test-id="insights-genres"
+            aria-labelledby="insights-genre-heading"
+        >
+            <header class="section-heading">
+                <div>
+                    <p class="eyebrow">
+                        {{ 'WORKSPACE.INSIGHTS.PATTERNS' | translate }}
+                    </p>
+                    <h2 id="insights-genre-heading">
+                        {{ 'WORKSPACE.INSIGHTS.SIGNATURE' | translate }}
+                    </h2>
+                </div>
+                <p>{{ 'WORKSPACE.INSIGHTS.PROFILE_NOTE' | translate }}</p>
+            </header>
+            @if (content() === 'live') {
+                <p class="insights-message">
+                    {{ 'WORKSPACE.INSIGHTS.LIVE_NOTE' | translate }}
+                </p>
+            } @else if (!taste.isAvailable) {
+                <p class="insights-message">
+                    {{ 'WORKSPACE.INSIGHTS.METADATA_DISABLED' | translate }}
+                    <a routerLink="/workspace/settings">{{
+                        'WORKSPACE.INSIGHTS.OPEN_SETTINGS' | translate
+                    }}</a>
+                </p>
+            } @else if (taste.error()) {
+                <p class="insights-message" role="alert">
+                    {{ 'WORKSPACE.INSIGHTS.TASTE_ERROR' | translate }}
+                    <button mat-button type="button" (click)="refresh()">
+                        {{ 'WORKSPACE.INSIGHTS.RETRY' | translate }}
+                    </button>
+                </p>
+            } @else if (taste.loading()) {
+                <p class="insights-message" role="status">
+                    {{ 'WORKSPACE.INSIGHTS.LOADING_TASTE' | translate }}
+                </p>
+            } @else if (genres().length) {
+                <div class="genre-signature">
+                    @for (
+                        genre of genres();
+                        track genre.key;
+                        let index = $index
+                    ) {
+                        <button
+                            type="button"
+                            class="genre-facet"
+                            [class.genre-facet--selected]="
+                                selectedGenre() === genre.key
+                            "
+                            [attr.aria-pressed]="selectedGenre() === genre.key"
+                            (click)="selectGenre(genre)"
+                        >
+                            <span class="genre-facet__index">{{
+                                (index + 1).toString().padStart(2, '0')
+                            }}</span>
+                            <span class="genre-facet__body"
+                                ><span class="genre-facet__name">{{
+                                    genre.name
+                                }}</span
+                                ><span
+                                    class="genre-facet__track"
+                                    aria-hidden="true"
+                                    ><i
+                                        [style.width.%]="
+                                            (genre.titleCount /
+                                                maxGenreCount()) *
+                                            100
+                                        "
+                                    ></i></span
+                                ><span class="genre-facet__caption">{{
+                                    (genre.movieId
+                                        ? 'WORKSPACE.INSIGHTS.GENRE_MOVIES'
+                                        : 'WORKSPACE.INSIGHTS.GENRE_SERIES'
+                                    ) | translate: { count: genre.titleCount }
+                                }}</span></span
+                            >
+                            <mat-icon aria-hidden="true">{{
+                                selectedGenre() === genre.key
+                                    ? 'check'
+                                    : 'arrow_outward'
+                            }}</mat-icon>
+                        </button>
+                    }
+                </div>
+                <p class="coverage-note">
+                    {{
+                        'WORKSPACE.INSIGHTS.GENRE_COVERAGE'
+                            | translate
+                                : {
+                                      resolved: taste.profile().resolvedSeeds,
+                                      total: taste.profile().totalSeeds,
+                                  }
+                    }}
+                </p>
+            } @else {
+                <p class="insights-message">
+                    {{ 'WORKSPACE.INSIGHTS.NO_GENRES' | translate }}
+                </p>
+            }
+        </section>
+
+        <section
+            class="discovery-section"
+            data-test-id="insights-recommendations"
+        >
+            <header class="section-heading">
+                <div>
+                    <p class="eyebrow">
+                        {{ 'WORKSPACE.INSIGHTS.PICKED_FOR_YOU' | translate }}
+                    </p>
+                    <h2>
+                        {{ 'WORKSPACE.INSIGHTS.NEXT_OBSESSION' | translate }}
+                    </h2>
+                </div>
+                @if (selected(); as genre) {
+                    <button
+                        mat-button
+                        type="button"
+                        (click)="selectedGenre.set(null)"
+                    >
+                        {{ genre.name }} <mat-icon>close</mat-icon>
+                    </button>
+                }
+            </header>
+            @if (cards().length) {
+                <lib-dashboard-rail
+                    [label]="'WORKSPACE.INSIGHTS.AVAILABLE_PICKS' | translate"
+                    [items]="cards()"
+                    layout="recommendation"
+                    (actionSelected)="onAction($event)"
+                    testId="insights-picks"
+                />
+            } @else if (busy()) {
+                <p class="insights-message" role="status">
+                    {{ 'WORKSPACE.INSIGHTS.FINDING_PICKS' | translate }}
+                </p>
+            } @else {
+                <p class="insights-message">
+                    {{
+                        (content() === 'live'
+                            ? 'WORKSPACE.INSIGHTS.LIVE_NOTE'
+                            : 'WORKSPACE.INSIGHTS.NO_PICKS'
+                        ) | translate
+                    }}
+                </p>
+            }
+        </section>
+
+        <section class="evidence-section">
+            <details>
+                <summary>
+                    {{ 'WORKSPACE.INSIGHTS.YOUR_HISTORY' | translate }}
+                    <span>{{ history().length }}</span>
+                </summary>
+                <p class="coverage-note">
+                    {{ 'WORKSPACE.INSIGHTS.RECORDS_NOTE' | translate }}
+                </p>
+                <ul class="history-list">
+                    @for (
+                        item of history();
+                        track item.playlist_id +
+                            ':' +
+                            item.type +
+                            ':' +
+                            item.xtream_id
+                    ) {
+                        <li>
+                            <a
+                                [routerLink]="data.getRecentItemLink(item)"
+                                [state]="
+                                    data.getRecentItemDetailNavigationState(
+                                        item
+                                    )
+                                "
+                            >
+                                @if (imageAvailable(item.poster_url)) {
+                                    <img
+                                        [src]="item.poster_url"
+                                        alt=""
+                                        loading="lazy"
+                                        (error)="markFailed(item.poster_url!)"
+                                    />
+                                } @else {
+                                    <mat-icon aria-hidden="true">{{
+                                        item.type === 'live'
+                                            ? 'live_tv'
+                                            : 'movie'
+                                    }}</mat-icon>
+                                }
+                                <span
+                                    >{{ item.title
+                                    }}<small>{{
+                                        item.playlist_name
+                                    }}</small></span
+                                ><mat-icon aria-hidden="true"
+                                    >chevron_right</mat-icon
+                                >
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </details>
+            @if (feedback.entries().length) {
+                <details>
+                    <summary>
+                        {{ 'WORKSPACE.INSIGHTS.SHAPE_TASTE' | translate }}
+                        <span>{{ feedback.entries().length }}</span>
+                    </summary>
+                    <ul class="feedback-list">
+                        @for (
+                            entry of feedback.entries();
+                            track entry.mediaType + ':' + entry.tmdbId
+                        ) {
+                            <li>
+                                <span
+                                    >{{
+                                        entry.title ||
+                                            ('WORKSPACE.INSIGHTS.UNTITLED_FEEDBACK'
+                                                | translate
+                                                    : { id: entry.tmdbId })
+                                    }}<small>{{
+                                        (entry.choice === 'more-like-this'
+                                            ? 'WORKSPACE.DASHBOARD.RECOMMENDATION_MORE_LIKE_THIS'
+                                            : 'WORKSPACE.DASHBOARD.RECOMMENDATION_NOT_FOR_ME'
+                                        ) | translate
+                                    }}</small></span
+                                ><button
+                                    mat-button
+                                    type="button"
+                                    (click)="undoFeedback(entry)"
+                                >
+                                    {{ 'WORKSPACE.INSIGHTS.UNDO' | translate }}
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </details>
+            }
+        </section>
+        <footer class="insights-footer">
+            <mat-icon aria-hidden="true">tune</mat-icon
+            >{{ 'WORKSPACE.INSIGHTS.LOCAL_NOTE' | translate }}
+        </footer>
+    </div>
+</section>

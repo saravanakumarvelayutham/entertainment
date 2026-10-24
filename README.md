@@ -66,6 +66,8 @@ environment variables remain internal compatibility contracts.
 
 - Per-playlist and global favorites, aggregated across all playlists ⭐
 - Recently viewed / watch history
+- **Your taste**: cinematic watching insights, available-history summaries and
+  genre discovery connected to personalized recommendations
 - Command palette (`Ctrl/Cmd+K`)
 
 **Platform**

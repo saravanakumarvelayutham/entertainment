@@ -91,11 +91,11 @@ function mapM3uPlaylistRecentItems(
                         rawItem.channel_id
                     ) ||
                     channelUrl,
-                type: 'live',
+                type: rawItem.category_id === 'movie' ? 'movie' : 'live',
                 playlist_id: playlist._id,
                 playlist_name: playlist.title || defaultPlaylistName,
                 viewed_at: normalizeStalkerDate(rawItem.added_at),
-                category_id: rawItem.category_id || 'live',
+                category_id: rawItem.category_id === 'movie' ? 'movie' : 'live',
                 xtream_id: channelUrl,
                 poster_url: rawItem.poster_url || undefined,
                 epg_lookup_key: firstNonEmpty(

@@ -1530,6 +1530,15 @@ Known accepted cost: "Star Wars: Episode 1" is skipped.
 
 **Flow** (`m3u-vod-detail/` in `libs/playlist/m3u/feature-player`):
 
+Recognized movie activations now persist `category_id: 'movie'` in the existing
+M3U recently-viewed JSON entry; other activations keep `'live'`. The history mapper
+preserves this explicit distinction for Dashboard and Watching Insights, allowing
+movie records to seed the shared genre profile. Legacy missing/live categories
+remain readable without migration or deletion and gain the current recognition
+verdict when reopened. Playback navigation stays on the existing M3U playlist
+channel-selection path, where the parent owns recognition; a movie record must
+never fall through to an Xtream detail route.
+
 - `M3uVodDetailComponent` hosts `PortalDetailShellComponent` +
   `PortalInlinePlayerComponent`. **Watch-first**: clicking a channel keeps
   M3U zapping semantics — playback starts immediately, the About block

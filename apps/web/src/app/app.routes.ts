@@ -88,6 +88,13 @@ export const routes: Routes = [
                     ),
             },
             {
+                path: 'insights',
+                loadComponent: () =>
+                    import('@iptvnator/workspace/dashboard/feature').then(
+                        (c) => c.WatchingInsightsComponent
+                    ),
+            },
+            {
                 path: 'sources',
                 loadComponent: () =>
                     import('@iptvnator/workspace/shell/feature').then(

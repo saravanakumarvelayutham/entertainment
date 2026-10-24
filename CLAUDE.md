@@ -1953,6 +1953,17 @@ from the outside in, in three nested levels owned by `LiveSidebarState`
   level 1. Contract: `docs/architecture/iptvnator-ui-guidelines.md`
   ("Collapsible Live Sidebar").
 
+## Watching Insights
+
+Workspace **Your taste** (`/workspace/insights`) uses real available history,
+stored/TMDB artwork, sampled genre counts and verified playable recommendations.
+`DashboardTasteProfileService` in workspace dashboard data-access shares one
+bounded, identity-deduplicated profile with genre recommendations; source removal,
+full exclusions, locale and feedback invalidate it. Latest source records are not
+lifetime totals or measured watch time. Live habits stay separate from VOD taste;
+metadata opt-out hides inference/picks. Contract:
+`docs/architecture/workspace-dashboard.md` (Watching Insights and shared taste).
+
 ## Live Channel Return
 
 Xtream and Stalker (including radio) capture displayed playback order on explicit

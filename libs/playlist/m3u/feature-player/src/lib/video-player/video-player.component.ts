@@ -1212,7 +1212,7 @@ export class VideoPlayerComponent
             tvg_id: channel.tvg?.id || undefined,
             tvg_name: channel.tvg?.name || undefined,
             group_title: channel.group?.title || undefined,
-            category_id: 'live',
+            category_id: this.opensMovieDetail(channel) ? 'movie' : 'live',
             added_at: new Date().toISOString(),
         };
 

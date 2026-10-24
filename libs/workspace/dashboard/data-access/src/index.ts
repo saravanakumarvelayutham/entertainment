@@ -12,3 +12,4 @@ export * from './lib/dashboard-ai-recommendations.service';
 export * from './lib/dashboard-ai-taste-signals.util';
 
 export * from './lib/dashboard-ai-discovery.service';
+export * from './lib/dashboard-taste-profile.service';

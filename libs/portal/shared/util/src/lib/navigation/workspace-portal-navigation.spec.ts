@@ -127,6 +127,35 @@ describe('workspace-portal-navigation', () => {
         );
     });
 
+    it('routes recognized M3U movies through playlist recent channel selection', () => {
+        const url = 'https://example.com/movie.mkv';
+        const navigation = getRecentItemNavigation({
+            id: url,
+            title: 'Dune',
+            type: 'movie',
+            playlist_id: 'm3u-1',
+            category_id: 'movie',
+            xtream_id: url,
+            source: 'm3u',
+            poster_url: 'https://example.com/poster.png',
+            viewed_at: '2026-10-23T00:00:00.000Z',
+        });
+
+        expect(navigation).toEqual({
+            link: ['/workspace', 'playlists', 'm3u-1', 'recent'],
+            state: {
+                openLiveCollectionItem: {
+                    contentType: 'live',
+                    sourceType: 'm3u',
+                    playlistId: 'm3u-1',
+                    itemId: url,
+                    title: 'Dune',
+                    imageUrl: 'https://example.com/poster.png',
+                },
+            },
+        });
+    });
+
     it('routes Stalker live recents to the collection route with auto-open state', () => {
         const navigation = getRecentItemNavigation({
             id: 'stalker-live-1',

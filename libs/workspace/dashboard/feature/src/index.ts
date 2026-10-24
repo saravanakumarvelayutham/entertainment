@@ -1,4 +1,5 @@
 export * from './lib/rails/workspace-dashboard-rails.component';
+export * from './lib/insights/watching-insights.component';
 export * from './lib/rails/dashboard-rail.component';
 export { resolveDashboardHeroArtwork } from './lib/rails/dashboard-hero.utils';
 export type {

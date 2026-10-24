@@ -495,13 +495,27 @@ export class DashboardDataService {
 
     readonly quickRecent = computed(() => this.recentPlaylists().slice(0, 4));
 
+    private readonly globalRecentErrorState = signal<string | null>(null);
+    readonly globalRecentError = this.globalRecentErrorState.asReadonly();
+
     async reloadGlobalRecentItems(): Promise<void> {
         if (!this.globalRecentLoaded()) {
             this.globalRecentLoadingState.set(true);
         }
 
         if (!this.hasPortalActivityStorage) {
-            const recentItems = await this.loadPwaXtreamGlobalRecentItems();
+            let recentItems;
+            try {
+                recentItems = await this.loadPwaXtreamGlobalRecentItems();
+                this.globalRecentErrorState.set(null);
+            } catch (error) {
+                this.globalRecentErrorState.set(
+                    'Watching history could not be loaded.'
+                );
+                this.globalRecentDbLoadedState.set(true);
+                this.finishInitialGlobalRecentLoadIfReady();
+                throw error;
+            }
             this.ngZone.run(() =>
                 this.xtreamGlobalRecentItems.set(recentItems)
             );
@@ -512,6 +526,7 @@ export class DashboardDataService {
 
         try {
             const recentItems = await this.dbService.getGlobalRecentlyViewed();
+            this.globalRecentErrorState.set(null);
             const normalized = recentItems.map((item) =>
                 mapDbRecentToItem(item)
             );
@@ -520,6 +535,9 @@ export class DashboardDataService {
             console.warn(
                 '[DashboardData] Failed to reload global recent items',
                 err
+            );
+            this.globalRecentErrorState.set(
+                'Watching history could not be loaded.'
             );
             this.ngZone.run(() => this.xtreamGlobalRecentItems.set([]));
         } finally {

@@ -115,6 +115,13 @@ export class WorkspaceShellRouteStateService {
             exact: true,
         });
 
+        links.push({
+            icon: 'auto_awesome',
+            tooltip: this.translateText('WORKSPACE.NAV.YOUR_TASTE'),
+            path: ['/workspace/insights'],
+            exact: true,
+        });
+
         return links;
     });
     readonly isDashboardRoute = computed(
@@ -138,6 +145,7 @@ export class WorkspaceShellRouteStateService {
         const currentRoute = this.currentRoute();
         if (
             currentRoute.kind !== 'dashboard' &&
+            currentRoute.kind !== 'insights' &&
             currentRoute.kind !== 'sources' &&
             currentRoute.kind !== 'settings' &&
             currentRoute.kind !== 'global-favorites' &&

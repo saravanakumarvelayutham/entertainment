@@ -10,7 +10,7 @@ export interface M3uRecentlyViewedItem {
     tvg_id?: string;
     tvg_name?: string;
     group_title?: string;
-    category_id: 'live';
+    category_id: 'live' | 'movie';
     added_at: string | number;
 }
 

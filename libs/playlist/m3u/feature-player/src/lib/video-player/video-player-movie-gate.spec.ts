@@ -310,6 +310,37 @@ describe('VideoPlayerComponent — M3U movie recognition gate', () => {
         expect(component.showMovieDetail()).toBe(true);
     });
 
+    describe('recently viewed content type', () => {
+        it.each([
+            ['recognized movie', movieChannel, true, true, 'movie'],
+            ['live channel', liveChannel, true, true, 'live'],
+            ['disabled metadata', movieChannel, false, true, 'live'],
+            ['disabled movie details', movieChannel, true, false, 'live'],
+        ] as const)(
+            'persists %s through the current recognition gate',
+            (_label, channel, tmdb, details, category) => {
+                const persist = jest.spyOn(
+                    TestBed.inject(PlaylistsService),
+                    'addM3uRecentlyViewed'
+                );
+                tmdbEnabled.set(tmdb);
+                m3uVodDetails.set(details);
+                syncStoreState(channel);
+                fixture.detectChanges();
+
+                expect(persist).toHaveBeenCalledWith(
+                    'playlist-1',
+                    expect.objectContaining({
+                        category_id: category,
+                        source: 'm3u',
+                        id: channel.url,
+                        url: channel.url,
+                    })
+                );
+            }
+        );
+    });
+
     describe('playback mode is independent of movie metadata', () => {
         it.each([
             [false, true],

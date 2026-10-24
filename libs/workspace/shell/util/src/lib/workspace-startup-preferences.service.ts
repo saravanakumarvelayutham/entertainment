@@ -79,6 +79,8 @@ export class WorkspaceStartupPreferencesService {
         switch (route.kind) {
             case 'dashboard':
                 return '/workspace/dashboard';
+            case 'insights':
+                return '/workspace/insights';
             case 'downloads':
                 return '/workspace/downloads';
             case 'global-favorites':

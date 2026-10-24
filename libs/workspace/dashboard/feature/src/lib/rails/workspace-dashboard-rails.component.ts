@@ -823,7 +823,7 @@ export class WorkspaceDashboardRailsComponent {
         });
 
         // Your Genres shares the recommendation opt-in, then ranks affinity
-        // from favorites, recent activity, completion and TMDB seed quality.
+        // from the shared taste profile: favorites, recent activity and weak completion evidence.
         effect(() => {
             if (
                 (!this.dashboardRails().tmdbRecommendations &&

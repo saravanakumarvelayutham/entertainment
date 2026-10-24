@@ -1767,4 +1767,31 @@ describe('DashboardDataService', () => {
             'xtream-1'
         );
     });
+    it('exposes desktop history read failure and clears it after a successful retry', async () => {
+        dbServiceMock.getGlobalRecentlyViewed.mockRejectedValueOnce(
+            new Error('Storage unavailable')
+        );
+        await expect(
+            service.reloadGlobalRecentItems()
+        ).resolves.toBeUndefined();
+        expect(service.globalRecentError()).toBeTruthy();
+        await service.reloadGlobalRecentItems();
+        expect(service.globalRecentError()).toBeNull();
+    });
+
+    it('preserves PWA history rejection while exposing a retryable error', async () => {
+        Object.defineProperty(window, 'electron', {
+            value: undefined,
+            configurable: true,
+        });
+        xtreamDataSourceMock.getRecentItems.mockRejectedValueOnce(
+            new Error('Storage unavailable')
+        );
+        await expect(service.reloadGlobalRecentItems()).rejects.toThrow(
+            'Storage unavailable'
+        );
+        expect(service.globalRecentError()).toBeTruthy();
+        await service.reloadGlobalRecentItems();
+        expect(service.globalRecentError()).toBeNull();
+    });
 });

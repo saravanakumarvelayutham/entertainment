@@ -5,6 +5,7 @@ import {
 
 export type WorkspaceShellPageKind =
     | 'dashboard'
+    | 'insights'
     | 'downloads'
     | 'global-favorites'
     | 'global-recent'
@@ -290,19 +291,21 @@ export function parseWorkspaceShellRoute(url: string): WorkspaceShellRoute {
     const kind: WorkspaceShellPageKind =
         !page || page === 'dashboard'
             ? 'dashboard'
-            : page === 'sources'
-              ? 'sources'
-              : page === 'settings'
-                ? 'settings'
-                : page === 'global-favorites'
-                  ? 'global-favorites'
-                  : page === 'global-recent'
-                    ? 'global-recent'
-                    : page === 'search'
-                      ? 'global-search'
-                      : page === 'downloads'
-                        ? 'downloads'
-                        : 'unknown';
+            : page === 'insights'
+              ? 'insights'
+              : page === 'sources'
+                ? 'sources'
+                : page === 'settings'
+                  ? 'settings'
+                  : page === 'global-favorites'
+                    ? 'global-favorites'
+                    : page === 'global-recent'
+                      ? 'global-recent'
+                      : page === 'search'
+                        ? 'global-search'
+                        : page === 'downloads'
+                          ? 'downloads'
+                          : 'unknown';
     // Focused detail pages hide the context panel and route search:
     // /workspace/downloads/:downloadId (3 segments) and the recording detail
     // /workspace/downloads/recording/:recordingId (4 segments).

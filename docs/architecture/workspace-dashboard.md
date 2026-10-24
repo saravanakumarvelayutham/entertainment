@@ -264,6 +264,63 @@ Render rules:
     connection fields. Workflows that need channel payloads still call
     `getPlaylistById()`.
 
+## Watching Insights and shared taste
+
+`/workspace/insights` is the workspace's **Your taste** destination. It remains
+available when Dashboard is hidden and supports restore-last-view. The shell
+classifies it explicitly, without borrowing an active portal's search/sidebar.
+`WatchingInsightsComponent` lives beside the dashboard rails in
+`workspace-dashboard-feature`; both screens consume dashboard data-access through
+its public barrel. No new Nx project or persistence store is introduced.
+
+The artwork-backed hero uses resolved TMDB backdrops/posters or stored source
+artwork, with image-error and no-artwork fallbacks in both themes. Movie, series
+and channel counts are a bounded snapshot of latest recorded source records, not
+lifetime totals, sessions, unique cross-provider titles, episode counts or watch
+duration. The combined dashboard input retains its existing 200-record cap and
+provider-specific limits. Period filters inspect the latest activity timestamp;
+they cannot reconstruct prior viewing. Source copies count separately, repeats
+of the same source identity count once, and removed sources disappear immediately.
+Imported viewing history contributes separately to taste and is labeled outside
+these counters. Live channels never imply programme genres or VOD preferences.
+M3U activations recognized by the existing opted-in movie gate now record their
+movie category instead of being saved as live channels. Legacy records remain
+unchanged until reopened; M3U items retain their normal playlist playback route.
+
+`DashboardTasteProfileService` is the common, opt-in TMDB taste boundary for this
+page and `DashboardGenreRecommendationsService`. It resolves up to 16 balanced
+signals from active-source history/favorites, imported history, and explicit
+positive feedback. Verified `(mediaType, tmdbId)` identities collapse provider
+copies/episodes before scoring; genres use namespaced numeric IDs rather than
+translated-name identity. All resolved genres are exposed to insights, while the
+existing genre recommender discovers from its top four. Genre bars count sampled
+titles, not percentages of the entire history; one title may have several genres.
+
+Favorites and explicit positive votes strengthen affinity. Completion bands are
+weak evidence, and ordinary playback ticks inside a band do not re-enrich titles.
+Public TMDB ratings remain candidate-quality inputs, not personal taste evidence.
+Not for me dismisses a title rather than disliking all its genres. The shared key
+includes locale, current sources, feedback and the complete available exclusion
+identities, including activity outside the 16-signal sample. Late resolutions and
+genre discovery cannot restore a stale generation. Removed sources cannot seed
+the profile even while retained dashboard snapshots await a reload.
+
+Insight genre selection filters current verified playable candidates; content and
+period filters do not rewrite the shared taste profile. The movie/series ring uses
+the actual source-record ratio and is neutral when no such records exist. History
+read failures expose a retry instead of successful zero totals. Feedback writes
+use `RecommendationFeedbackService` and its existing queue/store; the page offers
+persisted votes and undo. Candidate routes retain the existing title/year-gated
+catalog matches, and removed sources/dismissed titles are filtered before display.
+
+Metadata opt-out hides genre inference and cached personalized picks. PWA can show
+its supported local history and metadata insights; verified cross-catalog picks
+retain the existing desktop/imported-Xtream requirement. This feature adds no AI
+requests, changes no AI consent, and measures no new playback sessions.
+Browser history inference skips the optional Electron-only imported-history and
+feedback persistence reads; their absence is a capability boundary, not a failed
+history read.
+
 ## Optional AI Taste Ranking
 
 Desktop Settings → Dashboard exposes AI ranking, model, history learning and

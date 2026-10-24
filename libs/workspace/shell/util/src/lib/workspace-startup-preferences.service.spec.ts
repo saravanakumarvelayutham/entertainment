@@ -78,6 +78,18 @@ describe('WorkspaceStartupPreferencesService', () => {
         );
     });
 
+    it('restores insights independently of the dashboard visibility preference', async () => {
+        settingsStore.showDashboard.set(false);
+        settingsStore.startupBehavior.set(StartupBehavior.RestoreLastView);
+        service.persistLastRestorablePath(
+            '/workspace/insights?range=30#genres'
+        );
+
+        await expect(service.resolveInitialWorkspacePath()).resolves.toBe(
+            '/workspace/insights'
+        );
+    });
+
     it('canonicalizes detail routes to their section root', () => {
         expect(
             service.getRestorablePath(

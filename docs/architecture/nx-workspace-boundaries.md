@@ -180,6 +180,12 @@ affinity scoring and diversity selection. It has no Angular, TMDB, persistence,
 catalog, or Electron knowledge; dashboard data-access translates those runtime
 facts into explicit candidates and affinities.
 
+Watching Insights (`/workspace/insights`) remains in
+`workspace-dashboard-feature`, alongside its shared poster rails. Its reusable
+TMDB taste orchestration lives in `workspace-dashboard-data-access` as
+`DashboardTasteProfileService`; the page and genre discovery consume the same
+profile rather than importing provider stores or creating a second recommender.
+
 ## Project Tags
 
 Every Nx project keeps one tag from each family in `project.json`:

@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import {
     CatalogTitleMatchService,
+    RuntimeCapabilitiesService,
     TmdbEnrichmentService,
 } from '@iptvnator/services';
 import { DashboardDataService } from './dashboard-data.service';
 import { ExternalWatchHistoryService } from './external-watch-history.service';
 import { RecommendationFeedbackService } from './recommendation-feedback.service';
+import { DashboardTasteProfileService } from './dashboard-taste-profile.service';
 import { DashboardGenreRecommendationsService } from './dashboard-genre-recommendations.service';
 
 describe('DashboardGenreRecommendationsService', () => {
@@ -32,6 +34,7 @@ describe('DashboardGenreRecommendationsService', () => {
             genreIds: index === 1 ? [35] : [28],
         }));
 
+    let activePlaylists: { _id: string }[];
     let recentItems: ReturnType<typeof recent>[];
     let favorites: ReturnType<typeof favorite>[];
     let positions: Record<
@@ -53,12 +56,35 @@ describe('DashboardGenreRecommendationsService', () => {
         TestBed.configureTestingModule({
             providers: [
                 {
+                    provide: RuntimeCapabilitiesService,
+                    useValue: { isElectron: true },
+                },
+                {
                     provide: TmdbEnrichmentService,
                     useValue: {
                         isEnabled: () => true,
                         language: () => 'en-US',
-                        enrichMovie,
-                        enrichTv,
+                        enrichMovie: async (query: { title: string }) => {
+                            const result = await enrichMovie(query);
+                            return result
+                                ? {
+                                      id:
+                                          [
+                                              ...new Set(
+                                                  [
+                                                      ...recentItems,
+                                                      ...favorites,
+                                                  ].map((item) => item.title)
+                                              ),
+                                          ].indexOf(query.title) + 1 || 99,
+                                      ...result,
+                                  }
+                                : null;
+                        },
+                        enrichTv: async (query: { title: string }) => {
+                            const result = await enrichTv(query);
+                            return result ? { id: 900, ...result } : null;
+                        },
                         discoverTitles,
                     },
                 },
@@ -72,7 +98,7 @@ describe('DashboardGenreRecommendationsService', () => {
                         globalRecentVodItems: () => recentItems,
                         globalRecentItems: () => recentItems,
                         globalFavoriteItems: () => favorites,
-                        playlists: () => [{ _id: 'pl-1' }],
+                        playlists: () => activePlaylists,
                         getPlaybackPositionForItem: (item: { title: string }) =>
                             positions[item.title] ?? null,
                     },
@@ -90,6 +116,7 @@ describe('DashboardGenreRecommendationsService', () => {
                         load: jest.fn().mockResolvedValue(undefined),
                         isDismissed,
                         affinityWeights,
+                        entries: () => [],
                         cacheKey: feedbackCacheKey,
                     },
                 },
@@ -99,6 +126,7 @@ describe('DashboardGenreRecommendationsService', () => {
     }
 
     beforeEach(() => {
+        activePlaylists = [{ _id: 'pl-1' }];
         recentItems = [recent('Recent Action', 1)];
         favorites = [];
         positions = {};
@@ -392,7 +420,7 @@ describe('DashboardGenreRecommendationsService', () => {
         expect(service.rails()[0].genre).toBe('Drama');
     });
 
-    it('combines the movie and TV genre ids for the same preference', async () => {
+    it('keeps movie and TV genre identities separate despite equal labels', async () => {
         recentItems = [
             recent('Recent Action', 1),
             { ...recent('Action Series', 2), type: 'series' },
@@ -426,7 +454,10 @@ describe('DashboardGenreRecommendationsService', () => {
         expect(discoverTitles).toHaveBeenCalledWith('movie', { genreId: 28 });
         expect(discoverTitles).toHaveBeenCalledWith('tv', { genreId: 10759 });
         expect(
-            service.rails()[0].items.some((item) => item.mediaType === 'tv')
+            service
+                .rails()
+                .flatMap((rail) => rail.items)
+                .some((item) => item.mediaType === 'tv')
         ).toBe(true);
     });
 
@@ -471,5 +502,169 @@ describe('DashboardGenreRecommendationsService', () => {
         await service.load();
 
         expect(service.rails()).toEqual([]);
+    });
+    it('shares deduplicated evidence without interpreting public ratings as preference', async () => {
+        recentItems = [recent('Copy One', 1), recent('Copy Two', 2)];
+        enrichMovie.mockResolvedValue({
+            id: 42,
+            vote_average: 10,
+            genres: [{ id: 28, name: 'Action' }],
+        });
+        createService();
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        await taste.load();
+        expect(taste.profile().titles).toHaveLength(1);
+        expect(taste.profile().genres[0]).toMatchObject({
+            key: 'movie:genre:28',
+            titleCount: 1,
+            score: 4,
+        });
+        enrichMovie.mockResolvedValue({
+            id: 42,
+            vote_average: 0,
+            genres: [{ id: 28, name: 'Action' }],
+        });
+        expect(taste.profile().genres[0].score).toBe(4);
+    });
+
+    it('does not enrich on second-level playback ticks but refreshes meaningful completion', async () => {
+        createService();
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        positions['Recent Action'] = {
+            positionSeconds: 10,
+            durationSeconds: 100,
+        };
+        await taste.load();
+        const key = taste.key();
+        positions['Recent Action'].positionSeconds = 11;
+        expect(taste.key()).toBe(key);
+        await taste.load();
+        expect(enrichMovie).toHaveBeenCalledTimes(1);
+        positions['Recent Action'].positionSeconds = 90;
+        await taste.load();
+        expect(taste.profile().genres[0].score).toBe(5);
+    });
+
+    it('discards an in-flight profile after history is cleared', async () => {
+        let resolve!: (value: unknown) => void;
+        enrichMovie.mockReturnValue(new Promise((done) => (resolve = done)));
+        createService();
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        const pending = taste.load();
+        for (let i = 0; i < 10 && !resolve; i++) await Promise.resolve();
+        recentItems = [];
+        resolve({ id: 42, genres: [{ id: 28, name: 'Action' }] });
+        await pending;
+        expect(taste.profile().titles).toEqual([]);
+    });
+
+    it('surfaces failed profile loading and retries through the supported load path', async () => {
+        enrichMovie.mockRejectedValueOnce(new Error('Offline'));
+        createService();
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        await taste.load();
+        expect(taste.error()).toBeTruthy();
+        await taste.load();
+        expect(taste.error()).toBeNull();
+        expect(taste.profile().resolvedSeeds).toBe(1);
+    });
+    it('clears removed source taste despite retained recent and favorite snapshots', async () => {
+        favorites = [favorite('Favorite Comedy', 2)];
+        const service = createService();
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        await service.load();
+        expect(taste.profile().titles).toHaveLength(2);
+        activePlaylists = [];
+        await service.load();
+        expect(recentItems).toHaveLength(1);
+        expect(favorites).toHaveLength(1);
+        expect(taste.profile().titles).toEqual([]);
+        expect(service.rails()).toEqual([]);
+    });
+
+    it('retains imported evidence when the source of retained app history is removed', async () => {
+        externalEntries = [
+            { title: 'Imported Movie', watchedAt: '2026-09-14T12:00:00.000Z' },
+        ];
+        createService();
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        await taste.load();
+        activePlaylists = [];
+        await taste.load();
+        expect(taste.profile().titles).toHaveLength(1);
+        expect(taste.profile().titles[0]).toMatchObject({
+            title: 'Imported Movie',
+            external: true,
+            recent: false,
+        });
+    });
+
+    it.each(['recent', 'favorite'])(
+        'invalidates exclusions for a %s record beyond the seed budget',
+        async (kind) => {
+            recentItems = Array.from({ length: 20 }, (_, index) =>
+                recent('Seed ' + index, index + 1)
+            );
+            const service = createService();
+            const taste = TestBed.inject(DashboardTasteProfileService);
+            await service.load();
+            expect(taste.profile().totalSeeds).toBe(16);
+            expect(
+                service
+                    .rails()
+                    .flatMap((rail) => rail.items)
+                    .some((item) => item.title === 'Comedy 1')
+            ).toBe(true);
+            const oldKey = taste.key();
+            if (kind === 'recent') recentItems.push(recent('Comedy 1', 21));
+            else
+                favorites = Array.from({ length: 20 }, (_, index) =>
+                    favorite('Seed ' + index, index + 1)
+                ).concat(favorite('Comedy 1', 21));
+            expect(taste.key()).not.toBe(oldKey);
+            await service.load();
+            expect(
+                taste.profile().titles.some((item) => item.title === 'Comedy 1')
+            ).toBe(false);
+            expect(
+                service
+                    .rails()
+                    .flatMap((rail) => rail.items)
+                    .some((item) => item.title === 'Comedy 1')
+            ).toBe(false);
+        }
+    );
+    it('infers PWA interests from recorded source history without desktop app-state reads', async () => {
+        const service = createService();
+        Object.defineProperty(
+            TestBed.inject(RuntimeCapabilitiesService),
+            'isElectron',
+            { value: false }
+        );
+        const feedback = TestBed.inject(RecommendationFeedbackService);
+        const feedbackLoad = jest
+            .spyOn(feedback, 'load')
+            .mockRejectedValue(
+                new Error('Electron app state persistence is unavailable')
+            );
+        loadExternalHistory.mockRejectedValue(
+            new Error('Electron app state persistence is unavailable')
+        );
+        const taste = TestBed.inject(DashboardTasteProfileService);
+        await service.load();
+        expect(loadExternalHistory).not.toHaveBeenCalled();
+        expect(feedbackLoad).not.toHaveBeenCalled();
+        expect(enrichMovie).toHaveBeenCalledWith(
+            expect.objectContaining({ title: 'Recent Action' })
+        );
+        expect(taste.error()).toBeNull();
+        expect(taste.profile().genres[0]).toMatchObject({
+            name: 'Action',
+            titleCount: 1,
+        });
+        expect(taste.profile().titles[0]).toMatchObject({
+            recent: true,
+            title: 'Recent Action',
+        });
     });
 });

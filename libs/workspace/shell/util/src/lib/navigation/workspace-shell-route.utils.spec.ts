@@ -4,6 +4,20 @@ import {
 } from './workspace-shell-route.utils';
 
 describe('workspace-shell-route.utils', () => {
+    it('classifies insights without source search or a context sidebar', () => {
+        expect(
+            parseWorkspaceShellRoute('/workspace/insights?q=old#taste')
+        ).toEqual({
+            kind: 'insights',
+            context: null,
+            section: null,
+            isPortalFavoritesAllScope: false,
+            searchMode: 'none',
+            usesQuerySearch: false,
+            contextPanel: 'none',
+        });
+    });
+
     it('parses top-level workspace pages', () => {
         expect(parseWorkspaceShellRoute('/workspace')).toEqual(
             expect.objectContaining({

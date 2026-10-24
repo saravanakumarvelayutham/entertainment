@@ -755,6 +755,12 @@ describe('WorkspaceShellFacade', () => {
                 path: ['/workspace/global-recent'],
                 exact: true,
             },
+            {
+                icon: 'auto_awesome',
+                tooltip: 'WORKSPACE.NAV.YOUR_TASTE',
+                path: ['/workspace/insights'],
+                exact: true,
+            },
         ]);
         expect(facade.brandLink()).toBe('/workspace/sources');
     });
@@ -767,7 +773,23 @@ describe('WorkspaceShellFacade', () => {
             ['/workspace/sources'],
             ['/workspace/global-favorites'],
             ['/workspace/global-recent'],
+            ['/workspace/insights'],
         ]);
+    });
+
+    it('retains provider navigation on insights without carrying source search or context panels', () => {
+        facade.currentUrl.set('/workspace/insights');
+        searchSync.syncSearchFromRoute();
+
+        expect(facade.currentRoute().kind).toBe('insights');
+        expect(facade.railContext()).toEqual({
+            provider: 'xtreams',
+            playlistId: 'pl-1',
+        });
+        expect(facade.showContextPanel()).toBe(false);
+        expect(facade.canUseSearch()).toBe(false);
+        expect(facade.searchCapability().advancedRouteTarget).toBeNull();
+        expect(facade.dashboardXtreamContext()).toBeNull();
     });
 
     it('persists the last restorable route from navigation events', () => {

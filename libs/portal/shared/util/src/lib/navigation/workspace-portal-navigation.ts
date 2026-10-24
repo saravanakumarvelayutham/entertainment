@@ -63,7 +63,8 @@ export function getRecentItemNavigation(
         resumeIdentityOnly?: boolean;
     }
 ): WorkspaceNavigationTarget {
-    if (item.type === 'live') {
+    // M3U movies keep channel-selection transport; the playlist player owns recognition.
+    if (item.type === 'live' || item.source === 'm3u') {
         return buildLiveCollectionNavigationTarget({
             mode: 'recent',
             sourceType: normalizeCollectionSourceType(item.source) ?? 'm3u',
