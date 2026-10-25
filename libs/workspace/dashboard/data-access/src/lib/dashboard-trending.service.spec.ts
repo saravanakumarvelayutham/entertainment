@@ -31,6 +31,7 @@ describe('DashboardTrendingService', () => {
         xtreamId: 42,
         type: 'movie',
         trailingYear: null,
+        tmdbId: 603,
         ...overrides,
     });
 
@@ -98,7 +99,11 @@ describe('DashboardTrendingService', () => {
             entry({ title: 'Blade Runner', year: 1982 }),
         ]);
         matchTitles.mockResolvedValue([
-            match({ queryTitle: 'Blade Runner', trailingYear: 2049 }),
+            match({
+                queryTitle: 'Blade Runner',
+                trailingYear: 2049,
+                tmdbId: null,
+            }),
         ]);
         const service = createService();
 
@@ -115,14 +120,35 @@ describe('DashboardTrendingService', () => {
             entry({ title: 'Dune', year: 2021 }),
         ]);
         matchTitles.mockResolvedValue([
-            match({ queryTitle: 'Dune', trailingYear: 1984, xtreamId: 84 }),
-            match({ queryTitle: 'Dune', trailingYear: 2021, xtreamId: 21 }),
+            match({
+                queryTitle: 'Dune',
+                trailingYear: 1984,
+                xtreamId: 84,
+                tmdbId: null,
+            }),
+            match({
+                queryTitle: 'Dune',
+                trailingYear: 2021,
+                xtreamId: 21,
+                tmdbId: null,
+            }),
         ]);
         const service = createService();
 
         await service.load();
 
         expect(service.items()[0].match?.xtreamId).toBe(21);
+    });
+
+    it('rejects a same-title catalog row with unknown identity', async () => {
+        matchTitles.mockResolvedValue([
+            match({ trailingYear: null, tmdbId: null }),
+        ]);
+        const service = createService();
+
+        await service.load();
+
+        expect(service.items()[0].match).toBeNull();
     });
 
     it('loads only once per session after a successful load', async () => {

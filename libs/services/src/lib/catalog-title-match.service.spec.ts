@@ -208,7 +208,49 @@ describe('catalog title matching', () => {
                 ]
             );
 
-            expect(picked?.xtreamId).toBe(7);
+            expect(picked).toBeNull();
+        });
+
+        it('does not claim an untagged Brothers catalog row for a specific TMDB release', () => {
+            expect(
+                pick(
+                    {
+                        titles: ['Brothers'],
+                        year: 2026,
+                        type: 'series',
+                        tmdbId: 999,
+                    },
+                    [
+                        match({
+                            queryTitle: 'Brothers',
+                            type: 'series',
+                            trailingYear: null,
+                            tmdbId: null,
+                        }),
+                    ]
+                )
+            ).toBeNull();
+        });
+
+        it('requires the same stored ID when a TMDB lookup has no year', () => {
+            expect(
+                pick({ titles: ['Dune'], year: null, tmdbId: 438631 }, [
+                    match(),
+                ])
+            ).toBeNull();
+            expect(
+                pick({ titles: ['Dune'], year: null, tmdbId: 438631 }, [
+                    match({ tmdbId: 438631 }),
+                ])?.xtreamId
+            ).toBe(1);
+        });
+
+        it('accepts a known compatible year for a TMDB lookup without a stored ID', () => {
+            expect(
+                pick({ titles: ['Dune'], year: 2021, tmdbId: 438631 }, [
+                    match({ trailingYear: 2021 }),
+                ])?.xtreamId
+            ).toBe(1);
         });
 
         it('lets a matching TMDB id outrank every title-only row', () => {

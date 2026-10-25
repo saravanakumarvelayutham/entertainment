@@ -15,7 +15,7 @@ export interface CatalogTitleLookup {
      * the app language localizes the TMDB title.
      */
     readonly titles: readonly string[];
-    /** Release year, or null when unknown — unknown never rejects a row */
+    /** Release year, or null when unknown. TMDB cards require release evidence. */
     readonly year: number | null;
     /**
      * The lookup's own TMDB id when the caller has one. A row that already
@@ -61,8 +61,9 @@ export function groupTitleMatchesByKey(
  * is positive evidence for this exact film, while an untagged row merely
  * fails to contradict one ("Dune" could be either cut, so resolving a
  * 2021 lookup to it when "Dune 2021" also exists throws better evidence
- * away). Untagged rows come next — the only tier reachable when the
- * lookup's own year is unknown — then anything else year-compatible.
+ * away). TMDB-backed lookups require a matching ID or a compatible known
+ * year on both sides; an untagged title alone cannot prove availability.
+ * Without a lookup ID, untagged rows remain a title-search fallback.
  * Alias order survives as the tiebreaker within a tier.
  *
  * Identity beats title: a row whose stored TMDB id IS the lookup's wins
@@ -73,36 +74,52 @@ export function pickTitleMatch(
     lookup: CatalogTitleLookup,
     grouped: ReadonlyMap<string, CatalogTitleMatch[]>
 ): CatalogTitleMatch | null {
+    const candidates: CatalogTitleMatch[] = [];
+    const seenKeys = new Set<string>();
+    for (const title of lookup.titles) {
+        const key = `${lookup.type}:${normalizeTitleKeys(title).exact}`;
+        if (!seenKeys.has(key)) {
+            seenKeys.add(key);
+            candidates.push(...(grouped.get(key) ?? []));
+        }
+    }
+    return pickTitleMatchCandidate(lookup, candidates);
+}
+
+/** Shared identity ranking for worker matches and the loaded portal catalog. */
+export function pickTitleMatchCandidate<
+    T extends Pick<CatalogTitleMatch, 'trailingYear' | 'tmdbId'>,
+>(
+    lookup: Pick<CatalogTitleLookup, 'year' | 'tmdbId'>,
+    candidates: readonly T[]
+): T | null {
     const lookupTmdbId =
         typeof lookup.tmdbId === 'number' && lookup.tmdbId > 0
             ? lookup.tmdbId
             : null;
-    const compatible: CatalogTitleMatch[] = [];
-    const seenKeys = new Set<string>();
-    for (const title of lookup.titles) {
-        const key = `${lookup.type}:${normalizeTitleKeys(title).exact}`;
-        // Aliases routinely normalize to one key (TMDB repeats the title
-        // as original_title for English-language items). Re-scanning it
-        // cannot change the pick, so this only skips the wasted pass.
-        if (seenKeys.has(key)) {
+    const compatible: T[] = [];
+    for (const row of candidates) {
+        const rowTmdbId = row.tmdbId ?? null;
+        if (
+            lookupTmdbId !== null &&
+            rowTmdbId !== null &&
+            rowTmdbId !== lookupTmdbId
+        ) {
             continue;
         }
-        seenKeys.add(key);
-        for (const row of grouped.get(key) ?? []) {
-            const rowTmdbId = row.tmdbId ?? null;
-            if (
-                lookupTmdbId !== null &&
-                rowTmdbId !== null &&
-                rowTmdbId !== lookupTmdbId
-            ) {
-                continue;
-            }
-            if (lookupTmdbId !== null && rowTmdbId === lookupTmdbId) {
-                return row;
-            }
-            if (titleYearsCompatible(lookup.year, row.trailingYear)) {
-                compatible.push(row);
-            }
+        if (lookupTmdbId !== null && rowTmdbId === lookupTmdbId) {
+            return row;
+        }
+        // A TMDB card identifies a particular release. An untagged provider
+        // title is only a search candidate, even if it is the sole hit.
+        if (
+            lookupTmdbId !== null &&
+            (lookup.year === null || row.trailingYear === null)
+        ) {
+            continue;
+        }
+        if (titleYearsCompatible(lookup.year, row.trailingYear)) {
+            compatible.push(row);
         }
     }
 

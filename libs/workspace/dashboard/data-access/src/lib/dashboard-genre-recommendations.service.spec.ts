@@ -164,7 +164,8 @@ describe('DashboardGenreRecommendationsService', () => {
                     categoryId: 9,
                     xtreamId: matchedTitleIds.get(title),
                     type: 'movie',
-                    trailingYear: null,
+                    trailingYear:
+                        2019 + Number(title.match(/(\d+)$/)?.[1] ?? 1),
                     tmdbId: null,
                 };
             })
@@ -443,7 +444,7 @@ describe('DashboardGenreRecommendationsService', () => {
                 categoryId: 9,
                 xtreamId: index + 500,
                 type: title.startsWith('TV') ? 'series' : 'movie',
-                trailingYear: null,
+                trailingYear: 2019 + Number(title.match(/(\d+)$/)?.[1] ?? 1),
                 tmdbId: null,
             }))
         );

@@ -48,7 +48,9 @@ describe('DashboardRecommendationsService', () => {
         categoryId: 7,
         xtreamId: rowIdFor(queryTitle),
         type: 'movie',
-        trailingYear: null,
+        // The default TMDB fixtures are 2010 releases. A title alone does
+        // not prove that the provider row is the same release.
+        trailingYear: 2010,
         tmdbId: null,
         ...overrides,
     });
@@ -87,7 +89,9 @@ describe('DashboardRecommendationsService', () => {
         enrichTv.mockResolvedValue({
             recommendations: {
                 results: [
-                    ...recTitles.slice(0, 5).map((title, i) => rec(100 + i, title)),
+                    ...recTitles
+                        .slice(0, 5)
+                        .map((title, i) => rec(100 + i, title)),
                     ...extraTitles.map((title, i) => rec(200 + i, title)),
                 ],
             },
@@ -334,6 +338,24 @@ describe('DashboardRecommendationsService', () => {
         expect(dune?.match.xtreamId).toBe(2021);
     });
 
+    it('rejects a same-title catalog row with unknown identity', async () => {
+        matchTitles.mockImplementation(async (titles: string[]) =>
+            titles.map((title) =>
+                match(title, {
+                    trailingYear: title === 'Inception' ? null : 2010,
+                })
+            )
+        );
+        const service = createService();
+
+        await service.load();
+
+        expect(service.items().map((item) => item.title)).not.toContain(
+            'Inception'
+        );
+        expect(service.items()).toHaveLength(recTitles.length - 1);
+    });
+
     it('prefers a year-tagged alias row over an untagged localized one', async () => {
         // "The Hunt" is ambiguous (2012 and 2020 films share it); the
         // original-title alias holds a row tagged with the candidate's
@@ -373,9 +395,7 @@ describe('DashboardRecommendationsService', () => {
 
         await service.load();
 
-        const hunt = service
-            .items()
-            .find((item) => item.title === 'The Hunt');
+        const hunt = service.items().find((item) => item.title === 'The Hunt');
         expect(hunt?.match.xtreamId).toBe(2012);
     });
 
@@ -456,6 +476,13 @@ describe('DashboardRecommendationsService', () => {
             ...recentVod,
             { title: 'Blade Runner 2049', type: 'movie' },
         ];
+        matchTitles.mockImplementation(async (titles: string[]) =>
+            titles.map((title) =>
+                match(title, {
+                    trailingYear: title === 'Blade Runner' ? 1982 : 2010,
+                })
+            )
+        );
         const service = createService();
 
         await service.load();
@@ -469,7 +496,7 @@ describe('DashboardRecommendationsService', () => {
         matchTitles.mockImplementation(async (titles: string[]) =>
             titles.map((title) =>
                 match(title, {
-                    trailingYear: title === 'Inception' ? 1974 : null,
+                    trailingYear: title === 'Inception' ? 1974 : 2010,
                 })
             )
         );
@@ -637,7 +664,12 @@ describe('DashboardRecommendationsService', () => {
                 match(title, {
                     // The localized title hits a same-named 2020 row; the
                     // original-title alias holds the correct 2012 match.
-                    trailingYear: title === 'The Hunt' ? 2020 : null,
+                    trailingYear:
+                        title === 'The Hunt'
+                            ? 2020
+                            : title === 'Jagten'
+                              ? 2012
+                              : 2010,
                 })
             )
         );
@@ -645,9 +677,7 @@ describe('DashboardRecommendationsService', () => {
 
         await service.load();
 
-        const hunt = service
-            .items()
-            .find((item) => item.title === 'The Hunt');
+        const hunt = service.items().find((item) => item.title === 'The Hunt');
         expect(hunt).toBeDefined();
         expect(hunt?.match.queryTitle).toBe('Jagten');
     });
@@ -832,13 +862,18 @@ describe('DashboardRecommendationsService', () => {
                 },
             } as ActivityStub,
         ];
+        matchTitles.mockImplementation(async (titles: string[]) =>
+            titles.map((title) =>
+                match(title, {
+                    trailingYear: title === 'Godzilla' ? 2014 : 2010,
+                })
+            )
+        );
         const service = createService();
 
         await service.load();
 
-        expect(service.items().map((item) => item.title)).toContain(
-            'Godzilla'
-        );
+        expect(service.items().map((item) => item.title)).toContain('Godzilla');
     });
 
     it('excludes a watched title whose name ends in a year', async () => {

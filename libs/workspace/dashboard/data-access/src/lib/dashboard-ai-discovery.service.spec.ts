@@ -37,7 +37,7 @@ const match = (
     categoryId: 1,
     xtreamId: Number(title.replace(/\D/g, '')) || 1,
     trailingYear: null,
-    tmdbId: null,
+    tmdbId: Number(title.replace(/\D/g, '')) || null,
 });
 const input = (
     changes: Partial<DashboardAiDiscoveryInput> = {}
@@ -178,7 +178,8 @@ describe('DashboardAiDiscoveryService', () => {
             titles.map((title) => ({
                 ...match(title),
                 playlistId: title === 'Title 3' ? 'deleted' : 'library',
-                trailingYear: title === 'Title 4' ? 1980 : null,
+                trailingYear: title === 'Title 4' ? 1980 : 2020,
+                tmdbId: null,
             }))
         );
         service.refresh(

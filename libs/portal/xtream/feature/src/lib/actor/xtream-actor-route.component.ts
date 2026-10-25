@@ -176,7 +176,12 @@ export class XtreamActorRouteComponent {
     private portalMatchFor(credit: ActorFilmographyCredit) {
         const index =
             credit.mediaType === 'movie' ? this.vodIndex() : this.serialIndex();
-        return lookupCatalogTitle(index, credit.title, credit.year);
+        return lookupCatalogTitle(
+            index,
+            credit.title,
+            credit.year,
+            credit.tmdbId
+        );
     }
 
     private globalMatchFor(

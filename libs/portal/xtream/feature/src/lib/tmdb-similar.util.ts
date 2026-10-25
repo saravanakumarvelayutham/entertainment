@@ -1,8 +1,9 @@
 import {
     TmdbRecommendation,
+    bracketedReleaseYear,
     normalizeTitleKeys,
-    titleYearsCompatible,
 } from '@iptvnator/shared/interfaces';
+import { extractYear, pickTitleMatchCandidate } from '@iptvnator/services';
 
 /**
  * Matches TMDB recommendations against the provider catalog so the
@@ -10,9 +11,9 @@ import {
  *
  * Matching is two-tier: TMDB titles are canonical (a trailing year is part
  * of the title — "Blade Runner 2049"), provider titles are dirty (a
- * trailing year is usually a release tag — "The Matrix 1999"). The exact
- * normalized forms are compared first; the provider's year-stripped form
- * only counts when the stripped year does not contradict the TMDB year.
+ * trailing year is usually a release tag — "The Matrix 1999"). Both tiers
+ * retain release evidence and share identity ranking with cross-portal
+ * matches, so a title alone cannot override a known release or TMDB ID.
  */
 
 export interface SimilarCatalogItem {
@@ -58,27 +59,57 @@ export interface CatalogMatch {
 }
 
 interface IndexedCatalogEntry extends CatalogMatch {
-    /** Year tag stripped from the provider title (base-tier entries only) */
     trailingYear: number | null;
+    tmdbId: number | null;
+    title: string;
+    posterUrl: string | null;
 }
 
 /**
  * Two-tier catalog index for per-title availability checks (actor page
- * filmography). First occurrence of a title wins per tier.
+ * filmography). Keep every candidate so identity can decide at lookup time.
  */
 export interface CatalogTitleIndex {
-    exact: Map<string, IndexedCatalogEntry>;
-    base: Map<string, IndexedCatalogEntry>;
+    exact: Map<string, IndexedCatalogEntry[]>;
+    base: Map<string, IndexedCatalogEntry[]>;
+}
+
+function positiveInteger(value: unknown): number | null {
+    const parsed = typeof value === 'string' ? Number(value) : value;
+    return typeof parsed === 'number' && Number.isInteger(parsed) && parsed > 0
+        ? parsed
+        : null;
+}
+
+function addEntry(
+    index: Map<string, IndexedCatalogEntry[]>,
+    key: string,
+    entry: IndexedCatalogEntry
+): void {
+    const entries = index.get(key);
+    if (entries) {
+        entries.push(entry);
+    } else {
+        index.set(key, [entry]);
+    }
 }
 
 export function buildCatalogTitleIndex(
-    streams: readonly CatalogStream[]
+    streams: readonly CatalogStream[],
+    wantedTitles?: readonly string[]
 ): CatalogTitleIndex {
-    const exact = new Map<string, IndexedCatalogEntry>();
-    const base = new Map<string, IndexedCatalogEntry>();
+    const exact = new Map<string, IndexedCatalogEntry[]>();
+    const base = new Map<string, IndexedCatalogEntry[]>();
+    const wanted = wantedTitles
+        ? new Set(wantedTitles.map((title) => normalizeTitleKeys(title).exact))
+        : null;
     for (const stream of streams) {
-        const keys = normalizeTitleKeys(streamTitle(stream));
-        if (!keys.exact) {
+        const title = streamTitle(stream);
+        const keys = normalizeTitleKeys(title);
+        if (
+            !keys.exact ||
+            (wanted && !wanted.has(keys.exact) && !wanted.has(keys.base))
+        ) {
             continue;
         }
         const id = streamId(stream);
@@ -90,14 +121,23 @@ export function buildCatalogTitleIndex(
         const entry: IndexedCatalogEntry = {
             id,
             categoryId: String(categoryId),
-            trailingYear: keys.trailingYear,
+            trailingYear:
+                bracketedReleaseYear(title) ??
+                positiveInteger(field(stream, 'release_year')) ??
+                (typeof field(stream, 'releaseDate') === 'string'
+                    ? extractYear(field(stream, 'releaseDate') as string)
+                    : null),
+            tmdbId: positiveInteger(field(stream, 'tmdb_id')),
+            title,
+            posterUrl: streamPoster(stream),
         };
-        if (!exact.has(keys.exact)) {
-            exact.set(keys.exact, { ...entry, trailingYear: null });
-        }
+        addEntry(exact, keys.exact, entry);
         // The base tier only exists for titles that carried a year tag
-        if (keys.base !== keys.exact && !base.has(keys.base)) {
-            base.set(keys.base, entry);
+        if (keys.base !== keys.exact) {
+            addEntry(base, keys.base, {
+                ...entry,
+                trailingYear: keys.trailingYear ?? entry.trailingYear,
+            });
         }
     }
     return { exact, base };
@@ -105,27 +145,28 @@ export function buildCatalogTitleIndex(
 
 /**
  * Looks up a TMDB title (canonical — never year-stripped) in the catalog
- * index. Base-tier hits require the provider's stripped year tag to be
- * compatible with the TMDB year, so "Blade Runner" (1982) never claims the
- * catalog's "Blade Runner 2049".
+ * index. Identity ranking is shared with cross-portal matching: conflicting
+ * IDs/years are rejected, then matching IDs and exact years win.
  */
 export function lookupCatalogTitle(
     index: CatalogTitleIndex,
-    title: string,
-    year?: number | null
-): CatalogMatch | null {
-    const wanted = normalizeTitleKeys(title).exact;
-    if (!wanted) {
-        return null;
+    title: string | readonly string[],
+    year?: number | null,
+    tmdbId?: number | null
+): IndexedCatalogEntry | null {
+    const candidates: IndexedCatalogEntry[] = [];
+    const keys = new Set(
+        (typeof title === 'string' ? [title] : title).map(
+            (alias) => normalizeTitleKeys(alias).exact
+        )
+    );
+    for (const key of keys) {
+        if (key) {
+            candidates.push(...(index.exact.get(key) ?? []));
+            candidates.push(...(index.base.get(key) ?? []));
+        }
     }
-    const exactHit = index.exact.get(wanted);
-    if (exactHit) {
-        return exactHit;
-    }
-    const baseHit = index.base.get(wanted);
-    return baseHit && titleYearsCompatible(year, baseHit.trailingYear)
-        ? baseHit
-        : null;
+    return pickTitleMatchCandidate({ year: year ?? null, tmdbId }, candidates);
 }
 
 export function matchRecommendationsToCatalog(
@@ -137,74 +178,37 @@ export function matchRecommendationsToCatalog(
         return [];
     }
 
-    // Wanted keys are the EXACT normalized TMDB titles
-    const wanted = new Map<string, TmdbRecommendation>();
-    for (const recommendation of recommendations) {
-        const key = normalizeTitleKeys(recommendation.title).exact;
-        if (key && !wanted.has(key)) {
-            wanted.set(key, recommendation);
-        }
-    }
-
-    // Single pass over the catalog; stop as soon as every wanted title has
-    // a candidate — catalogs can hold tens of thousands of rows.
-    const catalogHits = new Map<string, CatalogStream>();
-    for (const stream of streams) {
-        if (catalogHits.size >= wanted.size) {
-            break;
-        }
-        const keys = normalizeTitleKeys(streamTitle(stream));
-        if (!keys.exact) {
-            continue;
-        }
-        if (wanted.has(keys.exact) && !catalogHits.has(keys.exact)) {
-            catalogHits.set(keys.exact, stream);
-            continue;
-        }
-        // Base tier: provider title carried a year tag — only match when
-        // that year does not contradict the recommendation's year
-        if (keys.base === keys.exact || catalogHits.has(keys.base)) {
-            continue;
-        }
-        const recommendation = wanted.get(keys.base);
-        if (
-            recommendation &&
-            titleYearsCompatible(recommendation.year, keys.trailingYear)
-        ) {
-            catalogHits.set(keys.base, stream);
-        }
-    }
-
+    const index = buildCatalogTitleIndex(
+        streams,
+        recommendations.map((recommendation) => recommendation.title)
+    );
     const limit = options.limit ?? 12;
     const seenIds = new Set<number>();
     const matched: SimilarCatalogItem[] = [];
 
-    for (const [key, recommendation] of wanted) {
+    for (const recommendation of recommendations) {
         if (matched.length >= limit) {
             break;
         }
-        const stream = catalogHits.get(key);
+        const stream = lookupCatalogTitle(
+            index,
+            recommendation.title,
+            recommendation.year,
+            recommendation.tmdbId
+        );
         if (!stream) {
             continue;
         }
-        const id = streamId(stream);
-        const categoryId =
-            field(stream, 'category_id') ?? field(stream, 'categoryId');
-        if (
-            id === null ||
-            id === options.excludeId ||
-            seenIds.has(id) ||
-            categoryId === undefined ||
-            categoryId === null
-        ) {
+        const { id, categoryId } = stream;
+        if (id === options.excludeId || seenIds.has(id)) {
             continue;
         }
         seenIds.add(id);
         matched.push({
             id,
             categoryId: String(categoryId),
-            title: streamTitle(stream),
-            posterUrl: recommendation.posterUrl ?? streamPoster(stream),
+            title: stream.title,
+            posterUrl: recommendation.posterUrl ?? stream.posterUrl,
         });
     }
 

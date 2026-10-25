@@ -1,3 +1,8 @@
+import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 const andMock = jest.fn((...conditions: unknown[]) => ({
     kind: 'and',
     conditions,
@@ -53,6 +58,69 @@ import {
     scoreSearchTextMatch,
     searchContent,
 } from './content.operations';
+
+function readPersistedSeriesIdentity(): unknown {
+    const operationsUrl = pathToFileURL(
+        resolve(__dirname, 'content.operations.ts')
+    ).href;
+    const connectionUrl = pathToFileURL(
+        resolve(process.cwd(), 'libs/shared/database/src/lib/connection.ts')
+    ).href;
+    const script = `
+        const { default: Database } = await import('better-sqlite3');
+        const { drizzle } = await import('drizzle-orm/better-sqlite3');
+        const schema = await import('@iptvnator/shared/database/schema');
+        const { getContent, getContentByXtreamId } = await import(${JSON.stringify(operationsUrl)});
+        const { __databaseConnectionTestHooks } = await import(${JSON.stringify(connectionUrl)});
+        const sqlite = new Database(':memory:');
+        const requiredTables = new Set(['playlists', 'categories', 'content']);
+        for (const statement of __databaseConnectionTestHooks.createTableStatements) {
+            const table = statement.match(/CREATE TABLE IF NOT EXISTS (\\w+)/)?.[1];
+            if (table && requiredTables.has(table)) sqlite.exec(statement);
+        }
+        sqlite.exec(\`
+            INSERT INTO playlists (id, name, type)
+            VALUES ('playlist-1', 'Portal One', 'xtream');
+            INSERT INTO categories (playlist_id, name, type, xtream_id)
+            VALUES ('playlist-1', 'Series', 'series', 10);
+            INSERT INTO content (
+                category_id, title, tmdb_id, release_year, original_title,
+                xtream_id, type
+            ) VALUES (
+                1, 'Brothers', 12635, 1984, 'Brothers', 40034, 'series'
+            );
+        \`);
+        const db = drizzle(sqlite, { schema });
+        const catalog = await getContent(db, 'playlist-1', 'series');
+        const detail = await getContentByXtreamId(
+            db,
+            40034,
+            'playlist-1',
+            'series'
+        );
+        console.log(JSON.stringify({ catalog, detail }));
+        sqlite.close();
+    `;
+
+    return JSON.parse(
+        execFileSync(
+            createRequire(__filename)('electron'),
+            ['--import', 'tsx', '--eval', script],
+            {
+                cwd: process.cwd(),
+                encoding: 'utf8',
+                env: {
+                    ...process.env,
+                    ELECTRON_RUN_AS_NODE: '1',
+                    TSX_TSCONFIG_PATH: resolve(
+                        process.cwd(),
+                        'tsconfig.base.json'
+                    ),
+                },
+            }
+        )
+    );
+}
 
 function createDbMock(result: unknown[] = []) {
     const limit = jest.fn().mockResolvedValue(result);
@@ -165,6 +233,39 @@ describe('content.operations', () => {
         );
         expect(eqMock).not.toHaveBeenCalledWith(schema.content.type, 'series');
         expect(where.mock.calls[0][0].conditions).toHaveLength(2);
+    });
+
+    it('projects persisted title identity through content reads', async () => {
+        const { db, select } = createDbMock([]);
+
+        await getContentByXtreamId(db, 40034, 'playlist-1', 'series');
+
+        expect(select).toHaveBeenCalledWith(
+            expect.objectContaining({
+                tmdb_id: schema.content.tmdbId,
+                release_year: schema.content.releaseYear,
+                original_title: schema.content.originalTitle,
+            })
+        );
+    });
+
+    it('preserves stored title identity through real SQLite catalog and detail reads', () => {
+        expect(readPersistedSeriesIdentity()).toEqual({
+            catalog: [
+                expect.objectContaining({
+                    title: 'Brothers',
+                    tmdb_id: 12635,
+                    release_year: 1984,
+                    original_title: 'Brothers',
+                }),
+            ],
+            detail: expect.objectContaining({
+                title: 'Brothers',
+                tmdb_id: 12635,
+                release_year: 1984,
+                original_title: 'Brothers',
+            }),
+        });
     });
 
     it('uses a synchronous better-sqlite transaction callback when saving content', async () => {
@@ -870,10 +971,7 @@ describe('content.operations', () => {
             .mockResolvedValueOnce([makeRow(1, 'A&E')])
             // FTS arm: compound substring matches, overlapping with the
             // prefix arm to prove candidates are deduplicated.
-            .mockResolvedValueOnce([
-                makeRow(2, 'US: A&E'),
-                makeRow(1, 'A&E'),
-            ]);
+            .mockResolvedValueOnce([makeRow(2, 'US: A&E'), makeRow(1, 'A&E')]);
         const select = jest.fn();
         const db = {
             all,
@@ -990,7 +1088,9 @@ describe('content.operations', () => {
         const all = jest
             .fn()
             .mockResolvedValueOnce([globRow])
-            .mockRejectedValueOnce(new Error('no such table: content_title_fts'));
+            .mockRejectedValueOnce(
+                new Error('no such table: content_title_fts')
+            );
         const limit = jest.fn().mockResolvedValue([globRow, scanRow]);
         const orderBy = jest.fn().mockReturnValue({ limit });
         const where = jest.fn().mockReturnValue({ orderBy });

@@ -20,7 +20,7 @@ describe('CrossPortalSimilarService', () => {
         categoryId: 7,
         xtreamId: 42,
         type: 'movie',
-        trailingYear: null,
+        trailingYear: 1999,
         tmdbId: null,
         ...overrides,
     });
@@ -128,5 +128,15 @@ describe('CrossPortalSimilarService', () => {
         );
 
         expect(items).toEqual([]);
+    });
+
+    it('omits unverified same-title recommendations', async () => {
+        matchTitles.mockResolvedValue([
+            match({ trailingYear: null, tmdbId: null }),
+        ]);
+        const service = createService();
+        await expect(
+            service.matchRecommendations([rec('The Matrix')], 'movie')
+        ).resolves.toEqual([]);
     });
 });

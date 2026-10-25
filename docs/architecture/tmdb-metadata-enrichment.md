@@ -326,6 +326,18 @@ Filmography has two scopes:
   "In your library" badge and navigate straight to their detail view; the
   rest open the portal search prefilled with the title (`?q=`). Stalker
   has no local catalog, so every title goes through the portal search.
+  The local index retains every same-title candidate on both normalized
+  tiers. Actor credits, Discover results (including original-title aliases)
+  and Similar recommendations pass their TMDB ID and release year to the
+  shared `pickTitleMatchCandidate` ranking used by cross-portal matching.
+  Bracketed years, stored `release_year` and PWA series `releaseDate`
+  distinguish exact-title hits;
+  a stripped trailing year applies only on the base tier. Conflicting
+  identity cannot claim availability or navigate to another release. An
+  unknown catalog year/ID is not proof of a TMDB card's release, even when
+  only one title matches. When
+  no compatible candidate remains, actor/Discover cards open search and
+  Similar omits the unmatched recommendation.
 - **All portals** (Electron only, toggle hidden in the PWA): one batched
   `DB_MATCH_TITLES` worker request runs a trigram-FTS lookup per title
   over ALL imported Xtream playlists
@@ -371,8 +383,11 @@ card wearing the 2021 poster opened the 1984 film.
 the lookup's (callers pass `tmdbId` when they have one; every TMDB-fed
 rail does) and returns a row carrying the SAME id outright. It then ranks
 the year-compatible rows by evidence: a row whose stated year IS the
-lookup's year wins, then an untagged row (the only tier reachable when the
-lookup year is unknown), then anything else compatible. `titles` accepts aliases most-trusted-first; ranking spans all
+lookup's year wins, then anything else compatible. TMDB-backed lookups
+require a same-ID row or known compatible years on both sides. An unknown
+catalog year cannot claim a particular release; a TMDB lookup without a
+year requires the same stored ID. Generic title lookups without a TMDB ID
+retain their untagged fallback. `titles` accepts aliases most-trusted-first; ranking spans all
 aliases at once, so a weak hit under the first alias cannot veto a strong
 one under the second, and alias order only breaks ties inside a tier. The
 recommendations rail is the one caller that passes two — TMDB's localized
@@ -750,6 +765,12 @@ back-fill them from what is on screen
 `persistContentMetadataIfMissing`. The activity SELECTs project them,
 `dashboard-mappers.ts` puts them on `PortalActivityItem`, and
 `buildDashboardTmdbAttempts` reads them back.
+
+The shared catalog projection in `content.operations.ts` also returns all
+three identity columns through `DB_GET_CONTENT`, item lookup and search.
+Warm catalog hydration must preserve these fields until local actor,
+Discover and Similar matching; dropping them turns a known old release
+back into an untagged title and recreates false availability.
 
 Contracts worth keeping:
 

@@ -89,6 +89,13 @@ Worker operations use the shared table contract in
 `libs/shared/database/src/lib/schema.ts`, imported by worker code through
 `@iptvnator/shared/database/schema`.
 
+Catalog reads retain the identity already stored on each `content` row:
+`tmdb_id`, `release_year` and `original_title`. The shared
+`selectContentFields()` projection feeds `DB_GET_CONTENT`, single-item and
+search reads, so all paths must preserve those columns. Otherwise a warm
+desktop catalog loses release evidence that `DB_MATCH_TITLES` still sees,
+and a same-title actor card can open a different film or show.
+
 ## Worker Architecture
 
 ### Request flow

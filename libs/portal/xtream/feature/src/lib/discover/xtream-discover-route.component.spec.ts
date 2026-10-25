@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { XtreamStore } from '@iptvnator/portal/xtream/data-access';
 import {
@@ -161,5 +161,48 @@ describe('XtreamDiscoverRouteComponent — catalog readiness', () => {
         await settle();
 
         expect(component.isLoading()).toBe(true);
+    });
+
+    it('ranks release identity across localized and original title aliases before navigation', async () => {
+        vodStreams.set([
+            { stream_id: 1, name: 'Localized Serenity', category_id: '9' },
+            {
+                stream_id: 5,
+                name: 'Serenity (2005)',
+                category_id: '9',
+                tmdb_id: 16320,
+            },
+            {
+                stream_id: 19,
+                name: 'Serenity (2019)',
+                category_id: '10',
+                tmdb_id: 452832,
+            },
+        ]);
+        const navigate = jest
+            .spyOn(TestBed.inject(Router), 'navigate')
+            .mockResolvedValue(true);
+        const component = createComponent();
+        resolveDiscover([
+            {
+                tmdbId: 452832,
+                mediaType: 'movie',
+                title: 'Localized Serenity',
+                originalTitle: 'Serenity',
+                year: 2019,
+                posterUrl: null,
+            },
+        ]);
+        await settle();
+        const [item] = component.items();
+        expect(item.available).toBe(true);
+        component.openItem(item);
+        expect(navigate).toHaveBeenCalledWith([
+            '/workspace/xtreams',
+            'pl-1',
+            'vod',
+            '10',
+            19,
+        ]);
     });
 });

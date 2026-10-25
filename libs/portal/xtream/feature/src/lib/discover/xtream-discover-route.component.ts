@@ -202,11 +202,14 @@ export class XtreamDiscoverRouteComponent {
             title.mediaType === 'movie' ? this.vodIndex() : this.serialIndex();
         // The localized title first, then TMDB's original: the catalog
         // stores whatever the panel named the file
-        return (
-            lookupCatalogTitle(index, title.title, title.year) ??
-            (title.originalTitle
-                ? lookupCatalogTitle(index, title.originalTitle, title.year)
-                : null)
+        return lookupCatalogTitle(
+            index,
+            [
+                title.title,
+                ...(title.originalTitle ? [title.originalTitle] : []),
+            ],
+            title.year,
+            title.tmdbId
         );
     }
 
