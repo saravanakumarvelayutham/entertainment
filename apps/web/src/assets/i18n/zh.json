@@ -1642,6 +1642,7 @@
             "AI_PICKS": "根据您的喜好精选",
             "AI_LOADING": "正在寻找符合您偏好的推荐…",
             "AI_FAILED": "AI 推荐不可用。常规推荐仍然可用。",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "尚无可供排序的片名。请启用 TMDB 元数据并导入电影或剧集库，以获取推荐。",
             "AI_RETRY": "重试",
             "ACTION_FAILED": "无法完成该操作。请重试。",

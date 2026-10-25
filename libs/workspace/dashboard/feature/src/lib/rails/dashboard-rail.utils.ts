@@ -24,6 +24,16 @@ export const RAIL_ITEM_LIMIT = 20;
 export const SKELETON_CARDS_PER_RAIL = [1, 2, 3, 4, 5, 6] as const;
 export const SKELETON_RAILS = [1, 2, 3] as const;
 
+/** Release status is not supplied to AI; keep that speculation out of captions. */
+export function resolveDashboardAiReason(
+    reason: string,
+    fallback: string
+): string {
+    return /\b(?:upcoming|unreleased|not[- ]yet[- ]released)\b/iu.test(reason)
+        ? fallback
+        : reason;
+}
+
 const LOW_QUALITY_RELEASE = /\b(?:cam(?:rip)?|hdcam|telesync)\b/iu;
 const RELEASE_TAG =
     /\b(?:2160p?|4k|uhd|1440p|1080[pi]?|720[pi]?|576[pi]?|480[pi]?|360[pi]?|cam(?:rip)?|hdcam|telesync|telecine|web[ ._-]?dl|webrip|blu[ ._-]?ray|brrip|dvdrip|remux)\b/giu;

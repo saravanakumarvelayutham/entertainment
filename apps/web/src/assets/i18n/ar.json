@@ -1642,6 +1642,7 @@
             "AI_PICKS": "مختارة حسب ذوقك",
             "AI_LOADING": "جارٍ البحث عن اختيارات تناسب تفضيلاتك…",
             "AI_FAILED": "اختيارات الذكاء الاصطناعي غير متاحة. توصياتك المعتادة ما زالت موجودة.",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "لا توجد عناوين متاحة لترتيبها بعد. فعّل بيانات TMDB واستورد مكتبة أفلام أو مسلسلات للحصول على اختيارات.",
             "AI_RETRY": "حاول مرة أخرى",
             "ACTION_FAILED": "تعذر إكمال الإجراء. يرجى المحاولة مرة أخرى.",

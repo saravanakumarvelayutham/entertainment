@@ -11,6 +11,8 @@ import {
 } from '@iptvnator/shared/interfaces';
 
 const MAX_BODY_BYTES = 128 * 1024;
+// History-backed requests can take longer than small, explicit-only rankings.
+const AI_RECOMMENDATION_TIMEOUT_MS = 60_000;
 const SAFE_ERROR = 'AI recommendations are unavailable. Try again later.';
 
 class AiRecommendationError extends Error {
@@ -167,7 +169,6 @@ export function parseAiRecommendationResponse(
     if (
         !parsed ||
         !Array.isArray(parsed.ranked) ||
-        (!parsed.ranked.length && request.candidates.length > 0) ||
         parsed.ranked.length > request.candidates.length ||
         parsed.ranked.length > 20
     )
@@ -293,7 +294,10 @@ export async function rankAiRecommendations(
     value: unknown
 ): Promise<AiRecommendationRankResponse> {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 20_000);
+    const timer = setTimeout(
+        () => controller.abort(),
+        AI_RECOMMENDATION_TIMEOUT_MS
+    );
     let stage: AiRecommendationErrorCode = 'invalid-request';
     try {
         const token = process.env.MODELS_AUTH_TOKEN?.trim();
@@ -327,12 +331,15 @@ export async function rankAiRecommendations(
                                 '"suggestedTitles":[{"title":"real title","mediaType":"movie or tv"}],' +
                                 '"discoveryGenres":[{"genreId":878,"mediaType":"movie"}]}. ' +
                                 'Rank at most the top 20 supplied ids, each once; concise reasons must be at most 240 characters. ' +
+                                'Return fewer picks rather than padding with weak matches or titles that conflict with explicit genre, media-type or avoidance preferences. ' +
+                                'Treat explicit exclusions as hard filters, not caveated alternatives. ' +
+                                'Explain the fit without calling titles upcoming or unreleased; playback availability is verified locally. ' +
                                 'Suggest at most 12 real titles beyond the current pool for local verification. ' +
                                 'Vary deeper cuts and adjacent interests, not just sequels or the same celebrities. ' +
                                 'Provide up to four unique discovery genres using real TMDB genre ids for each media type. ' +
                                 'Do not invent facts about titles or infer any history beyond supplied signals. ' +
                                 'When signals are present, tasteSummary must be nonempty and reflect uncertainty. ' +
-                                'When candidates are empty, return ranked: [] but still supply the taste profile and discovery hints.',
+                                'When candidates are empty or none fit the explicit constraints, return ranked: [] but still supply the taste profile and discovery hints.',
                         },
                         {
                             role: 'user',

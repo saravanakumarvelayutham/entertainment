@@ -1642,6 +1642,7 @@
             "AI_PICKS": "Selezionati per i tuoi gusti",
             "AI_LOADING": "Ricerca di scelte adatte alle tue preferenze…",
             "AI_FAILED": "Le scelte IA non sono disponibili. Le tue raccomandazioni abituali sono ancora qui.",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "Nessun titolo disponibile da classificare. Attiva i metadati TMDB e importa una libreria di film o serie per trovare suggerimenti.",
             "AI_RETRY": "Riprova",
             "ACTION_FAILED": "Impossibile completare l'azione. Riprova.",

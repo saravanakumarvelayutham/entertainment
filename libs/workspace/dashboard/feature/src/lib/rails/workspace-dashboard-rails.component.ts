@@ -112,6 +112,7 @@ import {
     liveRailTitleKeyForSource,
     RAIL_ITEM_LIMIT,
     rankDashboardCards,
+    resolveDashboardAiReason,
     shouldShowLiveFavoritesSkeleton,
     shouldShowRecentContentSkeleton,
     SKELETON_CARDS_PER_RAIL,
@@ -283,6 +284,8 @@ export class WorkspaceDashboardRailsComponent {
         })
     );
     readonly aiDiscoveryCards = computed(() => {
+        // A request endorses only reranked matches; broad discovery is candidate input.
+        if (this.watchIntent()) return [];
         const used = new Set(this.aiCards().map((card) => card.id));
         return distinctDashboardCards(
             this.aiDiscoveryService
@@ -1226,16 +1229,20 @@ export class WorkspaceDashboardRailsComponent {
         const liked =
             this.recommendationFeedback.choiceFor(item) === 'more-like-this';
         const explanation =
-            aiReason ??
-            (reason === 'watched'
-                ? this.translate.instant(
-                      'WORKSPACE.DASHBOARD.TMDB_RECOMMENDED_BECAUSE',
-                      { title: item.seedTitle }
+            aiReason !== undefined
+                ? resolveDashboardAiReason(
+                      aiReason,
+                      this.t('WORKSPACE.DASHBOARD.AI_PICKS')
                   )
-                : this.translate.instant(
-                      'WORKSPACE.DASHBOARD.TMDB_YOUR_GENRE',
-                      { genre: item.seedTitle }
-                  ));
+                : reason === 'watched'
+                  ? this.translate.instant(
+                        'WORKSPACE.DASHBOARD.TMDB_RECOMMENDED_BECAUSE',
+                        { title: item.seedTitle }
+                    )
+                  : this.translate.instant(
+                        'WORKSPACE.DASHBOARD.TMDB_YOUR_GENRE',
+                        { genre: item.seedTitle }
+                    );
         return [
             {
                 id: 'recommendation-explanation',

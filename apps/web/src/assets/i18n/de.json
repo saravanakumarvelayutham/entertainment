@@ -1642,6 +1642,7 @@
             "AI_PICKS": "Für Ihren Geschmack ausgewählt",
             "AI_LOADING": "Passende Empfehlungen werden gesucht…",
             "AI_FAILED": "KI-Empfehlungen sind nicht verfügbar. Ihre üblichen Empfehlungen sind weiterhin vorhanden.",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "Noch keine verfügbaren Titel zum Bewerten. Aktivieren Sie TMDB-Metadaten und importieren Sie eine Film- oder Serienbibliothek, um Empfehlungen zu erhalten.",
             "AI_RETRY": "Erneut versuchen",
             "ACTION_FAILED": "Die Aktion konnte nicht abgeschlossen werden. Bitte erneut versuchen.",

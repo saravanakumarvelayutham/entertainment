@@ -511,7 +511,9 @@
                                               ? 'WORKSPACE.DASHBOARD.AI_FAILED'
                                               : aiNeedsEvidence()
                                                 ? 'WORKSPACE.DASHBOARD.AI_NEEDS_EVIDENCE'
-                                                : 'WORKSPACE.DASHBOARD.AI_EMPTY'
+                                                : watchIntent()
+                                                  ? 'WORKSPACE.DASHBOARD.AI_REQUEST_EMPTY'
+                                                  : 'WORKSPACE.DASHBOARD.AI_EMPTY'
                                         ) | translate
                                     }}
                                 </p>

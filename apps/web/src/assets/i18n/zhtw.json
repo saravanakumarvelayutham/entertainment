@@ -1642,6 +1642,7 @@
             "AI_PICKS": "依照您的喜好精選",
             "AI_LOADING": "正在尋找符合您偏好的推薦…",
             "AI_FAILED": "AI 推薦無法使用。一般推薦仍然可用。",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "尚無可供排序的片名。請啟用 TMDB 中繼資料並匯入電影或影集資料庫，以取得推薦。",
             "AI_RETRY": "重試",
             "ACTION_FAILED": "無法完成該操作。請重試。",

@@ -307,12 +307,78 @@ describe('DashboardAiRecommendationsService', () => {
         await settle();
         expect(service.items()).toHaveLength(1);
     });
-    it('shows failure for empty rankings', async () => {
-        rank.mockResolvedValue({ ranked: [] });
+    it('publishes discovery hints for a transient no-match response without saving it or retrying', async () => {
+        const hints = {
+            suggestedTitles: [{ title: 'Sherlock', mediaType: 'tv' as const }],
+            discoveryGenres: [{ genreId: 9648, mediaType: 'tv' as const }],
+        };
+        rank.mockResolvedValue({ ranked: [], ...hints });
+        const refresh = () =>
+            service.refresh(settings, [candidate()], false, undefined, {
+                transient: true,
+            });
+        refresh();
+        await settle();
+        expect(service.failed()).toBe(false);
+        expect(service.loading()).toBe(false);
+        expect(service.errorCode()).toBeNull();
+        expect(service.items()).toEqual([]);
+        expect(service.discoveryHints()).toEqual(hints);
+        expect(service.discoveryEvidenceKey()).toBe(
+            dashboardAiEvidenceKey(settings)
+        );
+        refresh();
+        await settle();
+        expect(rank).toHaveBeenCalledTimes(1);
+        expect(getAppStateOrThrow).not.toHaveBeenCalled();
+        expect(setAppState).not.toHaveBeenCalled();
+    });
+    it('caches valid no-match results in memory and restores their discovery hints after restart', async () => {
+        const store = new Map<string, string>();
+        setAppState.mockImplementation(async (key, value) => {
+            store.set(key, value);
+            return true;
+        });
+        getAppStateOrThrow.mockImplementation(
+            async (key) => store.get(key) ?? null
+        );
+        const hints = {
+            suggestedTitles: [{ title: 'Sherlock', mediaType: 'tv' as const }],
+            discoveryGenres: [],
+        };
+        rank.mockResolvedValue({ ranked: [], ...hints });
+        service.refresh(settings, [candidate()]);
+        await settle();
+        service.refresh(settings, [candidate()]);
+        await settle();
+        service.refresh({ ...settings, enabled: false }, []);
+        service.refresh(settings, [candidate()]);
+        await settle();
+        expect(service.failed()).toBe(false);
+        expect(service.discoveryHints()).toEqual(hints);
+        const restarted = TestBed.runInInjectionContext(
+            () => new DashboardAiRecommendationsService()
+        );
+        restarted.refresh(settings, [candidate()]);
+        await settle();
+        expect(restarted.failed()).toBe(false);
+        expect(restarted.items()).toEqual([]);
+        expect(restarted.discoveryHints()).toEqual(hints);
+        expect(restarted.discoveryEvidenceKey()).toBe(
+            dashboardAiEvidenceKey(settings)
+        );
+        expect(rank).toHaveBeenCalledTimes(1);
+    });
+    it('still rejects nonempty rankings containing no verified candidates', async () => {
+        rank.mockResolvedValue({
+            ranked: [{ id: 'movie:99', reason: 'Invented match' }],
+        });
         service.refresh(settings, [candidate()]);
         await settle();
         expect(service.failed()).toBe(true);
+        expect(service.errorCode()).toBe('invalid-response');
         expect(service.items()).toEqual([]);
+        expect(service.discoveryEvidenceKey()).toBeNull();
     });
 
     const tasteSignals = {

@@ -223,12 +223,12 @@ describe('AI recommendation gateway', () => {
                 candidates: [],
             })
         ).toThrow('unavailable');
-        expect(() =>
+        expect(
             parseAiRecommendationResponse(
                 '{"ranked":[],"tasteSummary":"Valid profile"}',
                 learnedRequest
             )
-        ).toThrow('unavailable');
+        ).toEqual({ ranked: [], tasteSummary: 'Valid profile' });
     });
     it.each([undefined, '', ' ', 42, 'x'.repeat(1001)])(
         'requires a valid learned profile for signals: %s',
@@ -369,7 +369,65 @@ describe('AI recommendation gateway', () => {
             '[ai-recommendations:response-too-large]'
         );
     });
-    it('classifies the bounded request timeout', async () => {
+    it('accepts a valid response after the previous twenty-second deadline', async () => {
+        jest.useFakeTimers();
+        try {
+            fetchMock.mockImplementation(
+                (_url, options) =>
+                    new Promise((resolve, reject) => {
+                        options.signal.addEventListener('abort', () =>
+                            reject(new Error('aborted'))
+                        );
+                        setTimeout(
+                            () =>
+                                resolve(
+                                    new Response(
+                                        JSON.stringify({
+                                            choices: [
+                                                {
+                                                    message: {
+                                                        content: JSON.stringify(
+                                                            {
+                                                                ranked: [
+                                                                    {
+                                                                        id: 'movie:1',
+                                                                        reason: 'Thoughtful science fiction.',
+                                                                    },
+                                                                ],
+                                                            }
+                                                        ),
+                                                    },
+                                                },
+                                            ],
+                                        })
+                                    )
+                                ),
+                            25_000
+                        );
+                    })
+            );
+            const result = expect(
+                rankAiRecommendations(request)
+            ).resolves.toEqual({
+                ranked: [
+                    { id: 'movie:1', reason: 'Thoughtful science fiction.' },
+                ],
+            });
+            await jest.advanceTimersByTimeAsync(25_000);
+            await result;
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+            expect(body.messages[0].content).toContain(
+                'Return fewer picks rather than padding'
+            );
+            expect(body.messages[0].content).toContain(
+                'without calling titles upcoming or unreleased'
+            );
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+    it('classifies the bounded request timeout without retrying', async () => {
         jest.useFakeTimers();
         try {
             fetchMock.mockImplementation(
@@ -383,8 +441,11 @@ describe('AI recommendation gateway', () => {
             const result = expect(
                 rankAiRecommendations(request)
             ).rejects.toThrow('[ai-recommendations:timeout]');
-            await jest.advanceTimersByTimeAsync(20_000);
+            await jest.advanceTimersByTimeAsync(59_999);
+            expect(fetchMock.mock.calls[0][1].signal.aborted).toBe(false);
+            await jest.advanceTimersByTimeAsync(1);
             await result;
+            expect(fetchMock).toHaveBeenCalledTimes(1);
         } finally {
             jest.useRealTimers();
         }
@@ -484,7 +545,6 @@ describe('AI recommendation gateway', () => {
         ).toThrow('unavailable');
     });
     it.each([
-        { ranked: [] },
         { ranked: [{ id: 'unknown', reason: 'invented' }] },
         { ranked: [{ id: 'movie:1', reason: 'x'.repeat(241) }] },
         { ranked: [{ id: 'movie:1', reason: '   ' }] },
@@ -498,6 +558,21 @@ describe('AI recommendation gateway', () => {
         expect(() =>
             parseAiRecommendationResponse(JSON.stringify(value), request)
         ).toThrow();
+    });
+    it('accepts an honest empty ranking so verified discovery can find better matches', () => {
+        const response = {
+            ranked: [],
+            tasteSummary:
+                'The current candidates do not meet the requested exclusions.',
+            suggestedTitles: [{ title: 'Broadchurch', mediaType: 'tv' }],
+            discoveryGenres: [{ genreId: 80, mediaType: 'tv' }],
+        };
+        expect(
+            parseAiRecommendationResponse(
+                JSON.stringify(response),
+                learnedRequest
+            )
+        ).toEqual(response);
     });
     it('accepts a JSON fenced response and strips untrusted extra fields', () => {
         expect(

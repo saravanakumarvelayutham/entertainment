@@ -1642,6 +1642,7 @@
             "AI_PICKS": "Geselecteerd voor jouw smaak",
             "AI_LOADING": "Selecties zoeken die bij je voorkeuren passen…",
             "AI_FAILED": "AI-selecties zijn niet beschikbaar. Je gewone aanbevelingen zijn er nog steeds.",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "Er zijn nog geen titels beschikbaar om te rangschikken. Schakel TMDB-metadata in en importeer een film- of seriesbibliotheek om selecties te vinden.",
             "AI_RETRY": "Opnieuw proberen",
             "ACTION_FAILED": "De actie kon niet worden voltooid. Probeer het opnieuw.",

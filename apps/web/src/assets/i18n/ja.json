@@ -1642,6 +1642,7 @@
             "AI_PICKS": "あなたの好みに合わせて選択",
             "AI_LOADING": "好みに合う作品を検索中…",
             "AI_FAILED": "AIのおすすめを利用できません。通常のおすすめは引き続き表示されます。",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "まだ順位付けできる作品がありません。TMDBメタデータを有効にして映画またはシリーズのライブラリをインポートすると、おすすめが表示されます。",
             "AI_RETRY": "再試行",
             "ACTION_FAILED": "操作を完了できませんでした。もう一度お試しください。",

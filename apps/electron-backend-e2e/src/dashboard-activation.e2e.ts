@@ -75,12 +75,16 @@ test.describe('Dashboard Activation', () => {
                                         content: JSON.stringify({
                                             tasteSummary:
                                                 'Synthetic favorites suggest thoughtful movies and adjacent stories.',
-                                            ranked: payload.candidates
-                                                .slice(0, 20)
-                                                .map((candidate) => ({
-                                                    id: candidate.id,
-                                                    reason: 'Fits the synthetic favorites.',
-                                                })),
+                                            ranked: payload.preferences.includes(
+                                                'no suitable titles'
+                                            )
+                                                ? []
+                                                : payload.candidates
+                                                      .slice(0, 20)
+                                                      .map((candidate) => ({
+                                                          id: candidate.id,
+                                                          reason: 'Fits the synthetic favorites.',
+                                                      })),
                                             suggestedTitles: [],
                                             discoveryGenres: [],
                                         }),
@@ -179,6 +183,25 @@ test.describe('Dashboard Activation', () => {
                 'Synthetic favorites suggest thoughtful movies'
             );
             expect(await gatewayCalls()).toBe(3);
+            await watchRequest.fill(
+                'An unusually specific mood with no suitable titles'
+            );
+            await app.mainWindow.getByTestId('dashboard-watch-submit').click();
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-status')
+            ).toContainText('No library titles match this request yet.');
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-retry')
+            ).toHaveCount(0);
+            await expect(
+                app.mainWindow.getByTestId('dashboard-ai-discoveries-rail')
+            ).toHaveCount(0);
+            expect(await gatewayCalls()).toBe(4);
+            await app.mainWindow.getByTestId('dashboard-watch-clear').click();
+            await expect(profile).toContainText(
+                'Synthetic favorites suggest thoughtful movies'
+            );
+            expect(await gatewayCalls()).toBe(4);
             for (const theme of ['DARK_THEME', 'LIGHT_THEME']) {
                 await openSettings(app.mainWindow);
                 await openSettingsSection(app.mainWindow, 'general');

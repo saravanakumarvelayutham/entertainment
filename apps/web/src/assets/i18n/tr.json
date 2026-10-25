@@ -1642,6 +1642,7 @@
             "AI_PICKS": "Zevkinize göre seçildi",
             "AI_LOADING": "Tercihlerinize uyan öneriler bulunuyor…",
             "AI_FAILED": "Yapay zekâ önerileri kullanılamıyor. Normal önerileriniz hâlâ burada.",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "Henüz sıralanabilecek başlık yok. Öneri bulmak için TMDB meta verilerini etkinleştirin ve bir film veya dizi kitaplığı içe aktarın.",
             "AI_RETRY": "Yeniden dene",
             "ACTION_FAILED": "İşlem tamamlanamadı. Lütfen tekrar deneyin.",

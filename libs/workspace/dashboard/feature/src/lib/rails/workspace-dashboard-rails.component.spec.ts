@@ -10,6 +10,7 @@ import {
     isDashboardHighRated,
     liveRailTitleKeyForSource,
     rankDashboardCards,
+    resolveDashboardAiReason,
     shouldShowLiveFavoritesSkeleton,
     shouldShowRecentContentSkeleton,
     TOP_TEN_LIMIT,
@@ -35,6 +36,27 @@ import {
 } from './dashboard-hero.utils';
 import type { DashboardRailCard } from './dashboard-rail.component';
 import { COLLECTION_VIEW_STATE_KEY } from '@iptvnator/portal/shared/util';
+
+describe('resolveDashboardAiReason', () => {
+    it.each([
+        'An upcoming animated comedy-adventure offering a lighthearted premise.',
+        'An UNRELEASED film fitting your interests.',
+        'Not yet released, but a strong science-fiction match.',
+    ])(
+        'uses neutral localized copy for unsupported release status: %s',
+        (reason) => {
+            expect(
+                resolveDashboardAiReason(reason, 'Selected for your taste')
+            ).toBe('Selected for your taste');
+        }
+    );
+    it('retains useful explanations about a future-set plot', () => {
+        const reason = 'A thoughtful story about the future of human identity.';
+        expect(
+            resolveDashboardAiReason(reason, 'Selected for your taste')
+        ).toBe(reason);
+    });
+});
 
 describe('buildDashboardSourceActions', () => {
     const basePlaylist = {
@@ -203,9 +225,7 @@ describe('Top 10 rail helpers', () => {
 
     it('keeps a shorter list intact and ranks what is there', () => {
         expect(
-            rankDashboardCards([card('a'), card('b')]).map(
-                (item) => item.rank
-            )
+            rankDashboardCards([card('a'), card('b')]).map((item) => item.rank)
         ).toEqual([1, 2]);
     });
 
@@ -241,7 +261,6 @@ describe('hero selection helpers', () => {
     it('limits the up-next stack to a handful of recent items', () => {
         expect(HERO_CANDIDATE_LIMIT).toBe(5);
     });
-
 });
 
 describe('isDashboardHighRated', () => {

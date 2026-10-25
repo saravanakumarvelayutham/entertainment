@@ -1641,6 +1641,7 @@
             "AI_PROFILE_SAVE_FAILED": "Your taste profile is available for this session, but could not be saved. Try again to save it.",
             "AI_LOADING": "Finding picks that fit your preferences…",
             "AI_FAILED": "AI picks are unavailable. Your regular recommendations are still here.",
+            "AI_REQUEST_EMPTY": "No library titles match this request yet. Try another mood or broaden your request.",
             "AI_EMPTY": "No available titles to rank yet. Enable TMDB metadata and import a movie or series library to find picks.",
             "AI_NEEDS_EVIDENCE": "Watch a movie or series, add a favourite, or vote on a recommendation to start learning your taste.",
             "AI_RETRY": "Try again",

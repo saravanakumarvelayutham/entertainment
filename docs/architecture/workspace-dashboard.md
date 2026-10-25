@@ -250,6 +250,12 @@ Render rules:
        discovery hints and suppress stale ranked cards. Temporary requests do
        not update the durable taste profile; their disclosure names the AI
        gateway. New copy currently uses English fallbacks outside English.
+       During a temporary request, broad discoveries feed ranking but do not
+       render as a separate endorsed rail. A valid empty ranking still launches
+       verified discovery, and an exhausted request shows an honest no-match
+       message instead of an AI-unavailable error.
+       AI captions containing unsupported upcoming/unreleased claims use the
+       existing localized neutral taste label, including captions from cache.
        The dashboard hides dismissed identities immediately; the data-access
        service owns persistence and hybrid-ranking signals. Up to four
        personalized genre rails draw a bounded seed set round-robin from local
@@ -414,9 +420,15 @@ weight training. Prior context does not itself invalidate the result cache.
 
 Only the current main window's main frame may invoke the bridge. Main validates
 at most 40 candidates, 2,000 preference characters, 100 model characters and
-300 title characters. The request has a 20-second timeout, blocks redirects and
-reads at most 128 KiB of response data. Returned JSON must contain a nonempty
-ranking of at most 20 unique known ids and reasons of at most 240 characters, plus a taste
+300 title characters. The request has a 60-second timeout to accommodate
+history-backed model inference, blocks redirects and reads at most 128 KiB of
+response data. The model is asked to return fewer relevant picks instead of
+padding with weak or conflicting matches, and to avoid unsupported claims that
+library titles are unreleased. Returned JSON may contain an empty ranking when
+no supplied title fits; valid discovery hints still proceed through library
+matching and enrichment. Empty results are cached without automatic retries.
+Nonempty rankings contain at most 20 unique known ids and reasons of at most
+240 characters, plus a taste
 summary of at most 1,000 characters when learning is requested; malformed
 or invented identities reject the entire response. Provider errors become
 allowlisted safe error codes (authentication, rate limit, timeout, network,

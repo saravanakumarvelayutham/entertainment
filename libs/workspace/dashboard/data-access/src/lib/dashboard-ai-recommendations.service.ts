@@ -182,7 +182,6 @@ export class DashboardAiRecommendationsService {
         if (
             cached &&
             cached.ranked.every(({ id }) => byId.has(id)) &&
-            (!candidates.length || cached.ranked.length) &&
             (!tasteSignals || cached.tasteSummary)
         ) {
             this.attemptedKey = key;
@@ -233,7 +232,6 @@ export class DashboardAiRecommendationsService {
                     const usableCache =
                         cached &&
                         cached.ranked.every((item) => ids.has(item.id)) &&
-                        (!load.candidates.length || cached.ranked.length > 0) &&
                         (!load.tasteSignals || cached.tasteSummary);
                     const priorTasteSummary =
                         !load.transient &&
@@ -280,7 +278,8 @@ export class DashboardAiRecommendationsService {
                         seen.add(id);
                         ranked.push({ item, reason });
                     }
-                    if (ranked.length === 0 && load.candidates.length > 0)
+                    // A genuine no-match response may still seed catalog discovery.
+                    if (response.ranked.length > 0 && ranked.length === 0)
                         throw new Error(
                             '[ai-recommendations:invalid-response]'
                         );
