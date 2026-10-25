@@ -344,177 +344,24 @@
         }
 
         <div class="rails-page__rails">
-            <!-- Continue watching (movies + series): landscape stills with
-                 progress and time left. -->
-            @if (
-                dashboardRails().continueWatching &&
-                continueWatchingCards().length > 0
-            ) {
-                <lib-dashboard-rail
-                    [label]="
-                        'WORKSPACE.DASHBOARD.CONTINUE_WATCHING' | translate
+            @if (isElectron) {
+                <lib-dashboard-watch-assistant
+                    [enabled]="aiEnabled()"
+                    [intent]="watchIntent()"
+                    [busy]="
+                        aiCandidatesLoading() ||
+                        aiRecommendationsService.loading()
                     "
-                    [items]="continueWatchingCards()"
-                    [autoRoll]="false"
-                    [totalCount]="data.globalRecentVodItems().length"
-                    [seeAllLink]="['/workspace/global-recent']"
-                    [seeAllState]="continueWatchingSeeAllState()"
-                    layout="landscape"
-                    [testId]="'dashboard-continue-watching-rail'"
-                    (actionSelected)="onContinueWatchingActionSelected($event)"
+                    (intentChange)="watchIntent.set($event)"
                 />
             }
-
-            <!-- Live favorites: no fallback. Recently watched live gets its own rail. -->
-            @if (
-                dashboardRails().liveFavorites &&
-                !showLiveFavoritesSkeleton() &&
-                liveFavoriteCardsEnriched().length > 0
-            ) {
-                <lib-dashboard-rail
-                    [label]="liveRailTitleKeyForSource('favorites') | translate"
-                    [items]="liveFavoriteCardsEnriched()"
-                    [totalCount]="data.globalFavoriteLiveItems().length"
-                    [seeAllLink]="['/workspace/global-favorites']"
-                    [seeAllState]="liveSeeAllState"
-                    layout="channel"
-                    [testId]="'dashboard-live-favorites-rail'"
-                />
-            } @else if (showLiveFavoritesSkeleton()) {
-                <section
-                    class="rails-page__skeleton-rail"
-                    aria-hidden="true"
-                    aria-busy="true"
-                >
-                    <div class="rails-page__skeleton-header"></div>
-                    <div class="rails-page__skeleton-track">
-                        @for (slot of skeletonSlots; track slot) {
-                            <div
-                                class="rails-page__skeleton-card rails-page__skeleton-card--channel"
-                            ></div>
-                        }
-                    </div>
-                </section>
-            }
-
-            @if (
-                dashboardRails().recentlyWatchedLive &&
-                recentLiveCardsEnriched().length > 0
-            ) {
-                <lib-dashboard-rail
-                    [label]="liveRailTitleKeyForSource('recent') | translate"
-                    [items]="recentLiveCardsEnriched()"
-                    [totalCount]="data.globalRecentLiveItems().length"
-                    [seeAllLink]="['/workspace/global-recent']"
-                    [seeAllState]="liveSeeAllState"
-                    layout="channel"
-                    [testId]="'dashboard-recent-live-rail'"
-                />
-            }
-
-            @if (
-                dashboardRails().favoriteMoviesAndSeries &&
-                favoriteMoviesAndSeriesCards().length > 0
-            ) {
-                <lib-dashboard-rail
-                    [label]="
-                        'WORKSPACE.DASHBOARD.FAVORITE_MOVIES_AND_SERIES'
-                            | translate
-                    "
-                    [items]="favoriteMoviesAndSeriesCards()"
-                    [totalCount]="
-                        data.globalFavoriteItems().length -
-                        data.globalFavoriteLiveItems().length
-                    "
-                    [seeAllLink]="['/workspace/global-favorites']"
-                    [seeAllState]="favoriteMoviesAndSeriesSeeAllState()"
-                    [testId]="'dashboard-favorite-vod-rail'"
-                />
-            }
-
-            @if (showRecentContentSkeleton()) {
-                <section
-                    class="rails-page__skeleton-rail"
-                    aria-hidden="true"
-                    aria-busy="true"
-                >
-                    <div class="rails-page__skeleton-header"></div>
-                    <div class="rails-page__skeleton-track">
-                        @for (slot of skeletonSlots; track slot) {
-                            <div
-                                class="rails-page__skeleton-card rails-page__skeleton-card--landscape"
-                            ></div>
-                        }
-                    </div>
-                </section>
-            }
-
-            <!-- Sources rail -->
-            @if (dashboardRails().recentSources && sourceCards().length > 0) {
-                <lib-dashboard-rail
-                    [label]="'WORKSPACE.DASHBOARD.RECENT_SOURCES' | translate"
-                    [items]="sourceCards()"
-                    [totalCount]="data.playlists().length"
-                    [seeAllLink]="['/workspace/sources']"
-                    aspectRatio="16 / 9"
-                    [testId]="'dashboard-recent-sources-rail'"
-                    (actionSelected)="onSourceActionSelected($event)"
-                />
-            } @else if (
-                dashboardRails().recentSources && !data.playlistsLoaded()
-            ) {
-                <section
-                    class="rails-page__skeleton-rail"
-                    aria-hidden="true"
-                    aria-busy="true"
-                >
-                    <div class="rails-page__skeleton-header"></div>
-                    <div class="rails-page__skeleton-track">
-                        @for (slot of skeletonSlots; track slot) {
-                            <div class="rails-page__skeleton-card"></div>
-                        }
-                    </div>
-                </section>
-            }
-
-            <!-- Xtream recently-added rail (only relevant if there are Xtream playlists) -->
-            @if (
-                dashboardRails().xtreamRecentlyAdded &&
-                xtreamRecentlyAddedCards().length > 0
-            ) {
-                <lib-dashboard-rail
-                    [label]="
-                        'WORKSPACE.DASHBOARD.XTREAM_RECENTLY_ADDED' | translate
-                    "
-                    [items]="xtreamRecentlyAddedCards()"
-                    [totalCount]="data.xtreamRecentlyAddedItems().length"
-                    [testId]="'dashboard-xtream-recently-added-rail'"
-                />
-            } @else if (
-                dashboardRails().xtreamRecentlyAdded &&
-                xtreamPlaylistCount() > 0 &&
-                data.xtreamRecentlyAddedLoading()
-            ) {
-                <section
-                    class="rails-page__skeleton-rail"
-                    aria-hidden="true"
-                    aria-busy="true"
-                >
-                    <div class="rails-page__skeleton-header"></div>
-                    <div class="rails-page__skeleton-track">
-                        @for (slot of skeletonSlots; track slot) {
-                            <div class="rails-page__skeleton-card"></div>
-                        }
-                    </div>
-                </section>
-            }
-
             @if (aiEnabled()) {
                 <!-- AI picks panel: the taste summary (or a slim toolbar) with
                      the Refresh action, then the ranked rail or an empty-state
                      card. Test ids are the E2E contract; keep them. -->
                 <section class="ai-panel" data-test-id="dashboard-ai-panel">
                     @if (
+                        !watchIntent() &&
                         aiRecommendationsService.resultCachePersistenceFailed()
                     ) {
                         <p class="ai-panel__notice" role="status">
@@ -536,7 +383,8 @@
                         </p>
                     }
                     @if (
-                        aiRecommendationsService.tasteSummary();
+                        !watchIntent() &&
+                            aiRecommendationsService.tasteSummary();
                         as tasteSummary
                     ) {
                         <section
@@ -701,6 +549,171 @@
                         "
                     />
                 }
+            }
+
+            <!-- Continue watching (movies + series): landscape stills with
+                 progress and time left. -->
+            @if (
+                dashboardRails().continueWatching &&
+                continueWatchingCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="
+                        'WORKSPACE.DASHBOARD.CONTINUE_WATCHING' | translate
+                    "
+                    [items]="continueWatchingCards()"
+                    [autoRoll]="false"
+                    [totalCount]="data.globalRecentVodItems().length"
+                    [seeAllLink]="['/workspace/global-recent']"
+                    [seeAllState]="continueWatchingSeeAllState()"
+                    layout="landscape"
+                    [testId]="'dashboard-continue-watching-rail'"
+                    (actionSelected)="onContinueWatchingActionSelected($event)"
+                />
+            }
+
+            <!-- Live favorites: no fallback. Recently watched live gets its own rail. -->
+            @if (
+                dashboardRails().liveFavorites &&
+                !showLiveFavoritesSkeleton() &&
+                liveFavoriteCardsEnriched().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="liveRailTitleKeyForSource('favorites') | translate"
+                    [items]="liveFavoriteCardsEnriched()"
+                    [totalCount]="data.globalFavoriteLiveItems().length"
+                    [seeAllLink]="['/workspace/global-favorites']"
+                    [seeAllState]="liveSeeAllState"
+                    layout="channel"
+                    [testId]="'dashboard-live-favorites-rail'"
+                />
+            } @else if (showLiveFavoritesSkeleton()) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div
+                                class="rails-page__skeleton-card rails-page__skeleton-card--channel"
+                            ></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (
+                dashboardRails().recentlyWatchedLive &&
+                recentLiveCardsEnriched().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="liveRailTitleKeyForSource('recent') | translate"
+                    [items]="recentLiveCardsEnriched()"
+                    [totalCount]="data.globalRecentLiveItems().length"
+                    [seeAllLink]="['/workspace/global-recent']"
+                    [seeAllState]="liveSeeAllState"
+                    layout="channel"
+                    [testId]="'dashboard-recent-live-rail'"
+                />
+            }
+
+            @if (
+                dashboardRails().favoriteMoviesAndSeries &&
+                favoriteMoviesAndSeriesCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="
+                        'WORKSPACE.DASHBOARD.FAVORITE_MOVIES_AND_SERIES'
+                            | translate
+                    "
+                    [items]="favoriteMoviesAndSeriesCards()"
+                    [totalCount]="
+                        data.globalFavoriteItems().length -
+                        data.globalFavoriteLiveItems().length
+                    "
+                    [seeAllLink]="['/workspace/global-favorites']"
+                    [seeAllState]="favoriteMoviesAndSeriesSeeAllState()"
+                    [testId]="'dashboard-favorite-vod-rail'"
+                />
+            }
+
+            @if (showRecentContentSkeleton()) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div
+                                class="rails-page__skeleton-card rails-page__skeleton-card--landscape"
+                            ></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            <!-- Sources rail -->
+            @if (dashboardRails().recentSources && sourceCards().length > 0) {
+                <lib-dashboard-rail
+                    [label]="'WORKSPACE.DASHBOARD.RECENT_SOURCES' | translate"
+                    [items]="sourceCards()"
+                    [totalCount]="data.playlists().length"
+                    [seeAllLink]="['/workspace/sources']"
+                    aspectRatio="16 / 9"
+                    [testId]="'dashboard-recent-sources-rail'"
+                    (actionSelected)="onSourceActionSelected($event)"
+                />
+            } @else if (
+                dashboardRails().recentSources && !data.playlistsLoaded()
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
+                </section>
+            }
+
+            <!-- Xtream recently-added rail (only relevant if there are Xtream playlists) -->
+            @if (
+                dashboardRails().xtreamRecentlyAdded &&
+                xtreamRecentlyAddedCards().length > 0
+            ) {
+                <lib-dashboard-rail
+                    [label]="
+                        'WORKSPACE.DASHBOARD.XTREAM_RECENTLY_ADDED' | translate
+                    "
+                    [items]="xtreamRecentlyAddedCards()"
+                    [totalCount]="data.xtreamRecentlyAddedItems().length"
+                    [testId]="'dashboard-xtream-recently-added-rail'"
+                />
+            } @else if (
+                dashboardRails().xtreamRecentlyAdded &&
+                xtreamPlaylistCount() > 0 &&
+                data.xtreamRecentlyAddedLoading()
+            ) {
+                <section
+                    class="rails-page__skeleton-rail"
+                    aria-hidden="true"
+                    aria-busy="true"
+                >
+                    <div class="rails-page__skeleton-header"></div>
+                    <div class="rails-page__skeleton-track">
+                        @for (slot of skeletonSlots; track slot) {
+                            <div class="rails-page__skeleton-card"></div>
+                        }
+                    </div>
+                </section>
             }
 
             <!-- TMDB recommendations rail ("Because you watched"; opt-in; Electron only) -->

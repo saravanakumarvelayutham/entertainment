@@ -78,6 +78,119 @@ describe('DashboardAiRecommendationsService', () => {
         })
     );
 
+    it('keeps transient ranking and learning entirely out of persistence', async () => {
+        const signals = {
+            watched: [
+                {
+                    title: 'Arrival',
+                    mediaType: 'movie' as const,
+                    completion: 'completed' as const,
+                },
+            ],
+            favorites: [],
+            votes: [],
+        };
+        rank.mockResolvedValue({ ...response(), tasteSummary: 'Tonight only' });
+        service.refresh(
+            { ...settings, learnFromHistory: true },
+            [candidate()],
+            false,
+            signals,
+            { transient: true }
+        );
+        await settle();
+        await service.retrySaveResults();
+        await service.retrySaveTasteProfile();
+        expect(rank.mock.calls[0][0].tasteSignals).toEqual(signals);
+        expect(rank.mock.calls[0][0].priorTasteSummary).toBeUndefined();
+        expect(service.items()).toHaveLength(1);
+        expect(service.tasteSummary()).toBeNull();
+        expect(getAppStateOrThrow).not.toHaveBeenCalled();
+        expect(setAppState).not.toHaveBeenCalled();
+    });
+    it('deduplicates pending and completed transient requests and allows explicit retry', async () => {
+        const pending = deferred();
+        rank.mockReturnValueOnce(pending.promise);
+        const refresh = (retry = false) =>
+            service.refresh(settings, [candidate()], retry, undefined, {
+                transient: true,
+            });
+        refresh();
+        refresh();
+        pending.resolve(response());
+        await settle();
+        refresh();
+        await settle();
+        expect(rank).toHaveBeenCalledTimes(1);
+        refresh(true);
+        await settle();
+        expect(rank).toHaveBeenCalledTimes(2);
+    });
+    it('latches transient failures and successful empty discovery responses', async () => {
+        rank.mockRejectedValueOnce(new Error('unavailable'));
+        service.refresh(settings, [candidate()], false, undefined, {
+            transient: true,
+        });
+        await settle();
+        service.refresh(settings, [candidate()], false, undefined, {
+            transient: true,
+        });
+        expect(rank).toHaveBeenCalledTimes(1);
+        const signals = {
+            watched: [],
+            favorites: [{ title: 'Arrival', mediaType: 'movie' as const }],
+            votes: [],
+        };
+        rank.mockResolvedValue({ ranked: [], tasteSummary: 'Science fiction' });
+        const refresh = () =>
+            service.refresh(
+                { ...settings, learnFromHistory: true },
+                [],
+                false,
+                signals,
+                { transient: true }
+            );
+        refresh();
+        await settle();
+        refresh();
+        await settle();
+        expect(rank).toHaveBeenCalledTimes(2);
+        expect(service.failed()).toBe(false);
+        expect(getAppStateOrThrow).not.toHaveBeenCalled();
+        expect(setAppState).not.toHaveBeenCalled();
+    });
+    it('isolates identical session preferences and restores normal cached results despite a late session response', async () => {
+        service.refresh(settings, [candidate()]);
+        await settle();
+        const pending = deferred();
+        rank.mockReturnValueOnce(pending.promise);
+        service.refresh(settings, [candidate()], false, undefined, {
+            transient: true,
+        });
+        await settle();
+        expect(rank).toHaveBeenCalledTimes(2);
+        service.refresh(settings, [candidate()]);
+        expect(service.items()[0].reason).toBe('Thoughtful science fiction');
+        pending.resolve({
+            ranked: [{ id: 'movie:1', reason: 'Obsolete intent' }],
+        });
+        await settle();
+        expect(service.items()[0].reason).toBe('Thoughtful science fiction');
+        expect(rank).toHaveBeenCalledTimes(2);
+    });
+    it('rejects late transient results after disabling AI', async () => {
+        const pending = deferred();
+        rank.mockReturnValueOnce(pending.promise);
+        service.refresh(settings, [candidate()], false, undefined, {
+            transient: true,
+        });
+        await settle();
+        service.refresh({ ...settings, enabled: false }, []);
+        pending.resolve(response());
+        await settle();
+        expect(service.items()).toEqual([]);
+        expect(setAppState).not.toHaveBeenCalled();
+    });
     it('sends only explicit preferences and whitelisted public metadata', async () => {
         service.refresh(settings, [candidate()]);
         await settle();

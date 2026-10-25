@@ -1,0 +1,85 @@
+<section class="watch-assistant" data-test-id="dashboard-watch-assistant">
+    <header class="watch-assistant__header">
+        <span class="watch-assistant__symbol" aria-hidden="true">
+            <mat-icon>auto_awesome</mat-icon>
+        </span>
+        <div>
+            <span class="watch-assistant__eyebrow">{{
+                'WORKSPACE.DASHBOARD.ASSISTANT_EYEBROW' | translate
+            }}</span>
+            <h2>{{ 'WORKSPACE.DASHBOARD.ASSISTANT_TITLE' | translate }}</h2>
+            <p>{{ 'WORKSPACE.DASHBOARD.ASSISTANT_DESCRIPTION' | translate }}</p>
+        </div>
+    </header>
+    @if (enabled()) {
+        <form (submit)="submit($event)" class="watch-assistant__form">
+            <label for="dashboard-watch-request">{{
+                'WORKSPACE.DASHBOARD.ASSISTANT_LABEL' | translate
+            }}</label>
+            <div class="watch-assistant__composer">
+                <textarea
+                    id="dashboard-watch-request"
+                    data-test-id="dashboard-watch-request"
+                    rows="2"
+                    [maxLength]="maxLength"
+                    [value]="draft()"
+                    (input)="draft.set($any($event.target).value)"
+                    [placeholder]="
+                        'WORKSPACE.DASHBOARD.ASSISTANT_PLACEHOLDER' | translate
+                    "
+                    aria-describedby="dashboard-watch-privacy"
+                ></textarea>
+                <button
+                    type="submit"
+                    class="watch-assistant__submit"
+                    data-test-id="dashboard-watch-submit"
+                    [disabled]="busy() || !draft().trim()"
+                >
+                    {{ 'WORKSPACE.DASHBOARD.ASSISTANT_SUBMIT' | translate }}
+                    <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+                </button>
+            </div>
+            <div class="watch-assistant__suggestions">
+                @for (suggestion of suggestions; track suggestion) {
+                    <button
+                        type="button"
+                        [disabled]="busy()"
+                        (click)="suggest(suggestion)"
+                    >
+                        {{
+                            'WORKSPACE.DASHBOARD.ASSISTANT_' + suggestion
+                                | translate
+                        }}
+                    </button>
+                }
+            </div>
+        </form>
+        @if (intent()) {
+            <div class="watch-assistant__active" role="status">
+                <span>{{
+                    'WORKSPACE.DASHBOARD.ASSISTANT_ACTIVE'
+                        | translate: { request: intent() }
+                }}</span>
+                <button
+                    type="button"
+                    (click)="intentChange.emit('')"
+                    data-test-id="dashboard-watch-clear"
+                >
+                    {{ 'WORKSPACE.DASHBOARD.ASSISTANT_CLEAR' | translate }}
+                </button>
+            </div>
+        }
+        <p class="watch-assistant__privacy" id="dashboard-watch-privacy">
+            <mat-icon aria-hidden="true">info_outline</mat-icon>
+            {{ 'WORKSPACE.DASHBOARD.ASSISTANT_PRIVACY' | translate }}
+        </p>
+    } @else {
+        <a
+            class="watch-assistant__setup"
+            [routerLink]="['/workspace/settings/dashboard']"
+        >
+            {{ 'WORKSPACE.DASHBOARD.ASSISTANT_SETUP' | translate }}
+            <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+        </a>
+    }
+</section>

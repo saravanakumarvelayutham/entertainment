@@ -70,6 +70,8 @@ import {
 import type { DashboardHeroTmdbExtras } from './dashboard-hero-tmdb.service';
 import { DashboardHeroTmdbService } from './dashboard-hero-tmdb.service';
 import { DashboardRailComponent } from './dashboard-rail.component';
+import { DashboardWatchAssistantComponent } from './dashboard-watch-assistant.component';
+import { dashboardWatchIntentSettings } from './dashboard-watch-intent';
 import type {
     DashboardRailAction,
     DashboardRailCard,
@@ -124,6 +126,7 @@ import type {
     selector: 'lib-workspace-dashboard-rails',
     imports: [
         DashboardRailComponent,
+        DashboardWatchAssistantComponent,
         EmptyStateComponent,
         MatButtonModule,
         MatIcon,
@@ -185,6 +188,13 @@ export class WorkspaceDashboardRailsComponent {
         normalizeDashboardRailsSettings(this.settingsStore.dashboardRails?.())
     );
 
+    readonly watchIntent = signal('');
+    readonly aiSettings = computed(() =>
+        dashboardWatchIntentSettings(
+            this.settingsStore.aiRecommendations?.(),
+            this.watchIntent()
+        )
+    );
     readonly aiEnabled = computed(
         () =>
             this.isElectron &&
@@ -228,8 +238,11 @@ export class WorkspaceDashboardRailsComponent {
         )
     );
     readonly aiCards = computed(() =>
-        this.aiRecommendationsService
-            .items()
+        (this.aiRecommendationsService.discoveryEvidenceKey() ===
+        dashboardAiEvidenceKey(this.aiSettings(), this.aiTasteSignals())
+            ? this.aiRecommendationsService.items()
+            : []
+        )
             .map(({ item, reason }) => ({
                 item: this.aiCandidates().find(
                     (candidate) =>
@@ -260,7 +273,7 @@ export class WorkspaceDashboardRailsComponent {
     readonly aiDiscoveryGeneration = computed(() =>
         JSON.stringify({
             evidence: dashboardAiEvidenceKey(
-                this.settingsStore.aiRecommendations?.(),
+                this.aiSettings(),
                 this.aiTasteSignals()
             ),
             playlists: this.data
@@ -286,9 +299,7 @@ export class WorkspaceDashboardRailsComponent {
         );
     });
     readonly aiNeedsEvidence = computed(() => {
-        const settings = normalizeAiRecommendationSettings(
-            this.settingsStore.aiRecommendations?.()
-        );
+        const settings = this.aiSettings();
         return (
             settings.learnFromHistory &&
             !settings.preferences &&
@@ -306,10 +317,11 @@ export class WorkspaceDashboardRailsComponent {
 
     retryAiRecommendations(): void {
         this.aiRecommendationsService.refresh(
-            this.settingsStore.aiRecommendations?.(),
+            this.aiSettings(),
             this.aiCandidates(),
             true,
-            this.aiTasteSignals()
+            this.aiTasteSignals(),
+            { transient: !!this.watchIntent() }
         );
     }
 
@@ -843,7 +855,7 @@ export class WorkspaceDashboardRailsComponent {
                 hints:
                     this.aiRecommendationsService.discoveryEvidenceKey() ===
                     dashboardAiEvidenceKey(
-                        this.settingsStore.aiRecommendations?.(),
+                        this.aiSettings(),
                         this.aiTasteSignals()
                     )
                         ? this.aiRecommendationsService.discoveryHints()
@@ -865,7 +877,7 @@ export class WorkspaceDashboardRailsComponent {
             untracked(() => this.aiDiscoveryService.refresh(request));
         });
         effect(() => {
-            const settings = this.settingsStore.aiRecommendations?.();
+            const settings = this.aiSettings();
             const enabled = this.aiEnabled();
             if (enabled && this.aiCandidatesLoading()) {
                 return;
@@ -877,7 +889,8 @@ export class WorkspaceDashboardRailsComponent {
                     enabled ? settings : { enabled: false },
                     candidates,
                     false,
-                    tasteSignals
+                    tasteSignals,
+                    { transient: !!this.watchIntent() }
                 )
             );
         });

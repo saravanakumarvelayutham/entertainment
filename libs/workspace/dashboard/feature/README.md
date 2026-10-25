@@ -10,8 +10,8 @@ larger title. Image-backed heroes use a dark text scrim in both themes; missing
 or failed artwork uses a theme-colored scrim over the generated backdrop.
 Rail headings use a subtle separator and accented See all links. Cards retain
 the configured cover sizes, with surface shadows and matching hover/keyboard
-emphasis. The hero and its skeleton share responsive geometry, including an
-80px poster on narrow phones. Reduced-motion preferences suppress decorative
+emphasis. The hero and its skeleton share responsive geometry; narrow layouts
+use a 96px poster and hide it below 480px. Reduced-motion preferences suppress decorative
 movement and skeleton shimmer.
 
 ## Dashboard Surfaces
@@ -62,11 +62,18 @@ rails also require the underlying data slice to have at least one item.
   separate High Rated rail projects matched entries rated 7.5 or higher.
   Data: `DashboardTrendingService`.
 
-Recommendation and genre rails use landscape cards with the taste explanation
-beside the poster. `More like this` and `Not for me` are visible buttons, using
+Recommendation and genre rails use poster cards with the taste explanation
+below the title. `More like this` and `Not for me` are icon buttons with accessible labels, using
 the existing persisted feedback service. The like button shows its selected
 state and offers undo; dismissing a title removes it from all recommendation
 rails immediately. Other rails retain their cover or channel presentation.
+
+Desktop places a responsive **Find your next watch** composer below the feature
+banner. Users can submit a mood or a short request, choose a suggested prompt,
+and return to their saved taste. Only submission triggers AI work. Requests use
+the existing AI consent and library-matching flow, bypass local profile/result
+persistence, and never change saved preferences. With AI off, the panel links
+to Dashboard settings. The ranked results stay adjacent to the composer.
 
 ## Settings
 

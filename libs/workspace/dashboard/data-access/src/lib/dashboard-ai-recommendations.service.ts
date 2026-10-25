@@ -30,6 +30,7 @@ export interface DashboardAiRecommendation {
 }
 
 interface AiLoad {
+    transient: boolean;
     key: string;
     settings: AiRecommendationSettings;
     candidates: readonly DashboardRecommendationItem[];
@@ -71,30 +72,34 @@ export class DashboardAiRecommendationsService {
         settings: unknown,
         pool: readonly DashboardRecommendationItem[],
         retry = false,
-        signals?: AiRecommendationTasteSignals
+        signals?: AiRecommendationTasteSignals,
+        options: { transient?: boolean } = {}
     ): void {
+        const transient = options.transient === true;
         const config = normalizeAiRecommendationSettings(settings);
         const tasteSignals =
             config.learnFromHistory && hasDashboardAiTasteSignals(signals)
                 ? signals
                 : undefined;
         const fingerprint = dashboardAiEvidenceKey(config, tasteSignals);
-        if (this.profileFingerprint !== fingerprint) {
-            this.profileFingerprint = fingerprint;
+        const hasEvidence = config.preferences || tasteSignals;
+        const profileKey = (transient ? 'session:' : '') + fingerprint;
+        if (this.profileFingerprint !== profileKey) {
+            this.profileFingerprint = profileKey;
             this.tasteSummary.set(null);
             this.profilePersistenceFailed.set(false);
-            if (config.enabled && (config.preferences || tasteSignals)) {
+            if (!transient && config.enabled && hasEvidence) {
                 void this.profile
                     .read(fingerprint)
                     .then((summary) => {
                         if (
-                            this.profileFingerprint === fingerprint &&
+                            this.profileFingerprint === profileKey &&
                             !this.tasteSummary()
                         )
                             this.tasteSummary.set(summary);
                     })
                     .catch(() => {
-                        if (this.profileFingerprint === fingerprint)
+                        if (this.profileFingerprint === profileKey)
                             this.profilePersistenceFailed.set(true);
                     });
             }
@@ -110,7 +115,7 @@ export class DashboardAiRecommendationsService {
             .slice(0, MAX_AI_RECOMMENDATION_CANDIDATES);
         if (
             !config.enabled ||
-            (!config.preferences && !tasteSignals) ||
+            !hasEvidence ||
             !config.model ||
             (candidates.length === 0 && !tasteSignals) ||
             !window.electron?.rankAiRecommendations
@@ -126,12 +131,14 @@ export class DashboardAiRecommendationsService {
             if (!config.enabled) this.tasteSummary.set(null);
             return;
         }
-        const key = dashboardAiResultKey(config, candidates, tasteSignals);
+        const key =
+            (transient ? 'session:' : '') +
+            dashboardAiResultKey(config, candidates, tasteSignals);
         if (
             !retry &&
             this.desired?.key === key &&
             this.attemptedKey === key &&
-            (this.active || this.failed() || this.cache.peek(key))
+            (transient || this.active || this.failed() || this.cache.peek(key))
         ) {
             this.desired = { ...this.desired, candidates };
             const byId = new Map(
@@ -155,6 +162,7 @@ export class DashboardAiRecommendationsService {
             return;
         }
         this.desired = {
+            transient,
             key,
             settings: config,
             candidates,
@@ -167,7 +175,7 @@ export class DashboardAiRecommendationsService {
         this.errorCode.set(null);
         this.discoveryHints.set(emptyDashboardAiDiscoveryHints());
         this.discoveryEvidenceKey.set(null);
-        const cached = !retry ? this.cache.peek(key) : null;
+        const cached = !transient && !retry ? this.cache.peek(key) : null;
         const byId = new Map(
             candidates.map((item) => [candidateId(item), item])
         );
@@ -204,19 +212,23 @@ export class DashboardAiRecommendationsService {
     }
 
     private async run(): Promise<void> {
+        const cacheFailed = this.resultCachePersistenceFailed;
         this.active = true;
         try {
             while (this.desired && this.attemptedKey !== this.desired.key) {
                 const load = this.desired;
                 this.attemptedKey = load.key;
                 try {
-                    const cached = !load.retry
-                        ? await this.cache.read(load.key).catch(() => {
-                              if (this.desired?.key === load.key)
-                                  this.resultCachePersistenceFailed.set(true);
-                              return null;
-                          })
-                        : null;
+                    const cached =
+                        !load.transient && !load.retry
+                            ? await this.cache.read(load.key).catch(() => {
+                                  if (this.desired?.key === load.key)
+                                      this.resultCachePersistenceFailed.set(
+                                          true
+                                      );
+                                  return null;
+                              })
+                            : null;
                     const ids = new Set(load.candidates.map(candidateId));
                     const usableCache =
                         cached &&
@@ -224,7 +236,9 @@ export class DashboardAiRecommendationsService {
                         (!load.candidates.length || cached.ranked.length > 0) &&
                         (!load.tasteSignals || cached.tasteSummary);
                     const priorTasteSummary =
-                        load.settings.learnFromHistory && !usableCache
+                        !load.transient &&
+                        load.settings.learnFromHistory &&
+                        !usableCache
                             ? await this.profile.readLatest().catch(() => {
                                   if (this.desired?.key === load.key)
                                       this.profilePersistenceFailed.set(true);
@@ -292,7 +306,7 @@ export class DashboardAiRecommendationsService {
                     this.discoveryHints.set(hints);
                     this.items.set(ranked.slice(0, 20));
                     this.failed.set(false);
-                    if (summary) {
+                    if (summary && !load.transient) {
                         this.tasteSummary.set(summary.trim());
                         if (usableCache)
                             await this.restoreProfileIfMissing(
@@ -301,7 +315,7 @@ export class DashboardAiRecommendationsService {
                             );
                         else await this.persistProfile(load, summary.trim());
                     }
-                    if (!usableCache) {
+                    if (!load.transient && !usableCache) {
                         await this.cache
                             .save(load.key, {
                                 ranked: ranked
@@ -317,9 +331,7 @@ export class DashboardAiRecommendationsService {
                             })
                             .then(() => {
                                 if (this.desired?.key === load.key)
-                                    this.resultCachePersistenceFailed.set(
-                                        false
-                                    );
+                                    cacheFailed.set(false);
                             })
                             .catch(() => {
                                 if (this.desired?.key === load.key)
@@ -368,6 +380,7 @@ export class DashboardAiRecommendationsService {
     }
 
     async retrySaveTasteProfile(): Promise<void> {
+        if (this.desired?.transient) return;
         const fingerprint = this.profileFingerprint;
         const summary = this.tasteSummary();
         if (!fingerprint || !summary) return;
@@ -383,6 +396,7 @@ export class DashboardAiRecommendationsService {
         }
     }
     async retrySaveResults(): Promise<void> {
+        if (this.desired?.transient) return;
         const key = this.desired?.key;
         if (!key) return;
         const response = this.cache.peek(key);

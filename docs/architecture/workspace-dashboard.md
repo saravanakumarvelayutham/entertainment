@@ -237,6 +237,19 @@ Render rules:
        summary, then the AI rail or the `dashboard-ai-status` empty-state
        card; persistence failures render as inline notices with their retry
        buttons. The test ids are the E2E contract and must not change.
+       A responsive “Find your next watch” composer sits below the feature
+       banner, ahead of the recommendation and activity rails. Desktop users
+       with AI disabled get a link to `/workspace/settings/dashboard`; it never
+       enables consent implicitly. Draft edits do not trigger inference. Submit
+       and localized mood shortcuts compose a bounded, visit-specific request
+       with saved preferences, preserving the history-learning opt-in. Clear
+       restores ordinary taste-based recommendations. The request uses existing
+       ranking IPC and verified-library matching; it is not a general chat.
+       Renderer transient ranking bypasses profile/result persistence and prior
+       summaries, including retry-save actions. Request generations isolate
+       discovery hints and suppress stale ranked cards. Temporary requests do
+       not update the durable taste profile; their disclosure names the AI
+       gateway. New copy currently uses English fallbacks outside English.
        The dashboard hides dismissed identities immediately; the data-access
        service owns persistence and hybrid-ranking signals. Up to four
        personalized genre rails draw a bounded seed set round-robin from local

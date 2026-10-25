@@ -32,7 +32,7 @@ test.describe('Dashboard Activation', () => {
     test('@electron reuses learned AI recommendations on dashboard revisits and refreshes explicitly', async ({
         dataDir,
         request,
-    }) => {
+    }, testInfo) => {
         test.setTimeout(120_000);
         await resetMockServers(request, ['xtream']);
         const vodFixture = await fetchXtreamVodFixture(
@@ -48,8 +48,10 @@ test.describe('Dashboard Activation', () => {
             await app.electronApp.evaluate(() => {
                 const state = globalThis as unknown as {
                     __aiGatewayCalls: number;
+                    __aiWatchPreferences: string[];
                 };
                 state.__aiGatewayCalls = 0;
+                state.__aiWatchPreferences = [];
                 const originalFetch = globalThis.fetch;
                 globalThis.fetch = async (input, init) => {
                     if (
@@ -62,7 +64,9 @@ test.describe('Dashboard Activation', () => {
                     const body = JSON.parse(String(init?.body));
                     const payload = JSON.parse(body.messages[1].content) as {
                         candidates: { id: string }[];
+                        preferences: string;
                     };
+                    state.__aiWatchPreferences.push(payload.preferences);
                     return new Response(
                         JSON.stringify({
                             choices: [
@@ -147,6 +151,67 @@ test.describe('Dashboard Activation', () => {
             await expect(
                 app.mainWindow.getByTestId('dashboard-ai-refresh')
             ).toBeEnabled();
+            const watchRequest = app.mainWindow.getByTestId(
+                'dashboard-watch-request'
+            );
+            await watchRequest.fill('Something uplifting for tonight');
+            expect(await gatewayCalls()).toBe(2);
+            await app.mainWindow.getByTestId('dashboard-watch-submit').click();
+            await expect.poll(gatewayCalls).toBe(3);
+            await expect(
+                app.mainWindow.getByTestId('dashboard-watch-clear')
+            ).toBeVisible();
+            await expect(profile).toHaveCount(0);
+            expect(
+                await app.electronApp.evaluate(() =>
+                    (
+                        globalThis as unknown as {
+                            __aiWatchPreferences: string[];
+                        }
+                    ).__aiWatchPreferences.at(-1)
+                )
+            ).toContain(
+                'Current watch request (prioritize for this session): Something uplifting for tonight'
+            );
+            await app.mainWindow.getByTestId('dashboard-watch-clear').click();
+            await expect(watchRequest).toHaveValue('');
+            await expect(profile).toContainText(
+                'Synthetic favorites suggest thoughtful movies'
+            );
+            expect(await gatewayCalls()).toBe(3);
+            for (const theme of ['DARK_THEME', 'LIGHT_THEME']) {
+                await openSettings(app.mainWindow);
+                await openSettingsSection(app.mainWindow, 'general');
+                await app.mainWindow.getByTestId(theme).click();
+                await saveSettings(app.mainWindow);
+                await goToDashboard(app.mainWindow);
+                await expect(
+                    app.mainWindow.locator('html')
+                ).not.toHaveAttribute('data-workspace-scene', /.+/);
+                await expect(
+                    app.mainWindow.locator('mat-snack-bar-container')
+                ).toBeHidden();
+                const assistant = app.mainWindow.getByTestId(
+                    'dashboard-watch-assistant'
+                );
+                await expect(assistant).toBeVisible();
+                await assistant.screenshot({
+                    path: testInfo.outputPath(`watch-assistant-${theme}.png`),
+                });
+            }
+            await app.mainWindow.setViewportSize({ width: 390, height: 844 });
+            const assistant = app.mainWindow.getByTestId(
+                'dashboard-watch-assistant'
+            );
+            await expect(assistant).toBeVisible();
+            expect(
+                await assistant.evaluate(
+                    (element) => element.scrollWidth <= element.clientWidth
+                )
+            ).toBe(true);
+            await assistant.screenshot({
+                path: testInfo.outputPath('watch-assistant-narrow.png'),
+            });
             await closeElectronApp(app);
             // Persisted results must also work offline in a new process. An
             // empty token prevents any accidental live gateway request.

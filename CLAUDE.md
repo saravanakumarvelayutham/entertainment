@@ -10,6 +10,9 @@ Workspace chrome uses neutral charcoal/silver app tokens and the app sans-serif
 stack. Global navigation sits above provider/source tabs, with labels above
 640px. The dashboard pairs a wide cinematic feature with a horizontal history deck; catalog,
 detail, live, Sources and Settings pages use distinct compositions.
+Desktop's “Find your next watch” composer follows the feature banner; explicit
+requests use existing AI consent and transient ranking, without updating saved
+taste or result caches. See `docs/architecture/workspace-dashboard.md`.
 Canonical palette and interaction rules: `docs/architecture/iptvnator-ui-guidelines.md`.
 Workspace motion follows Settings > General > Interface motion (System, Full,
 or Reduced). Full overrides the OS animation preference for workspace effects;
